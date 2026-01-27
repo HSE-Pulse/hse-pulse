@@ -37,13 +37,16 @@ services:
     container_name: pulseflow
     environment:
       - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/}
-      - MONGO_DB=${MONGO_DB_HSE:-HSE}
+      - MONGO_DB=healthcare
       - MODEL_PATH=${PULSEFLOW_MODEL_PATH:-/app/models/lstm_model.pth}
       - DEVICE=${DEVICE:-cpu}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - ROOT_PATH=/pulseflow
     volumes:
       - ./models/pulseflow:/app/models:ro
+    depends_on:
+      mongodb:
+        condition: service_healthy
     networks:
       - frontend_net
       - backend_net
@@ -61,13 +64,16 @@ services:
     container_name: careplanplus
     environment:
       - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/}
-      - MONGO_DB=${MONGO_DB_RECOMMENDER:-recommender_system}
+      - MONGO_DB=healthcare
       - MODEL_PATH=${CAREPLANPLUS_MODEL_PATH:-/app/models/bert_model.pth}
       - DEVICE=${DEVICE:-cpu}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - ROOT_PATH=/careplanplus
     volumes:
       - ./models/careplanplus:/app/models
+    depends_on:
+      mongodb:
+        condition: service_healthy
     networks:
       - frontend_net
       - backend_net
@@ -85,13 +91,16 @@ services:
     container_name: pulsenotes
     environment:
       - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/}
-      - MONGO_DB=${MONGO_DB_MIMIC:-mimic}
+      - MONGO_DB=healthcare
       - MODEL_PATH=${PULSENOTES_MODEL_PATH:-/app/models/clinicalbert}
       - DEVICE=${DEVICE:-cpu}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - ROOT_PATH=/pulsenotes
     volumes:
       - ./models/pulsenotes:/app/models
+    depends_on:
+      mongodb:
+        condition: service_healthy
     networks:
       - frontend_net
       - backend_net
@@ -108,12 +117,17 @@ services:
       dockerfile: Dockerfile
     container_name: medisync
     environment:
+      - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/}
+      - MONGO_DB=healthcare
       - DEVICE=${DEVICE:-cpu}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - MODEL_PATH=${MEDISYNC_MODEL_PATH:-/app/models/maddpg_checkpoint.pth}
       - ROOT_PATH=/medisync
     volumes:
       - ./models/medisync:/app/models:ro
+    depends_on:
+      mongodb:
+        condition: service_healthy
     networks:
       - frontend_net
       - backend_net
@@ -131,9 +145,10 @@ services:
     image: mongo:6.0
     container_name: mongodb
     environment:
-      - MONGO_INITDB_DATABASE=HSE
+      - MONGO_INITDB_DATABASE=healthcare
     volumes:
       - mongodb_data:/data/db
+      - ./mongodb/init:/docker-entrypoint-initdb.d:ro
     networks:
       - backend_net
     restart: unless-stopped

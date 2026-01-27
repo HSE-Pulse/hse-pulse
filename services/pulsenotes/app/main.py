@@ -479,7 +479,7 @@ async def lifespan(app: FastAPI):
 
         # Try to build index from database if notes collection exists
         if 'notes' in db.list_collection_names():
-            nlp_manager.build_index_from_db(db['notes'])
+            nlp_manager.build_index_from_db(db['clinical_notes'])
 
     except Exception as e:
         logger.warning(f"MongoDB connection failed: {e}")
@@ -672,7 +672,7 @@ async def rag_query(request: RAGQueryRequest):
                         query_filter['hadm_id'] = parsed['hadm_id']
 
                     if query_filter:
-                        db_notes = list(db['notes'].find(query_filter))
+                        db_notes = list(db['clinical_notes'].find(query_filter))
                         for note in db_notes:
                             notes.append({
                                 'id': str(note.get('_id')),
@@ -770,7 +770,7 @@ async def get_patient_notes(subject_id: int):
         # Also check MongoDB
         if db is not None:
             try:
-                db_notes = list(db['notes'].find({'subject_id': subject_id}))
+                db_notes = list(db['clinical_notes'].find({'subject_id': subject_id}))
                 for note in db_notes:
                     # Avoid duplicates
                     if not any(n.get('subject_id') == subject_id and n.get('text') == note.get('text') for n in notes):

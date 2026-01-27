@@ -260,8 +260,19 @@ async def lifespan(app: FastAPI):
     try:
         mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
         mongo_client.admin.command('ping')
-        db = mongo_client[os.getenv("MONGO_DB", "recommender_system")]
+        db = mongo_client[os.getenv("MONGO_DB", "healthcare")]
         logger.info("Connected to MongoDB")
+
+        # Load procedure descriptions from database
+        try:
+            proc_mappings = list(db['procedure_mappings'].find({}, {"_id": 0}))
+            if proc_mappings:
+                for pm in proc_mappings:
+                    model_manager.procedure_descriptions[pm['code']] = pm['description']
+                logger.info(f"Loaded {len(proc_mappings)} procedure descriptions from database")
+        except Exception as e:
+            logger.warning(f"Could not load procedure mappings: {e}")
+
     except Exception as e:
         logger.warning(f"MongoDB connection failed: {e}. Using demo data.")
         db = None

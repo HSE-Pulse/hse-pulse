@@ -70,10 +70,8 @@ class ModelManager:
         self.scaler = None
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.features = [
-            'ED Trolleys', 'Ward Trolleys',
-            'Surge Capacity in Use (Full report @14:00)',
-            'Delayed Transfers of Care (As of Midnight)',
-            'No of >75+yrs Waiting >24hrs'
+            'trolley_count', 'admissions', 'discharges',
+            'trolleys_gt_24hrs', 'elderly_waiting'
         ]
 
     def load_model(self, model_path: str, scaler_path: Optional[str] = None):
@@ -293,10 +291,9 @@ async def predict_patient_flow(request: PredictionRequest):
 
         if db is not None:
             try:
-                collection = db["trolleys"]
+                collection = db["trolley_counts"]
                 df = pd.DataFrame(list(collection.find({
-                    'region': request.region,
-                    'hospital': request.hospital
+                    'hospital_code': request.hospital
                 }).sort('date', -1).limit(100)))
 
                 if len(df) >= 7:
@@ -353,28 +350,43 @@ async def list_hospitals():
     """List available hospitals and regions."""
     if db is not None:
         try:
-            collection = db["trolleys"]
-            pipeline = [
-                {"$group": {"_id": {"region": "$region", "hospital": "$hospital"}}},
-                {"$sort": {"_id.region": 1, "_id.hospital": 1}}
-            ]
-            results = list(collection.aggregate(pipeline))
-            hospitals = [{"region": r["_id"]["region"], "hospital": r["_id"]["hospital"]}
-                        for r in results]
-            return {"hospitals": hospitals}
+            hospitals_collection = db["hospitals"]
+            hospitals = list(hospitals_collection.find({}, {"_id": 0}))
+            if hospitals:
+                return {"hospitals": hospitals}
         except Exception as e:
             logger.warning(f"Error fetching hospitals: {e}")
 
     # Return demo hospitals
     return {
         "hospitals": [
-            {"region": "Dublin North", "hospital": "Beaumont Hospital"},
-            {"region": "Dublin South", "hospital": "St Vincent's University Hospital"},
-            {"region": "Dublin Midlands", "hospital": "Tallaght University Hospital"},
-            {"region": "South/South West", "hospital": "Cork University Hospital"},
-            {"region": "West/North West", "hospital": "University Hospital Galway"}
+            {"hospital_code": "UHK", "name": "University Hospital Kerry", "region": "South West", "hse_area": "HSE South"},
+            {"hospital_code": "CUH", "name": "Cork University Hospital", "region": "South", "hse_area": "HSE South"},
+            {"hospital_code": "UHW", "name": "University Hospital Waterford", "region": "South East", "hse_area": "HSE South"},
+            {"hospital_code": "UHG", "name": "University Hospital Galway", "region": "West", "hse_area": "HSE West"},
+            {"hospital_code": "UHL", "name": "University Hospital Limerick", "region": "Mid-West", "hse_area": "HSE West"},
+            {"hospital_code": "SVH", "name": "St Vincent's University Hospital", "region": "Dublin South", "hse_area": "HSE Dublin Mid-Leinster"},
+            {"hospital_code": "MUH", "name": "Mater Misericordiae University Hospital", "region": "Dublin North", "hse_area": "HSE Dublin North East"},
+            {"hospital_code": "TUH", "name": "Tallaght University Hospital", "region": "Dublin South West", "hse_area": "HSE Dublin Mid-Leinster"}
         ]
     }
+
+
+@app.get("/trolley-data/{hospital_code}")
+async def get_trolley_data(hospital_code: str, days: int = 30):
+    """Get recent trolley data for a hospital."""
+    if db is not None:
+        try:
+            collection = db["trolley_counts"]
+            data = list(collection.find(
+                {"hospital_code": hospital_code},
+                {"_id": 0}
+            ).sort("date", -1).limit(days))
+            return {"hospital_code": hospital_code, "records": data}
+        except Exception as e:
+            logger.warning(f"Error fetching trolley data: {e}")
+
+    return {"hospital_code": hospital_code, "records": [], "message": "No data available"}
 
 
 @app.get("/")

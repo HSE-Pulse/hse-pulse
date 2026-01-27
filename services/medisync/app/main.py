@@ -14,6 +14,7 @@ import numpy as np
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from pymongo import MongoClient
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from starlette.responses import Response
 
@@ -208,20 +209,37 @@ class RLModelManager:
         return results
 
 
-# Global instance
+# Global instances
 rl_manager = RLModelManager()
+mongo_client: Optional[MongoClient] = None
+db = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager."""
+    global mongo_client, db
+
     logger.info("Starting MediSync service...")
 
     model_path = os.getenv("MODEL_PATH", "/app/models/maddpg_checkpoint.pth")
     rl_manager.load_models(model_path)
 
+    # Connect to MongoDB
+    mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+    try:
+        mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+        mongo_client.admin.command('ping')
+        db = mongo_client[os.getenv("MONGO_DB", "healthcare")]
+        logger.info("Connected to MongoDB")
+    except Exception as e:
+        logger.warning(f"MongoDB connection failed: {e}. Using demo data.")
+        db = None
+
     yield
 
+    if mongo_client:
+        mongo_client.close()
     logger.info("MediSync service stopped")
 
 
@@ -303,6 +321,7 @@ class HealthResponse(BaseModel):
     status: str
     models_loaded: int
     demo_mode: bool
+    database_connected: bool
     timestamp: str
 
 
@@ -332,6 +351,7 @@ async def health_check():
         status="healthy",
         models_loaded=len(rl_manager.actors),
         demo_mode=rl_manager.demo_mode,
+        database_connected=db is not None,
         timestamp=datetime.utcnow().isoformat()
     )
 
@@ -431,6 +451,60 @@ async def get_sample_scenarios():
                     "General Ward": {"current_patients": 70, "available_beds": 100, "staff_on_duty": 10, "incoming_rate": 6, "severity_index": 0.3}
                 }
             }
+        ]
+    }
+
+
+@app.get("/hospital-state/{hospital_code}")
+async def get_hospital_state(hospital_code: str):
+    """Get current state for a hospital from the database."""
+    if db is not None:
+        try:
+            state = db['hospital_state'].find_one(
+                {"hospital_code": hospital_code},
+                {"_id": 0}
+            )
+            if state:
+                return state
+        except Exception as e:
+            logger.warning(f"Error fetching hospital state: {e}")
+
+    # Return demo state if database not available
+    return {
+        "hospital_code": hospital_code,
+        "timestamp": datetime.utcnow().isoformat(),
+        "departments": {
+            "Emergency": {"current_patients": 25, "available_beds": 30, "staff_on_duty": 12, "incoming_rate": 5, "severity_index": 0.4},
+            "ICU": {"current_patients": 18, "available_beds": 20, "staff_on_duty": 15, "incoming_rate": 2, "severity_index": 0.8},
+            "Surgery": {"current_patients": 10, "available_beds": 15, "staff_on_duty": 8, "incoming_rate": 3, "severity_index": 0.6},
+            "General Ward": {"current_patients": 80, "available_beds": 100, "staff_on_duty": 20, "incoming_rate": 8, "severity_index": 0.3}
+        },
+        "message": "Demo data - database not connected" if db is None else None
+    }
+
+
+@app.get("/hospitals")
+async def list_hospitals():
+    """List all hospitals with their current state."""
+    if db is not None:
+        try:
+            hospitals = list(db['hospitals'].find({}, {"_id": 0}))
+            if hospitals:
+                return {"hospitals": hospitals}
+        except Exception as e:
+            logger.warning(f"Error fetching hospitals: {e}")
+
+    # Return demo hospitals
+    return {
+        "hospitals": [
+            {"hospital_code": "UHK", "name": "University Hospital Kerry", "region": "South West"},
+            {"hospital_code": "CUH", "name": "Cork University Hospital", "region": "South"},
+            {"hospital_code": "UHW", "name": "University Hospital Waterford", "region": "South East"},
+            {"hospital_code": "UHG", "name": "University Hospital Galway", "region": "West"},
+            {"hospital_code": "UHL", "name": "University Hospital Limerick", "region": "Mid-West"},
+            {"hospital_code": "SVH", "name": "St Vincent's University Hospital", "region": "Dublin South"},
+            {"hospital_code": "MUH", "name": "Mater Misericordiae University Hospital", "region": "Dublin North"},
+            {"hospital_code": "TUH", "name": "Tallaght University Hospital", "region": "Dublin South West"}
         ]
     }
 
