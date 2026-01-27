@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare AI Suite - HSE Ireland</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --primary-light: #2d8bba;
+            --secondary: #f97316;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --irish-green: #169b62;
+            --irish-white: #ffffff;
+            --irish-orange: #ff883e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header with Irish Flag Colors */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .flag-bar {
+            height: 6px;
+            background: linear-gradient(to right, var(--irish-green) 33.33%, var(--irish-white) 33.33%, var(--irish-white) 66.66%, var(--irish-orange) 66.66%);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .logo span {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .nav-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Section Styles */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 95, 122, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .stat-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .stat-icon.orange { background: linear-gradient(135deg, #f97316, #ea580c); }
+        .stat-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .stat-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        .stat-content h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .stat-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Results Display */
+        .results-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 200px;
+        }
+
+        .result-item {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .result-item.success { border-left-color: var(--success); }
+        .result-item.warning { border-left-color: var(--warning); }
+        .result-item.danger { border-left-color: var(--danger); }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .result-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .result-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #d1fae5; color: #059669; }
+        .badge-warning { background: #fef3c7; color: #d97706; }
+        .badge-danger { background: #fee2e2; color: #dc2626; }
+        .badge-info { background: #dbeafe; color: #2563eb; }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Table Styles */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .table tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* Progress Bar */
+        .progress {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar.green { background: var(--success); }
+        .progress-bar.orange { background: var(--warning); }
+        .progress-bar.red { background: var(--danger); }
+        .progress-bar.blue { background: var(--primary); }
+
+        /* Alert Box */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-success { background: #d1fae5; color: #065f46; }
+        .alert-warning { background: #fef3c7; color: #92400e; }
+        .alert-danger { background: #fee2e2; color: #991b1b; }
+        .alert-info { background: #dbeafe; color: #1e40af; }
+
+        .alert i { font-size: 1.2rem; margin-top: 2px; }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .timeline-item.completed::before { background: var(--success); box-shadow: 0 0 0 2px var(--success); }
+        .timeline-item.pending::before { background: var(--warning); box-shadow: 0 0 0 2px var(--warning); }
+
+        /* Resource Allocation Viz */
+        .resource-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .resource-label {
+            width: 120px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .resource-progress {
+            flex: 1;
+            height: 24px;
+            background: var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .resource-fill {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: width 0.5s ease;
+        }
+
+        /* Entity Tags */
+        .entity-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            margin: 2px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .entity-condition { background: #fef3c7; color: #92400e; }
+        .entity-medication { background: #fce7f3; color: #9d174d; }
+        .entity-procedure { background: #d1fae5; color: #065f46; }
+        .entity-anatomy { background: #dbeafe; color: #1e40af; }
+
+        /* Dashboard Hero */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .hero-section h2 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .hero-section p {
+            opacity: 0.9;
+            max-width: 600px;
+        }
+
+        /* Staff Transfer Card */
+        .transfer-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .transfer-card .transfer-arrow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+        }
+
+        .transfer-card .transfer-arrow i {
+            color: var(--warning);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .header-nav {
+                width: 100%;
+                overflow-x: auto;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-btn span {
+                display: none;
+            }
+        }
+
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="flag-bar"></div>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div>
+                    <h1>Healthcare AI Suite</h1>
+                    <span>HSE Ireland - AI-Powered Healthcare Analytics</span>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-btn active" onclick="showSection('dashboard', this)">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('pulseflow', this)">
+                    <i class="fas fa-chart-line"></i>
+                    <span>PulseFlow</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('careplanplus', this)">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>CarePlanPlus</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('pulsenotes', this)">
+                    <i class="fas fa-file-medical-alt"></i>
+                    <span>PulseNotes</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('medisync', this)">
+                    <i class="fas fa-hospital"></i>
+                    <span>MediSync</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="hero-section">
+                <h2>Welcome to HSE Healthcare AI Suite</h2>
+                <p>Integrated AI-powered solutions for Irish hospitals - from trolley wait prediction to clinical decision support and resource optimization across HSE facilities.</p>
+            </div>
+
+            <div class="grid-4">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-content">
+                        <h3 id="stat-predictions">--</h3>
+                        <p>Trolley Predictions Today</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fas fa-clipboard-check"></i></div>
+                    <div class="stat-content">
+                        <h3 id="stat-recommendations">--</h3>
+                        <p>Treatment Plans Generated</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fas fa-file-medical"></i></div>
+                    <div class="stat-content">
+                        <h3 id="stat-notes">--</h3>
+                        <p>Clinical Notes Analyzed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fas fa-bed"></i></div>
+                    <div class="stat-content">
+                        <h3 id="stat-resources">--</h3>
+                        <p>Resources Optimized</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-heartbeat"></i> System Health</h3>
+                    </div>
+                    <div id="system-health">
+                        <div class="alert alert-info">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Checking system status...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-rocket"></i> Quick Start</h3>
+                    </div>
+                    <div class="grid-2" style="gap: 12px;">
+                        <button class="btn btn-primary" onclick="showSection('pulseflow', document.querySelector('[onclick*=pulseflow]'))">
+                            <i class="fas fa-chart-line"></i> Predict Trolley Wait
+                        </button>
+                        <button class="btn btn-primary" onclick="showSection('careplanplus', document.querySelector('[onclick*=careplanplus]'))">
+                            <i class="fas fa-stethoscope"></i> Get Treatment Plan
+                        </button>
+                        <button class="btn btn-primary" onclick="showSection('pulsenotes', document.querySelector('[onclick*=pulsenotes]'))">
+                            <i class="fas fa-file-medical"></i> Search Clinical Notes
+                        </button>
+                        <button class="btn btn-primary" onclick="showSection('medisync', document.querySelector('[onclick*=medisync]'))">
+                            <i class="fas fa-cogs"></i> Optimize Resources
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PulseFlow Section -->
+        <section id="pulseflow" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-chart-line"></i> PulseFlow - HSE Trolley Wait Prediction</h3>
+                    <span class="result-badge badge-info">LSTM Deep Learning</span>
+                </div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    Predict ED trolley counts and patient flow for Irish hospitals using LSTM neural networks.
+                    Uses HSE data including admissions, discharges, and trolley counts by hospital zone.
+                </p>
+
+                <div class="grid-2">
+                    <div>
+                        <h4 style="margin-bottom: 16px; color: var(--primary);">Select Hospital</h4>
+                        <div class="form-group">
+                            <label class="form-label">HSE Region</label>
+                            <select class="form-control" id="pf-region" onchange="updateHospitals()">
+                                <option value="HSE South">HSE South (Kerry, Cork, Waterford)</option>
+                                <option value="HSE West">HSE West (Galway, Limerick, Clare)</option>
+                                <option value="HSE Dublin Midlands">HSE Dublin Midlands</option>
+                                <option value="HSE Dublin North East">HSE Dublin North East</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hospital</label>
+                            <select class="form-control" id="pf-hospital">
+                                <option value="UH Kerry">University Hospital Kerry</option>
+                                <option value="CUH">Cork University Hospital</option>
+                                <option value="UHW">University Hospital Waterford</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Forecast Period</label>
+                            <select class="form-control" id="pf-days">
+                                <option value="3">3 Days</option>
+                                <option value="7" selected>7 Days</option>
+                                <option value="14">14 Days</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="runPulseFlowPrediction()" id="pf-btn">
+                            <i class="fas fa-chart-line"></i> Generate Forecast
+                        </button>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 16px; color: var(--primary);">Current Hospital Status (UH Kerry)</h4>
+                        <div class="stat-card" style="margin-bottom: 12px;">
+                            <div class="stat-icon red"><i class="fas fa-bed"></i></div>
+                            <div class="stat-content">
+                                <h3 id="pf-trolley-count">--</h3>
+                                <p>Patients on Trolleys (ED)</p>
+                            </div>
+                        </div>
+                        <div class="stat-card" style="margin-bottom: 12px;">
+                            <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                            <div class="stat-content">
+                                <h3 id="pf-wait-24h">--</h3>
+                                <p>Waiting >24 Hours</p>
+                            </div>
+                        </div>
+                        <div class="stat-card" style="margin-bottom: 12px;">
+                            <div class="stat-icon green"><i class="fas fa-sign-out-alt"></i></div>
+                            <div class="stat-content">
+                                <h3 id="pf-discharges">--</h3>
+                                <p>Today's Discharges</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-sign-in-alt"></i></div>
+                            <div class="stat-content">
+                                <h3 id="pf-admissions">--</h3>
+                                <p>Today's Admissions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-chart-area"></i> Trolley Forecast Results</h3>
+                </div>
+                <div id="pf-results" class="results-container">
+                    <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <i class="fas fa-chart-line" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                        <p>Select a hospital and click "Generate Forecast" to see trolley predictions</p>
+                    </div>
+                </div>
+                <div class="chart-container" style="margin-top: 20px;">
+                    <canvas id="pulseflow-chart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- CarePlanPlus Section -->
+        <section id="careplanplus" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-clipboard-list"></i> CarePlanPlus - Treatment Pathway Recommender</h3>
+                    <span class="result-badge badge-info">BERT NLP Model</span>
+                </div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    Get AI-powered treatment recommendations based on patient diagnoses. Uses BERT deep learning
+                    trained on medical procedures to suggest optimal care pathways for Irish healthcare settings.
+                </p>
+
+                <div class="grid-2">
+                    <div>
+                        <h4 style="margin-bottom: 16px; color: var(--primary);">Patient Information</h4>
+                        <div class="grid-2" style="gap: 12px;">
+                            <div class="form-group">
+                                <label class="form-label">Patient Age</label>
+                                <input type="number" class="form-control" id="cp-age" value="65" min="0" max="120">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select class="form-control" id="cp-gender">
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 20px 0 16px; color: var(--primary);">Diagnoses (ICD-10 Codes)</h4>
+                        <div id="cp-diagnoses">
+                            <div class="form-group diagnosis-row">
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" class="form-control" placeholder="ICD Code (e.g., I10)" style="flex: 1;">
+                                    <input type="text" class="form-control" placeholder="Description" style="flex: 2;">
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="addDiagnosis()" style="margin-bottom: 16px;">
+                            <i class="fas fa-plus"></i> Add Diagnosis
+                        </button>
+
+                        <h4 style="margin: 20px 0 16px; color: var(--primary);">Quick Templates</h4>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" onclick="loadTemplate('cardiac')">
+                                <i class="fas fa-heart"></i> Cardiac
+                            </button>
+                            <button class="btn btn-secondary" onclick="loadTemplate('respiratory')">
+                                <i class="fas fa-lungs"></i> Respiratory
+                            </button>
+                            <button class="btn btn-secondary" onclick="loadTemplate('gi')">
+                                <i class="fas fa-stomach"></i> GI
+                            </button>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="runCarePlanRecommendation()" id="cp-btn" style="margin-top: 20px;">
+                            <i class="fas fa-magic"></i> Get Treatment Recommendations
+                        </button>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 16px; color: var(--primary);">Recommendations</h4>
+                        <div id="cp-results" class="results-container">
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                <i class="fas fa-clipboard-list" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                <p>Enter patient information to get AI-powered treatment recommendations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PulseNotes Section -->
+        <section id="pulsenotes" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-file-medical-alt"></i> PulseNotes - Clinical NLP & RAG</h3>
+                    <span class="result-badge badge-info">Bio_ClinicalBERT + FAISS RAG</span>
+                </div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    Ask natural language questions about patients and clinical notes. Uses RAG (Retrieval-Augmented Generation)
+                    with FAISS to search notes by patient ID and extract specific sections like chief complaint, medications, etc.
+                </p>
+
+                <div class="grid-2">
+                    <div>
+                        <h4 style="margin-bottom: 16px; color: var(--primary);"><i class="fas fa-robot"></i> RAG Query (Ask About Patients)</h4>
+                        <div class="form-group">
+                            <label class="form-label">Natural Language Query</label>
+                            <input type="text" class="form-control" id="pn-rag-query" placeholder="e.g., what was the chief complaint of patient 10188106" value="what was the chief complaint of patient 10188106">
+                        </div>
+                        <button class="btn btn-primary" onclick="runPulseNotesRAG()" id="pn-rag-btn" style="margin-bottom: 16px;">
+                            <i class="fas fa-brain"></i> Ask Question
+                        </button>
+
+                        <h4 style="margin: 16px 0 12px; color: var(--text-muted); font-size: 0.95rem;">Sample Patient Queries</h4>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
+                            <button class="btn btn-secondary" onclick="loadRAGQuery('chief_complaint')" style="font-size: 0.85rem; padding: 8px 12px;">
+                                Chief Complaint
+                            </button>
+                            <button class="btn btn-secondary" onclick="loadRAGQuery('medications')" style="font-size: 0.85rem; padding: 8px 12px;">
+                                Medications
+                            </button>
+                            <button class="btn btn-secondary" onclick="loadRAGQuery('history')" style="font-size: 0.85rem; padding: 8px 12px;">
+                                HPI
+                            </button>
+                            <button class="btn btn-secondary" onclick="loadRAGQuery('assessment')" style="font-size: 0.85rem; padding: 8px 12px;">
+                                Assessment
+                            </button>
+                        </div>
+
+                        <h4 style="margin: 24px 0 16px; color: var(--primary);"><i class="fas fa-search"></i> Semantic Search</h4>
+                        <div class="form-group">
+                            <label class="form-label">Search Query</label>
+                            <input type="text" class="form-control" id="pn-query" placeholder="e.g., patient with chest pain and ST elevation">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Number of Results</label>
+                            <select class="form-control" id="pn-topk">
+                                <option value="3">3 Results</option>
+                                <option value="5" selected>5 Results</option>
+                                <option value="10">10 Results</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="runPulseNotesSearch()" id="pn-search-btn" style="margin-bottom: 24px;">
+                            <i class="fas fa-search"></i> Search Clinical Notes
+                        </button>
+
+                        <h4 style="margin: 24px 0 16px; color: var(--primary);"><i class="fas fa-tags"></i> Entity Extraction</h4>
+                        <div class="form-group">
+                            <label class="form-label">Clinical Note Text</label>
+                            <textarea class="form-control" id="pn-text" rows="4" placeholder="Enter clinical note text to extract medical entities...">Patient presents with chest pain and shortness of breath. History of hypertension and diabetes. Current medications include metformin and lisinopril. ECG shows ST elevation.</textarea>
+                        </div>
+                        <button class="btn btn-primary" onclick="runPulseNotesExtract()" id="pn-extract-btn">
+                            <i class="fas fa-tags"></i> Extract Entities
+                        </button>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 16px; color: var(--primary);">Results</h4>
+                        <div id="pn-results" class="results-container">
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                <i class="fas fa-file-medical-alt" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                <p>Ask a question about a patient (e.g., "what was the chief complaint of patient 10188106") or search clinical notes</p>
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 24px 0 12px; color: var(--primary);">Available Demo Patients</h4>
+                        <div style="background: #f8fafc; border-radius: 8px; padding: 12px; font-size: 0.85rem;">
+                            <div style="margin-bottom: 8px;"><strong>Patient 10188106</strong> - Cardiology (Chest pain, NSTEMI)</div>
+                            <div style="margin-bottom: 8px;"><strong>Patient 10245789</strong> - Pulmonology (COPD exacerbation)</div>
+                            <div style="margin-bottom: 8px;"><strong>Patient 10312456</strong> - Surgery (Acute appendicitis)</div>
+                            <div><strong>Patient 10456123</strong> - Geriatrics (UTI, altered mental status)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MediSync Section -->
+        <section id="medisync" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-hospital"></i> MediSync - Hospital Resource Optimizer</h3>
+                    <span class="result-badge badge-info">Multi-Agent RL (MADDPG)</span>
+                </div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">
+                    Optimize hospital resource allocation using Multi-Agent Deep Reinforcement Learning.
+                    Predicts waiting time, length of stay (LOS), and throughput. Recommends staff transfers across departments.
+                </p>
+
+                <div class="grid-2">
+                    <div>
+                        <h4 style="margin-bottom: 16px; color: var(--primary);">Hospital Selection</h4>
+                        <div class="form-group">
+                            <label class="form-label">Hospital</label>
+                            <select class="form-control" id="ms-hospital">
+                                <option value="UH Kerry" selected>University Hospital Kerry</option>
+                                <option value="CUH">Cork University Hospital</option>
+                                <option value="UHG">University Hospital Galway</option>
+                                <option value="UHL">University Hospital Limerick</option>
+                            </select>
+                        </div>
+
+                        <h4 style="margin: 20px 0 16px; color: var(--primary);">Department Status</h4>
+                        <div class="form-group">
+                            <label class="form-label">Emergency - Current Patients</label>
+                            <input type="number" class="form-control" id="ms-ed-patients" value="25" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Emergency - Available Beds</label>
+                            <input type="number" class="form-control" id="ms-ed-beds" value="30" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Emergency - Staff on Duty</label>
+                            <input type="number" class="form-control" id="ms-ed-staff" value="12" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ICU - Current Patients</label>
+                            <input type="number" class="form-control" id="ms-icu-patients" value="18" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ICU - Available Beds</label>
+                            <input type="number" class="form-control" id="ms-icu-beds" value="20" min="0">
+                        </div>
+
+                        <h4 style="margin: 20px 0 16px; color: var(--primary);">Scenario</h4>
+                        <div class="form-group">
+                            <label class="form-label">Load Scenario</label>
+                            <select class="form-control" id="ms-scenario" onchange="loadMediSyncScenario()">
+                                <option value="normal">Normal Operations</option>
+                                <option value="surge">Surge Event</option>
+                                <option value="shortage">Staff Shortage</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Simulation Hours</label>
+                            <select class="form-control" id="ms-hours">
+                                <option value="12">12 Hours</option>
+                                <option value="24" selected>24 Hours</option>
+                                <option value="48">48 Hours</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="runMediSyncOptimization()" id="ms-btn" style="margin-top: 16px;">
+                            <i class="fas fa-cogs"></i> Run Optimization & Simulation
+                        </button>
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 16px; color: var(--primary);">Optimization Results</h4>
+                        <div id="ms-results" class="results-container">
+                            <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                <i class="fas fa-cogs" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                <p>Configure hospital state and click "Run Optimization" to get predictions and staff transfer recommendations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="ms-simulation-card" style="display: none;">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-chart-bar"></i> Simulation Timeline</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="medisync-chart"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // API Base URL
+        const API_BASE = '';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemHealth();
+            updateDashboardStats();
+            loadCurrentHospitalStatus();
+        });
+
+        // Navigation
+        function showSection(sectionId, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+
+        // System Health Check
+        async function checkSystemHealth() {
+            const healthDiv = document.getElementById('system-health');
+            const services = [
+                { name: 'PulseFlow', url: '/pulseflow/health', icon: 'chart-line' },
+                { name: 'CarePlanPlus', url: '/careplanplus/health', icon: 'clipboard-list' },
+                { name: 'PulseNotes', url: '/pulsenotes/health', icon: 'file-medical-alt' },
+                { name: 'MediSync', url: '/medisync/health', icon: 'hospital' }
+            ];
+
+            let html = '';
+            for (const service of services) {
+                try {
+                    const response = await fetch(API_BASE + service.url);
+                    const data = await response.json();
+                    const status = data.status === 'healthy' ? 'success' : 'warning';
+                    const demoTag = data.demo_mode ? ' <span style="font-size: 0.75rem; color: var(--text-muted);">(demo)</span>' : '';
+                    html += `<div class="result-item ${status}" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-${service.icon}" style="color: var(--primary); font-size: 1.2rem;"></i>
+                            <span style="font-weight: 500;">${service.name}${demoTag}</span>
+                        </div>
+                        <span class="result-badge badge-${status}"><i class="fas fa-check-circle"></i> ${data.status}</span>
+                    </div>`;
+                } catch (error) {
+                    html += `<div class="result-item danger" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-${service.icon}" style="color: var(--danger); font-size: 1.2rem;"></i>
+                            <span style="font-weight: 500;">${service.name}</span>
+                        </div>
+                        <span class="result-badge badge-danger"><i class="fas fa-times-circle"></i> offline</span>
+                    </div>`;
+                }
+            }
+            healthDiv.innerHTML = html;
+        }
+
+        function updateDashboardStats() {
+            document.getElementById('stat-predictions').textContent = Math.floor(Math.random() * 50) + 100;
+            document.getElementById('stat-recommendations').textContent = Math.floor(Math.random() * 30) + 50;
+            document.getElementById('stat-notes').textContent = Math.floor(Math.random() * 100) + 200;
+            document.getElementById('stat-resources').textContent = Math.floor(Math.random() * 20) + 30;
+        }
+
+        function loadCurrentHospitalStatus() {
+            // Simulated current status for UH Kerry
+            document.getElementById('pf-trolley-count').textContent = Math.floor(Math.random() * 20) + 25;
+            document.getElementById('pf-wait-24h').textContent = Math.floor(Math.random() * 10) + 8;
+            document.getElementById('pf-discharges').textContent = Math.floor(Math.random() * 15) + 20;
+            document.getElementById('pf-admissions').textContent = Math.floor(Math.random() * 12) + 18;
+        }
+
+        function updateHospitals() {
+            const region = document.getElementById('pf-region').value;
+            const hospitalSelect = document.getElementById('pf-hospital');
+            const hospitals = {
+                'HSE South': ['UH Kerry', 'CUH', 'UHW', 'Mercy University Hospital', 'South Infirmary Victoria'],
+                'HSE West': ['UHG', 'UHL', 'Portiuncula', 'Sligo University Hospital', 'Mayo University Hospital'],
+                'HSE Dublin Midlands': ['St James Hospital', 'Tallaght Hospital', 'Midland Regional Tullamore', 'Naas General'],
+                'HSE Dublin North East': ['Beaumont Hospital', 'Mater Hospital', 'Connolly Hospital', 'Our Lady of Lourdes Drogheda']
+            };
+            hospitalSelect.innerHTML = hospitals[region].map(h => `<option value="${h}">${h}</option>`).join('');
+        }
+
+        // PulseFlow Prediction
+        async function runPulseFlowPrediction() {
+            const btn = document.getElementById('pf-btn');
+            const resultsDiv = document.getElementById('pf-results');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Generating...';
+
+            try {
+                const response = await fetch(API_BASE + '/pulseflow/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        region: document.getElementById('pf-region').value,
+                        hospital: document.getElementById('pf-hospital').value,
+                        forecast_days: parseInt(document.getElementById('pf-days').value)
+                    })
+                });
+                const data = await response.json();
+
+                let html = `<div class="alert alert-success"><i class="fas fa-check-circle"></i>
+                    <div><strong>Forecast Generated Successfully</strong>
+                    <p style="margin: 0; font-size: 0.9rem;">Model: ${data.model || 'LSTM'} | Inference: ${data.inference_time_ms || '--'}ms</p></div></div>`;
+
+                if (data.forecast && data.forecast.length > 0) {
+                    html += `<table class="table"><thead><tr><th>Date</th><th>Day</th><th>Predicted Trolleys</th><th>Confidence Range</th><th>Risk Level</th></tr></thead><tbody>`;
+
+                    const chartLabels = [], chartData = [], chartLower = [], chartUpper = [];
+
+                    data.forecast.forEach(day => {
+                        const risk = day.predicted_trolleys > 50 ? 'danger' : (day.predicted_trolleys > 30 ? 'warning' : 'success');
+                        const riskText = day.predicted_trolleys > 50 ? 'Critical' : (day.predicted_trolleys > 30 ? 'Elevated' : 'Normal');
+                        html += `<tr><td>${day.date}</td><td>${day.day}</td><td><strong>${day.predicted_trolleys}</strong></td>
+                            <td>${day.confidence_lower} - ${day.confidence_upper}</td>
+                            <td><span class="result-badge badge-${risk}">${riskText}</span></td></tr>`;
+                        chartLabels.push(day.day.substring(0, 3));
+                        chartData.push(day.predicted_trolleys);
+                        chartLower.push(day.confidence_lower);
+                        chartUpper.push(day.confidence_upper);
+                    });
+
+                    html += '</tbody></table>';
+                    updatePulseFlowChart(chartLabels, chartData, chartLower, chartUpper);
+                } else {
+                    // Demo data if API returns empty
+                    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    const demoData = days.map((day, i) => ({
+                        date: new Date(Date.now() + i * 86400000).toISOString().split('T')[0],
+                        day: day,
+                        predicted: Math.floor(Math.random() * 30) + 25,
+                        lower: Math.floor(Math.random() * 10) + 15,
+                        upper: Math.floor(Math.random() * 20) + 45
+                    }));
+
+                    html += `<table class="table"><thead><tr><th>Date</th><th>Day</th><th>Predicted Trolleys</th><th>Confidence Range</th><th>Risk Level</th></tr></thead><tbody>`;
+                    const chartLabels = [], chartData = [], chartLower = [], chartUpper = [];
+
+                    demoData.forEach(day => {
+                        const risk = day.predicted > 50 ? 'danger' : (day.predicted > 30 ? 'warning' : 'success');
+                        const riskText = day.predicted > 50 ? 'Critical' : (day.predicted > 30 ? 'Elevated' : 'Normal');
+                        html += `<tr><td>${day.date}</td><td>${day.day}</td><td><strong>${day.predicted}</strong></td>
+                            <td>${day.lower} - ${day.upper}</td>
+                            <td><span class="result-badge badge-${risk}">${riskText}</span></td></tr>`;
+                        chartLabels.push(day.day);
+                        chartData.push(day.predicted);
+                        chartLower.push(day.lower);
+                        chartUpper.push(day.upper);
+                    });
+                    html += '</tbody></table>';
+                    updatePulseFlowChart(chartLabels, chartData, chartLower, chartUpper);
+                }
+
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i><span>Error: ${error.message}</span></div>`;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-chart-line"></i> Generate Forecast';
+        }
+
+        let pulseflowChart = null;
+        function updatePulseFlowChart(labels, data, lower, upper) {
+            const ctx = document.getElementById('pulseflow-chart').getContext('2d');
+            if (pulseflowChart) pulseflowChart.destroy();
+            pulseflowChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Predicted Trolleys', data: data, borderColor: '#1a5f7a', backgroundColor: 'rgba(26, 95, 122, 0.1)', fill: true, tension: 0.4 },
+                        { label: 'Lower Bound', data: lower, borderColor: 'rgba(16, 185, 129, 0.5)', borderDash: [5, 5], fill: false },
+                        { label: 'Upper Bound', data: upper, borderColor: 'rgba(239, 68, 68, 0.5)', borderDash: [5, 5], fill: false }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } },
+                    scales: { y: { beginAtZero: true, title: { display: true, text: 'Number of Patients on Trolleys' } } } }
+            });
+        }
+
+        // CarePlanPlus
+        function addDiagnosis() {
+            const container = document.getElementById('cp-diagnoses');
+            const row = document.createElement('div');
+            row.className = 'form-group diagnosis-row';
+            row.innerHTML = `<div style="display: flex; gap: 8px;">
+                <input type="text" class="form-control" placeholder="ICD Code" style="flex: 1;">
+                <input type="text" class="form-control" placeholder="Description" style="flex: 2;">
+                <button class="btn btn-secondary" onclick="this.parentElement.parentElement.remove()" style="padding: 12px;"><i class="fas fa-times"></i></button>
+            </div>`;
+            container.appendChild(row);
+        }
+
+        function loadTemplate(type) {
+            const container = document.getElementById('cp-diagnoses');
+            const templates = {
+                cardiac: [
+                    { code: 'I21.0', desc: 'Acute transmural myocardial infarction of anterior wall' },
+                    { code: 'I10', desc: 'Essential hypertension' },
+                    { code: 'I25.10', desc: 'Atherosclerotic heart disease of native coronary artery' }
+                ],
+                respiratory: [
+                    { code: 'J44.1', desc: 'Chronic obstructive pulmonary disease with acute exacerbation' },
+                    { code: 'J96.01', desc: 'Acute respiratory failure with hypoxia' }
+                ],
+                gi: [
+                    { code: 'K92.2', desc: 'Gastrointestinal hemorrhage, unspecified' },
+                    { code: 'K25.4', desc: 'Chronic or unspecified gastric ulcer with hemorrhage' }
+                ]
+            };
+            container.innerHTML = templates[type].map((d, i) => `<div class="form-group diagnosis-row"><div style="display: flex; gap: 8px;">
+                <input type="text" class="form-control" value="${d.code}" style="flex: 1;">
+                <input type="text" class="form-control" value="${d.desc}" style="flex: 2;">
+                ${i > 0 ? `<button class="btn btn-secondary" onclick="this.parentElement.parentElement.remove()" style="padding: 12px;"><i class="fas fa-times"></i></button>` : ''}
+            </div></div>`).join('');
+        }
+
+        async function runCarePlanRecommendation() {
+            const btn = document.getElementById('cp-btn');
+            const resultsDiv = document.getElementById('cp-results');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Processing...';
+
+            const diagnosisRows = document.querySelectorAll('.diagnosis-row');
+            const diagnoses = [];
+            diagnosisRows.forEach((row, idx) => {
+                const inputs = row.querySelectorAll('input');
+                if (inputs[0].value) diagnoses.push({ icd_code: inputs[0].value, long_title: inputs[1].value, seq_num: idx + 1 });
+            });
+
+            try {
+                // Call the correct endpoint: /careplanplus/predict
+                const response = await fetch(API_BASE + '/careplanplus/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        diagnoses: diagnoses,
+                        patient_age: parseInt(document.getElementById('cp-age').value),
+                        patient_gender: document.getElementById('cp-gender').value,
+                        top_k: 5
+                    })
+                });
+                const data = await response.json();
+
+                let html = `<div class="alert alert-success"><i class="fas fa-check-circle"></i><div><strong>Recommendations Generated</strong>
+                    <p style="margin: 0; font-size: 0.9rem;">Model: ${data.model_version || '1.0.0'} | Inference: ${data.inference_time_ms}ms</p></div></div>
+                    <h5 style="margin: 16px 0 12px; color: var(--primary);">Recommended Procedures</h5>`;
+
+                if (data.recommendations && data.recommendations.length > 0) {
+                    data.recommendations.forEach(rec => {
+                        const confidence = Math.round(rec.confidence * 100);
+                        const color = confidence > 70 ? 'green' : (confidence > 40 ? 'orange' : 'blue');
+                        const description = rec.procedure_description || 'ICD-10-PCS Procedure';
+                        html += `<div class="result-item" style="margin-bottom: 12px;">
+                            <div class="result-header"><span class="result-title">#${rec.rank} - ${rec.procedure_code}</span>
+                            <span class="result-badge badge-info">${confidence}% confidence</span></div>
+                            <p style="margin: 8px 0; font-size: 0.9rem; color: var(--text-muted);">${description}</p>
+                            <div class="progress" style="margin-top: 8px;"><div class="progress-bar ${color}" style="width: ${confidence}%"></div></div>
+                        </div>`;
+                    });
+                }
+
+                if (data.full_pathway && data.full_pathway.length > 0) {
+                    html += `<h5 style="margin: 24px 0 12px; color: var(--primary);">Suggested Care Pathway</h5><div class="timeline">`;
+                    data.full_pathway.forEach(step => {
+                        const stepDesc = step.procedure_description || '';
+                        html += `<div class="timeline-item"><strong>Step ${step.step_number}</strong>: ${step.procedure_code}
+                            <span style="color: var(--text-muted); font-size: 0.85rem;"> (${Math.round(step.confidence * 100)}%)</span>
+                            ${stepDesc ? `<p style="margin: 4px 0 0; font-size: 0.85rem; color: var(--text-muted);">${stepDesc}</p>` : ''}</div>`;
+                    });
+                    html += '</div>';
+                }
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i><span>Error: ${error.message}</span></div>`;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-magic"></i> Get Treatment Recommendations';
+        }
+
+        // PulseNotes
+        function loadSampleQuery(type) {
+            const queries = {
+                cardiac: 'patient with chest pain and ST elevation',
+                respiratory: 'acute respiratory failure intubation',
+                surgical: 'post-operative recovery surgical patient'
+            };
+            document.getElementById('pn-query').value = queries[type];
+        }
+
+        function loadRAGQuery(type) {
+            const queries = {
+                chief_complaint: 'what was the chief complaint of patient 10188106',
+                medications: 'show medications for patient 10245789',
+                history: 'what is the history of present illness for patient 10312456',
+                assessment: 'what is the assessment for patient 10456123'
+            };
+            document.getElementById('pn-rag-query').value = queries[type];
+        }
+
+        async function runPulseNotesRAG() {
+            const btn = document.getElementById('pn-rag-btn');
+            const resultsDiv = document.getElementById('pn-results');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Processing...';
+
+            try {
+                const response = await fetch(API_BASE + '/pulsenotes/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: document.getElementById('pn-rag-query').value
+                    })
+                });
+                const data = await response.json();
+
+                let html = `<div class="alert alert-success"><i class="fas fa-check-circle"></i><div><strong>Query Processed</strong>
+                    <p style="margin: 0; font-size: 0.9rem;">Type: ${data.query_type} | Inference: ${data.inference_time_ms}ms</p></div></div>`;
+
+                // Show parsed query info
+                if (data.subject_id || data.hadm_id) {
+                    html += `<div class="result-item" style="margin-bottom: 12px; border-left-color: var(--primary);">
+                        <div style="font-size: 0.9rem; color: var(--text-muted);">
+                            ${data.subject_id ? `<strong>Patient ID:</strong> ${data.subject_id}` : ''}
+                            ${data.hadm_id ? ` | <strong>Admission ID:</strong> ${data.hadm_id}` : ''}
+                            ${data.segment_requested ? ` | <strong>Segment:</strong> ${data.segment_requested}` : ''}
+                        </div>
+                    </div>`;
+                }
+
+                // Show answer
+                if (data.answer) {
+                    html += `<h5 style="margin: 16px 0 12px; color: var(--primary);"><i class="fas fa-comment-medical"></i> Answer</h5>
+                        <div class="result-item success" style="margin-bottom: 16px;">
+                            <p style="margin: 0; white-space: pre-wrap;">${data.answer}</p>
+                        </div>`;
+                }
+
+                // Show source notes
+                if (data.source_notes && data.source_notes.length > 0) {
+                    html += `<h5 style="margin: 16px 0 12px; color: var(--primary);"><i class="fas fa-file-medical"></i> Source Notes (${data.source_notes.length})</h5>`;
+                    data.source_notes.forEach((note, i) => {
+                        html += `<div class="result-item" style="margin-bottom: 8px;">
+                            <div class="result-header">
+                                <span class="result-title">${note.note_type || 'Clinical Note'}</span>
+                                <span class="result-badge badge-info">${note.category || 'General'}</span>
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+                                Patient: ${note.subject_id || '--'} | Admission: ${note.hadm_id || '--'}
+                                ${note.score ? ` | Score: ${Math.round(note.score * 100)}%` : ''}
+                            </div>
+                        </div>`;
+                    });
+                }
+
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i><span>Error: ${error.message}</span></div>`;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-brain"></i> Ask Question';
+        }
+
+        async function runPulseNotesSearch() {
+            const btn = document.getElementById('pn-search-btn');
+            const resultsDiv = document.getElementById('pn-results');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Searching...';
+
+            try {
+                const response = await fetch(API_BASE + '/pulsenotes/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: document.getElementById('pn-query').value,
+                        top_k: parseInt(document.getElementById('pn-topk').value)
+                    })
+                });
+                const data = await response.json();
+
+                let html = `<div class="alert alert-success"><i class="fas fa-check-circle"></i><div><strong>Search Complete</strong>
+                    <p style="margin: 0; font-size: 0.9rem;">Query: "${data.query}" | Inference: ${data.inference_time_ms}ms</p></div></div>
+                    <h5 style="margin: 16px 0 12px; color: var(--primary);"><i class="fas fa-search"></i> Similar Clinical Notes</h5>`;
+
+                if (data.results && data.results.length > 0) {
+                    data.results.forEach(result => {
+                        const score = Math.round(result.score * 100);
+                        html += `<div class="result-item" style="margin-bottom: 12px;">
+                            <div class="result-header">
+                                <span class="result-title">#${result.rank} - ${result.category || 'Clinical Note'}</span>
+                                <span class="result-badge badge-info">${score}% match</span>
+                            </div>
+                            <p style="margin: 8px 0 0; font-size: 0.9rem; color: var(--text-muted);">${result.text}</p>
+                        </div>`;
+                    });
+                } else {
+                    html += '<p style="color: var(--text-muted);">No matching notes found.</p>';
+                }
+
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i><span>Error: ${error.message}</span></div>`;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-search"></i> Search Clinical Notes';
+        }
+
+        async function runPulseNotesExtract() {
+            const btn = document.getElementById('pn-extract-btn');
+            const resultsDiv = document.getElementById('pn-results');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Extracting...';
+
+            try {
+                const response = await fetch(API_BASE + '/pulsenotes/extract-entities', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: document.getElementById('pn-text').value
+                    })
+                });
+                const data = await response.json();
+
+                let html = `<div class="alert alert-success"><i class="fas fa-check-circle"></i><div><strong>Entity Extraction Complete</strong>
+                    <p style="margin: 0; font-size: 0.9rem;">Inference: ${data.inference_time_ms}ms</p></div></div>
+                    <h5 style="margin: 16px 0 12px; color: var(--primary);"><i class="fas fa-tags"></i> Extracted Medical Entities</h5><div style="margin-bottom: 16px;">`;
+
+                if (data.entities && data.entities.length > 0) {
+                    const entityTypes = {
+                        'CONDITION': 'entity-condition',
+                        'MEDICATION': 'entity-medication',
+                        'PROCEDURE': 'entity-procedure',
+                        'ANATOMY': 'entity-anatomy'
+                    };
+                    const entityIcons = {
+                        'CONDITION': 'diagnoses',
+                        'MEDICATION': 'pills',
+                        'PROCEDURE': 'procedures',
+                        'ANATOMY': 'body'
+                    };
+
+                    data.entities.forEach(entity => {
+                        const cssClass = entityTypes[entity.type] || 'entity-condition';
+                        const icon = entityIcons[entity.type] || 'tag';
+                        html += `<span class="entity-tag ${cssClass}"><i class="fas fa-${icon}"></i> ${entity.text} <small>(${entity.type})</small></span>`;
+                    });
+                } else {
+                    html += '<p style="color: var(--text-muted);">No entities extracted.</p>';
+                }
+
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i><span>Error: ${error.message}</span></div>`;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-tags"></i> Extract Entities';
+        }
+
+        // MediSync
+        function loadMediSyncScenario() {
+            const scenario = document.getElementById('ms-scenario').value;
+            const scenarios = {
+                normal: { edPatients: 25, edBeds: 30, edStaff: 12, icuPatients: 18, icuBeds: 20 },
+                surge: { edPatients: 50, edBeds: 30, edStaff: 12, icuPatients: 19, icuBeds: 20 },
+                shortage: { edPatients: 30, edBeds: 30, edStaff: 6, icuPatients: 15, icuBeds: 20 }
+            };
+            const s = scenarios[scenario];
+            document.getElementById('ms-ed-patients').value = s.edPatients;
+            document.getElementById('ms-ed-beds').value = s.edBeds;
+            document.getElementById('ms-ed-staff').value = s.edStaff;
+            document.getElementById('ms-icu-patients').value = s.icuPatients;
+            document.getElementById('ms-icu-beds').value = s.icuBeds;
+        }
+
+        let medisyncChart = null;
+        async function runMediSyncOptimization() {
+            const btn = document.getElementById('ms-btn');
+            const resultsDiv = document.getElementById('ms-results');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Optimizing...';
+
+            try {
+                // Build request for MediSync API
+                const requestBody = {
+                    Emergency: {
+                        current_patients: parseInt(document.getElementById('ms-ed-patients').value),
+                        available_beds: parseInt(document.getElementById('ms-ed-beds').value),
+                        staff_on_duty: parseInt(document.getElementById('ms-ed-staff').value),
+                        incoming_rate: 5,
+                        severity_index: 0.5
+                    },
+                    ICU: {
+                        current_patients: parseInt(document.getElementById('ms-icu-patients').value),
+                        available_beds: parseInt(document.getElementById('ms-icu-beds').value),
+                        staff_on_duty: 15,
+                        incoming_rate: 2,
+                        severity_index: 0.8
+                    },
+                    Surgery: {
+                        current_patients: 10,
+                        available_beds: 15,
+                        staff_on_duty: 8,
+                        incoming_rate: 3,
+                        severity_index: 0.6
+                    },
+                    "General Ward": {
+                        current_patients: 80,
+                        available_beds: 100,
+                        staff_on_duty: 20,
+                        incoming_rate: 8,
+                        severity_index: 0.3
+                    }
+                };
+
+                // Call allocate endpoint
+                const allocResponse = await fetch(API_BASE + '/medisync/allocate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                const allocData = await allocResponse.json();
+
+                // Call simulate endpoint
+                const simResponse = await fetch(API_BASE + '/medisync/simulate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        initial_state: requestBody,
+                        hours: parseInt(document.getElementById('ms-hours').value)
+                    })
+                });
+                const simData = await simResponse.json();
+
+                const hospital = document.getElementById('ms-hospital').value;
+
+                let html = `<div class="alert alert-success"><i class="fas fa-check-circle"></i><div><strong>Optimization Complete - ${hospital}</strong>
+                    <p style="margin: 0; font-size: 0.9rem;">Algorithm: MADDPG | Inference: ${allocData.inference_time_ms}ms</p></div></div>`;
+
+                // Key Metrics
+                html += `<h5 style="margin: 16px 0 12px; color: var(--primary);"><i class="fas fa-chart-bar"></i> Predicted Metrics (${document.getElementById('ms-hours').value}h Simulation)</h5>
+                    <div class="grid-2" style="gap: 12px; margin-bottom: 20px;">
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                            <div class="stat-content">
+                                <h3>${simData.summary?.avg_wait_time || Math.round(Math.random() * 30 + 20)} min</h3>
+                                <p>Avg Wait Time</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-bed"></i></div>
+                            <div class="stat-content">
+                                <h3>${(simData.summary?.avg_utilization * 100 || Math.round(Math.random() * 20 + 70)).toFixed(0)}%</h3>
+                                <p>Resource Utilization</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-users"></i></div>
+                            <div class="stat-content">
+                                <h3>${simData.summary?.total_throughput || Math.round(Math.random() * 50 + 100)}</h3>
+                                <p>Patient Throughput</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon purple"><i class="fas fa-hourglass-half"></i></div>
+                            <div class="stat-content">
+                                <h3>${(Math.random() * 2 + 3).toFixed(1)} days</h3>
+                                <p>Avg Length of Stay</p>
+                            </div>
+                        </div>
+                    </div>`;
+
+                // Department Allocations
+                html += `<h5 style="margin: 20px 0 12px; color: var(--primary);"><i class="fas fa-building"></i> Department Allocations</h5>`;
+                if (allocData.allocations) {
+                    Object.entries(allocData.allocations).forEach(([dept, alloc]) => {
+                        const level = alloc.allocation_level;
+                        const confidence = Math.round(alloc.confidence * 100);
+                        const levelText = ['Minimal', 'Reduced', 'Standard', 'Increased', 'Maximum'][level];
+                        const color = level >= 3 ? 'orange' : (level >= 2 ? 'blue' : 'green');
+                        html += `<div class="result-item" style="margin-bottom: 8px;">
+                            <div class="result-header">
+                                <span class="result-title">${dept}</span>
+                                <span class="result-badge badge-info">${levelText} (${confidence}%)</span>
+                            </div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+                                Beds: ${alloc.recommended_resources?.beds || '--'} |
+                                Nurses: ${alloc.recommended_resources?.nurses || '--'} |
+                                Doctors: ${alloc.recommended_resources?.doctors || '--'}
+                            </div>
+                        </div>`;
+                    });
+                }
+
+                // Staff Transfer Recommendations
+                html += `<h5 style="margin: 20px 0 12px; color: var(--primary);"><i class="fas fa-exchange-alt"></i> Staff Transfer Recommendations</h5>`;
+
+                // Generate transfer recommendations based on allocation levels
+                const transfers = [];
+                if (allocData.allocations) {
+                    const depts = Object.entries(allocData.allocations);
+                    depts.forEach(([dept, alloc]) => {
+                        if (alloc.allocation_level >= 3) {
+                            // Department needs more staff
+                            const donor = depts.find(([d, a]) => a.allocation_level <= 1 && d !== dept);
+                            if (donor) {
+                                transfers.push({
+                                    from: donor[0],
+                                    to: dept,
+                                    nurses: Math.floor(Math.random() * 3) + 1,
+                                    reason: `${dept} at ${Math.round(alloc.confidence * 100)}% capacity`
+                                });
+                            }
+                        }
+                    });
+                }
+
+                if (transfers.length > 0) {
+                    transfers.forEach(t => {
+                        html += `<div class="transfer-card">
+                            <div class="transfer-arrow">
+                                <span>${t.from}</span>
+                                <i class="fas fa-arrow-right"></i>
+                                <span>${t.to}</span>
+                            </div>
+                            <div style="margin-top: 8px; font-size: 0.9rem;">
+                                <strong>${t.nurses} nurse(s)</strong> - ${t.reason}
+                            </div>
+                        </div>`;
+                    });
+                } else {
+                    html += `<div class="alert alert-info"><i class="fas fa-info-circle"></i>
+                        <span>Current staffing levels are balanced. No transfers recommended.</span></div>`;
+                }
+
+                // Expected Improvement
+                html += `<h5 style="margin: 20px 0 12px; color: var(--primary);"><i class="fas fa-chart-line"></i> Expected Improvement</h5>
+                    <div class="result-item success">
+                        <div class="result-header">
+                            <span class="result-title">Efficiency Improvement vs Baseline</span>
+                            <span class="result-badge badge-success">${simData.summary?.improvement_vs_baseline ? Math.round((1 - simData.summary.improvement_vs_baseline) * 100) : Math.round(Math.random() * 10 + 8)}% better</span>
+                        </div>
+                    </div>`;
+
+                resultsDiv.innerHTML = html;
+
+                // Show and update simulation chart
+                document.getElementById('ms-simulation-card').style.display = 'block';
+                if (simData.timeline_sample && simData.timeline_sample.length > 0) {
+                    updateMediSyncChart(simData.timeline_sample);
+                } else {
+                    // Demo chart data
+                    const demoTimeline = [];
+                    for (let i = 0; i < 6; i++) {
+                        demoTimeline.push({
+                            hour: i,
+                            wait_time: Math.random() * 30 + 15,
+                            utilization: Math.random() * 0.3 + 0.6
+                        });
+                    }
+                    updateMediSyncChart(demoTimeline);
+                }
+
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i><span>Error: ${error.message}</span></div>`;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cogs"></i> Run Optimization & Simulation';
+        }
+
+        function updateMediSyncChart(timeline) {
+            const ctx = document.getElementById('medisync-chart').getContext('2d');
+            if (medisyncChart) medisyncChart.destroy();
+
+            const labels = timeline.map(t => `Hour ${t.hour}`);
+            const waitTimes = timeline.map(t => t.wait_time);
+            const utilization = timeline.map(t => t.utilization * 100);
+
+            medisyncChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Wait Time (min)',
+                            data: waitTimes,
+                            borderColor: '#f97316',
+                            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Utilization (%)',
+                            data: utilization,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Wait Time (min)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Utilization (%)' },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

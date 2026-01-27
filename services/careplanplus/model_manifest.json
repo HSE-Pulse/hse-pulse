@@ -1,0 +1,116 @@
+{
+  "model_name": "CarePlanPlus-BERT",
+  "version": "1.0.0",
+  "description": "BERT-based personalized treatment pathway recommender for procedure prediction",
+  "framework": "PyTorch + HuggingFace Transformers",
+  "architecture": {
+    "type": "BERT-Classifier",
+    "base_model": "bert-base-uncased",
+    "frozen_layers": 6,
+    "intermediate_size": 256,
+    "dropout": 0.3
+  },
+  "input_schema": {
+    "type": "object",
+    "required": ["diagnoses"],
+    "properties": {
+      "diagnoses": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["icd_code"],
+          "properties": {
+            "icd_code": {"type": "string", "description": "ICD diagnosis code"},
+            "seq_num": {"type": "integer", "description": "Sequence number"},
+            "long_title": {"type": "string", "description": "Diagnosis description"}
+          }
+        }
+      },
+      "procedure_history": {
+        "type": "array",
+        "items": {"type": "string"},
+        "description": "List of previous procedure codes"
+      },
+      "patient_age": {"type": "integer", "minimum": 0, "maximum": 120},
+      "patient_gender": {"type": "string", "enum": ["M", "F"]},
+      "top_k": {"type": "integer", "minimum": 1, "maximum": 10, "default": 5}
+    }
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "recommendations": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "procedure_code": {"type": "string"},
+            "confidence": {"type": "number"},
+            "rank": {"type": "integer"}
+          }
+        }
+      },
+      "full_pathway": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "step_number": {"type": "integer"},
+            "procedure_code": {"type": "string"},
+            "confidence": {"type": "number"}
+          }
+        }
+      },
+      "model_version": {"type": "string"},
+      "inference_time_ms": {"type": "number"}
+    }
+  },
+  "example_request": {
+    "diagnoses": [
+      {"icd_code": "I10", "seq_num": 1, "long_title": "Essential hypertension"},
+      {"icd_code": "I25.10", "seq_num": 2, "long_title": "Atherosclerotic heart disease"}
+    ],
+    "procedure_history": [],
+    "top_k": 5
+  },
+  "example_response": {
+    "recommendations": [
+      {"procedure_code": "02HV33Z", "confidence": 0.4523, "rank": 1},
+      {"procedure_code": "5A1955Z", "confidence": 0.2341, "rank": 2},
+      {"procedure_code": "0BH17ZZ", "confidence": 0.1567, "rank": 3}
+    ],
+    "model_version": "1.0.0",
+    "inference_time_ms": 125.45
+  },
+  "inference_endpoint": "/predict",
+  "pathway_endpoint": "/pathway",
+  "evaluation_metrics": {
+    "Precision@k": "Precision at k recommendations",
+    "Recall@k": "Recall at k recommendations",
+    "MAP": "Mean Average Precision",
+    "NDCG": "Normalized Discounted Cumulative Gain"
+  },
+  "training_data": {
+    "source": "MIMIC-IV / Hospital EHR",
+    "patient_collection": "patients",
+    "nies_collection": "nies_data",
+    "features": [
+      "Diagnosis ICD codes",
+      "Diagnosis descriptions",
+      "Procedure sequences",
+      "Patient demographics"
+    ]
+  },
+  "artifacts": [
+    {
+      "name": "bert_model.pth",
+      "type": "model_weights",
+      "description": "PyTorch model state dict with BERT encoder"
+    },
+    {
+      "name": "procedure_encoder.pkl",
+      "type": "label_encoder",
+      "description": "LabelEncoder for procedure codes"
+    }
+  ]
+}

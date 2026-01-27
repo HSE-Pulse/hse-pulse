@@ -1,0 +1,390 @@
+"""
+PulseFlow - Patient Flow Prediction Service
+LSTM-based ED trolley forecasting for Irish hospitals
+"""
+
+import os
+import logging
+import time
+from datetime import datetime, timedelta
+from contextlib import asynccontextmanager
+from typing import Optional, List
+
+import torch
+import torch.nn as nn
+import numpy as np
+import pandas as pd
+import joblib
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+from pymongo import MongoClient
+from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+from starlette.responses import Response
+
+# Configure logging
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO"),
+    format='{"time": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s"}'
+)
+logger = logging.getLogger(__name__)
+
+# Prometheus metrics
+REQUEST_COUNT = Counter(
+    'http_requests_total',
+    'Total HTTP requests',
+    ['method', 'endpoint', 'status']
+)
+REQUEST_LATENCY = Histogram(
+    'http_request_duration_seconds',
+    'HTTP request latency',
+    ['method', 'endpoint']
+)
+MODEL_INFERENCE_TIME = Histogram(
+    'model_inference_duration_seconds',
+    'Model inference latency'
+)
+MODEL_LOADED = Gauge('model_loaded', 'Whether the model is loaded')
+PREDICTIONS_TOTAL = Counter('predictions_total', 'Total predictions made')
+
+
+class LSTMRegressor(nn.Module):
+    """LSTM model for patient flow regression."""
+
+    def __init__(self, input_size: int, hidden_size: int = 64, num_layers: int = 2):
+        super().__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
+        self.fc = nn.Linear(hidden_size, 1)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        out, _ = self.lstm(x)
+        out = self.fc(out[:, -1, :])
+        return out.squeeze()
+
+
+class ModelManager:
+    """Manages LSTM model loading and inference."""
+
+    def __init__(self):
+        self.model: Optional[LSTMRegressor] = None
+        self.scaler = None
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.features = [
+            'ED Trolleys', 'Ward Trolleys',
+            'Surge Capacity in Use (Full report @14:00)',
+            'Delayed Transfers of Care (As of Midnight)',
+            'No of >75+yrs Waiting >24hrs'
+        ]
+
+    def load_model(self, model_path: str, scaler_path: Optional[str] = None):
+        """Load LSTM model and scaler from disk."""
+        try:
+            if os.path.exists(model_path):
+                checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
+                self.model = LSTMRegressor(
+                    input_size=checkpoint.get('input_size', 5),
+                    hidden_size=checkpoint.get('hidden_size', 64),
+                    num_layers=checkpoint.get('num_layers', 2)
+                ).to(self.device)
+                self.model.load_state_dict(checkpoint['model_state_dict'])
+                self.model.eval()
+                logger.info(f"Model loaded from {model_path}")
+                MODEL_LOADED.set(1)
+            else:
+                logger.warning(f"Model file not found at {model_path}, using demo mode")
+                self._create_demo_model()
+
+            if scaler_path and os.path.exists(scaler_path):
+                self.scaler = joblib.load(scaler_path)
+                logger.info(f"Scaler loaded from {scaler_path}")
+            else:
+                logger.warning("Scaler not found, predictions may be unscaled")
+
+        except Exception as e:
+            logger.error(f"Error loading model: {e}")
+            self._create_demo_model()
+
+    def _create_demo_model(self):
+        """Create a demo model for testing without real weights."""
+        self.model = LSTMRegressor(input_size=5, hidden_size=64, num_layers=2).to(self.device)
+        self.model.eval()
+        MODEL_LOADED.set(0.5)  # Indicate demo mode
+        logger.info("Demo model created")
+
+    def predict(self, sequence: np.ndarray, forecast_days: int = 7) -> List[float]:
+        """Generate patient flow predictions."""
+        if self.model is None:
+            raise ValueError("Model not loaded")
+
+        with MODEL_INFERENCE_TIME.time():
+            predictions = []
+            last_seq = sequence.copy()
+
+            with torch.no_grad():
+                for _ in range(forecast_days):
+                    input_tensor = torch.tensor(
+                        last_seq, dtype=torch.float32
+                    ).unsqueeze(0).to(self.device)
+                    pred = self.model(input_tensor).item()
+                    predictions.append(max(0, pred))  # Ensure non-negative
+                    next_input = np.append(
+                        last_seq[1:],
+                        [[pred] * last_seq.shape[1]],
+                        axis=0
+                    )
+                    last_seq = next_input
+
+            PREDICTIONS_TOTAL.inc()
+            return predictions
+
+
+# Global instances
+model_manager = ModelManager()
+mongo_client: Optional[MongoClient] = None
+db = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan manager."""
+    global mongo_client, db
+
+    # Startup
+    logger.info("Starting PulseFlow service...")
+
+    # Load model
+    model_path = os.getenv("MODEL_PATH", "/app/models/lstm_model.pth")
+    scaler_path = os.getenv("SCALER_PATH", "/app/models/scaler.pkl")
+    model_manager.load_model(model_path, scaler_path)
+
+    # Connect to MongoDB
+    mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+    try:
+        mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+        mongo_client.admin.command('ping')
+        db = mongo_client[os.getenv("MONGO_DB", "HSE")]
+        logger.info("Connected to MongoDB")
+    except Exception as e:
+        logger.warning(f"MongoDB connection failed: {e}. Using demo data.")
+        db = None
+
+    yield
+
+    # Shutdown
+    if mongo_client:
+        mongo_client.close()
+    logger.info("PulseFlow service stopped")
+
+
+app = FastAPI(
+    title="PulseFlow",
+    description="LSTM-based patient flow prediction for ED trolley forecasting",
+    version="1.0.0",
+    lifespan=lifespan,
+    root_path=os.getenv("ROOT_PATH", "")
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Request/Response Models
+class PredictionRequest(BaseModel):
+    """Request model for patient flow prediction."""
+    region: str = Field(..., description="Hospital region", example="Dublin North")
+    hospital: str = Field(..., description="Hospital name", example="Beaumont Hospital")
+    date: str = Field(..., description="Prediction start date (YYYY-MM-DD)", example="2024-01-15")
+    forecast_days: int = Field(default=7, ge=1, le=14, description="Number of days to forecast")
+
+    # Optional manual input for demo without database
+    surge_capacity: Optional[int] = Field(None, description="Current surge capacity in use")
+    delayed_transfers: Optional[int] = Field(None, description="Delayed transfers of care")
+    waiting_24hrs: Optional[int] = Field(None, description="Total waiting >24hrs")
+    waiting_75y_24hrs: Optional[int] = Field(None, description=">75yrs waiting >24hrs")
+
+
+class ForecastDay(BaseModel):
+    """Single day forecast."""
+    date: str
+    day: str
+    predicted_trolleys: float
+    confidence_lower: float
+    confidence_upper: float
+
+
+class PredictionResponse(BaseModel):
+    """Response model for patient flow prediction."""
+    model: str = "LSTM"
+    hospital: str
+    region: str
+    forecast_start: str
+    forecast: List[ForecastDay]
+    model_version: str = "1.0.0"
+    inference_time_ms: float
+
+
+class HealthResponse(BaseModel):
+    """Health check response."""
+    status: str
+    model_loaded: bool
+    database_connected: bool
+    timestamp: str
+
+
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    """Middleware to track request metrics."""
+    start_time = time.time()
+    response = await call_next(request)
+    duration = time.time() - start_time
+
+    REQUEST_COUNT.labels(
+        method=request.method,
+        endpoint=request.url.path,
+        status=response.status_code
+    ).inc()
+
+    REQUEST_LATENCY.labels(
+        method=request.method,
+        endpoint=request.url.path
+    ).observe(duration)
+
+    return response
+
+
+@app.get("/health", response_model=HealthResponse)
+async def health_check():
+    """Health check endpoint."""
+    return HealthResponse(
+        status="healthy",
+        model_loaded=model_manager.model is not None,
+        database_connected=db is not None,
+        timestamp=datetime.utcnow().isoformat()
+    )
+
+
+@app.get("/metrics")
+async def metrics():
+    """Prometheus metrics endpoint."""
+    return Response(
+        content=generate_latest(),
+        media_type=CONTENT_TYPE_LATEST
+    )
+
+
+@app.post("/predict", response_model=PredictionResponse)
+async def predict_patient_flow(request: PredictionRequest):
+    """
+    Predict patient flow (ED trolleys) for the next N days.
+
+    Uses LSTM model trained on HSE trolley data to forecast
+    emergency department strain levels.
+    """
+    start_time = time.time()
+
+    try:
+        # Try to get historical data from MongoDB
+        sequence = None
+
+        if db is not None:
+            try:
+                collection = db["trolleys"]
+                df = pd.DataFrame(list(collection.find({
+                    'region': request.region,
+                    'hospital': request.hospital
+                }).sort('date', -1).limit(100)))
+
+                if len(df) >= 7:
+                    df = df.sort_values('date')
+                    features_available = [f for f in model_manager.features if f in df.columns]
+                    if len(features_available) == len(model_manager.features):
+                        if model_manager.scaler:
+                            df[features_available] = model_manager.scaler.transform(df[features_available])
+                        sequence = df[features_available].values[-7:]
+            except Exception as e:
+                logger.warning(f"Error fetching from database: {e}")
+
+        # Use demo data if no database data available
+        if sequence is None:
+            logger.info("Using synthetic demo data for prediction")
+            np.random.seed(42)
+            sequence = np.random.randn(7, 5) * 0.5  # Normalized synthetic data
+
+        # Generate predictions
+        predictions = model_manager.predict(sequence, request.forecast_days)
+
+        # Create forecast response
+        start_date = datetime.strptime(request.date, "%Y-%m-%d")
+        forecast = []
+
+        for i, pred in enumerate(predictions):
+            forecast_date = start_date + timedelta(days=i + 1)
+            # Add confidence intervals (simplified)
+            forecast.append(ForecastDay(
+                date=forecast_date.strftime("%Y-%m-%d"),
+                day=forecast_date.strftime("%A"),
+                predicted_trolleys=round(pred, 1),
+                confidence_lower=round(max(0, pred - 5), 1),
+                confidence_upper=round(pred + 5, 1)
+            ))
+
+        inference_time = (time.time() - start_time) * 1000
+
+        return PredictionResponse(
+            hospital=request.hospital,
+            region=request.region,
+            forecast_start=request.date,
+            forecast=forecast,
+            inference_time_ms=round(inference_time, 2)
+        )
+
+    except Exception as e:
+        logger.error(f"Prediction error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/hospitals")
+async def list_hospitals():
+    """List available hospitals and regions."""
+    if db is not None:
+        try:
+            collection = db["trolleys"]
+            pipeline = [
+                {"$group": {"_id": {"region": "$region", "hospital": "$hospital"}}},
+                {"$sort": {"_id.region": 1, "_id.hospital": 1}}
+            ]
+            results = list(collection.aggregate(pipeline))
+            hospitals = [{"region": r["_id"]["region"], "hospital": r["_id"]["hospital"]}
+                        for r in results]
+            return {"hospitals": hospitals}
+        except Exception as e:
+            logger.warning(f"Error fetching hospitals: {e}")
+
+    # Return demo hospitals
+    return {
+        "hospitals": [
+            {"region": "Dublin North", "hospital": "Beaumont Hospital"},
+            {"region": "Dublin South", "hospital": "St Vincent's University Hospital"},
+            {"region": "Dublin Midlands", "hospital": "Tallaght University Hospital"},
+            {"region": "South/South West", "hospital": "Cork University Hospital"},
+            {"region": "West/North West", "hospital": "University Hospital Galway"}
+        ]
+    }
+
+
+@app.get("/")
+async def root():
+    """Root endpoint with API info."""
+    return {
+        "service": "PulseFlow",
+        "description": "Patient Flow Prediction API",
+        "version": "1.0.0",
+        "docs": "/docs",
+        "health": "/health",
+        "metrics": "/metrics"
+    }

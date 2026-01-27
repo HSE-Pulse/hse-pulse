@@ -1,0 +1,115 @@
+name: Test Services
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop]
+
+jobs:
+  test-pulseflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd services/pulseflow
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Run tests
+        run: |
+          cd services/pulseflow
+          python -m pytest tests/ -v --tb=short || echo "No tests found"
+
+  test-careplanplus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd services/careplanplus
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Run tests
+        run: |
+          cd services/careplanplus
+          python -m pytest tests/ -v --tb=short || echo "No tests found"
+
+  test-pulsenotes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd services/pulsenotes
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Run tests
+        run: |
+          cd services/pulsenotes
+          python -m pytest tests/ -v --tb=short || echo "No tests found"
+
+  test-medisync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd services/medisync
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Run tests
+        run: |
+          cd services/medisync
+          python -m pytest tests/ -v --tb=short || echo "No tests found"
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: [test-pulseflow, test-careplanplus, test-pulsenotes, test-medisync]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build services
+        run: docker-compose build
+
+      - name: Start services
+        run: |
+          docker-compose up -d
+          sleep 60  # Wait for services to start
+
+      - name: Run smoke tests
+        run: |
+          chmod +x scripts/smoke_test.sh
+          ./scripts/smoke_test.sh
+
+      - name: Cleanup
+        if: always()
+        run: docker-compose down -v

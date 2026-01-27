@@ -1,0 +1,76 @@
+{
+  "model_name": "PulseNotes-ClinicalBERT-RAG",
+  "version": "1.0.0",
+  "description": "Bio_ClinicalBERT with FAISS for clinical note analysis and retrieval",
+  "framework": "PyTorch + HuggingFace Transformers + FAISS",
+  "architecture": {
+    "encoder": "emilyalsentzer/Bio_ClinicalBERT",
+    "embedding_dim": 768,
+    "index_type": "FAISS IndexFlatL2"
+  },
+  "input_schema": {
+    "search": {
+      "type": "object",
+      "required": ["query"],
+      "properties": {
+        "query": {"type": "string", "description": "Search query text"},
+        "top_k": {"type": "integer", "minimum": 1, "maximum": 20, "default": 5}
+      }
+    },
+    "entity_extraction": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {
+        "text": {"type": "string", "description": "Clinical note text"}
+      }
+    }
+  },
+  "output_schema": {
+    "search": {
+      "type": "object",
+      "properties": {
+        "results": {"type": "array", "items": {"type": "object"}},
+        "query": {"type": "string"},
+        "inference_time_ms": {"type": "number"}
+      }
+    },
+    "entity_extraction": {
+      "type": "object",
+      "properties": {
+        "entities": {"type": "array", "items": {"type": "object"}},
+        "inference_time_ms": {"type": "number"}
+      }
+    }
+  },
+  "example_request": {
+    "query": "patient with chest pain and shortness of breath",
+    "top_k": 5
+  },
+  "example_response": {
+    "results": [
+      {"id": 1, "text": "Patient presents with chest pain...", "category": "Cardiology", "score": 0.95, "rank": 1}
+    ],
+    "query": "patient with chest pain and shortness of breath",
+    "inference_time_ms": 85.23
+  },
+  "inference_endpoints": {
+    "search": "/search",
+    "entity_extraction": "/extract-entities"
+  },
+  "evaluation_metrics": {
+    "F1_micro": "Micro-averaged F1 score for NER",
+    "F1_macro": "Macro-averaged F1 score for NER",
+    "MRR": "Mean Reciprocal Rank for retrieval",
+    "NDCG@k": "Normalized DCG at k"
+  },
+  "training_data": {
+    "source": "MIMIC-III Clinical Notes",
+    "collection": "noteevents",
+    "preprocessing": ["Tokenization", "Entity annotation", "Embedding generation"]
+  },
+  "artifacts": [
+    {"name": "clinicalbert/", "type": "model_weights", "description": "Bio_ClinicalBERT model"},
+    {"name": "faiss.index", "type": "index", "description": "FAISS vector index"},
+    {"name": "documents.json", "type": "data", "description": "Indexed documents metadata"}
+  ]
+}

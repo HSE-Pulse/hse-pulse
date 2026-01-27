@@ -1,0 +1,54 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'healthcare-ml-portfolio'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files: []
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Healthcare ML Services
+  - job_name: 'pulseflow'
+    static_configs:
+      - targets: ['pulseflow:8000']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  - job_name: 'careplanplus'
+    static_configs:
+      - targets: ['careplanplus:8000']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  - job_name: 'pulsenotes'
+    static_configs:
+      - targets: ['pulsenotes:8000']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  - job_name: 'medisync'
+    static_configs:
+      - targets: ['medisync:8000']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # Nginx
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:80']
+    metrics_path: /nginx_status
+
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']

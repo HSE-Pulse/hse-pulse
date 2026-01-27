@@ -1,0 +1,128 @@
+{
+  "model_name": "PulseFlow-LSTM",
+  "version": "1.0.0",
+  "description": "LSTM-based patient flow prediction model for ED trolley forecasting",
+  "framework": "PyTorch",
+  "architecture": {
+    "type": "LSTM",
+    "input_size": 5,
+    "hidden_size": 64,
+    "num_layers": 2,
+    "output_size": 1
+  },
+  "input_schema": {
+    "type": "object",
+    "required": ["region", "hospital", "date"],
+    "properties": {
+      "region": {
+        "type": "string",
+        "description": "Hospital region (e.g., Dublin North)",
+        "example": "Dublin North"
+      },
+      "hospital": {
+        "type": "string",
+        "description": "Hospital name",
+        "example": "Beaumont Hospital"
+      },
+      "date": {
+        "type": "string",
+        "format": "date",
+        "description": "Prediction start date (YYYY-MM-DD)",
+        "example": "2024-01-15"
+      },
+      "forecast_days": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 14,
+        "default": 7,
+        "description": "Number of days to forecast"
+      }
+    }
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "model": {"type": "string"},
+      "hospital": {"type": "string"},
+      "region": {"type": "string"},
+      "forecast_start": {"type": "string", "format": "date"},
+      "forecast": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "date": {"type": "string", "format": "date"},
+            "day": {"type": "string"},
+            "predicted_trolleys": {"type": "number"},
+            "confidence_lower": {"type": "number"},
+            "confidence_upper": {"type": "number"}
+          }
+        }
+      },
+      "model_version": {"type": "string"},
+      "inference_time_ms": {"type": "number"}
+    }
+  },
+  "example_request": {
+    "region": "Dublin North",
+    "hospital": "Beaumont Hospital",
+    "date": "2024-01-15",
+    "forecast_days": 7
+  },
+  "example_response": {
+    "model": "LSTM",
+    "hospital": "Beaumont Hospital",
+    "region": "Dublin North",
+    "forecast_start": "2024-01-15",
+    "forecast": [
+      {
+        "date": "2024-01-16",
+        "day": "Tuesday",
+        "predicted_trolleys": 12.5,
+        "confidence_lower": 7.5,
+        "confidence_upper": 17.5
+      },
+      {
+        "date": "2024-01-17",
+        "day": "Wednesday",
+        "predicted_trolleys": 14.2,
+        "confidence_lower": 9.2,
+        "confidence_upper": 19.2
+      }
+    ],
+    "model_version": "1.0.0",
+    "inference_time_ms": 45.32
+  },
+  "inference_endpoint": "/predict",
+  "evaluation_metrics": {
+    "MSE": "Mean Squared Error",
+    "MAE": "Mean Absolute Error",
+    "MAPE": "Mean Absolute Percentage Error",
+    "R2": "R-squared coefficient"
+  },
+  "training_data": {
+    "source": "HSE Trolley Watch",
+    "collection": "mongodb://HSE.trolleys",
+    "features": [
+      "ED Trolleys",
+      "Ward Trolleys",
+      "Surge Capacity in Use",
+      "Delayed Transfers of Care",
+      "No of >75+yrs Waiting >24hrs"
+    ],
+    "target": "Total Trolleys / ED Trolleys",
+    "sequence_length": 7
+  },
+  "artifacts": [
+    {
+      "name": "lstm_model.pth",
+      "type": "model_weights",
+      "description": "PyTorch model state dict"
+    },
+    {
+      "name": "scaler.pkl",
+      "type": "preprocessor",
+      "description": "StandardScaler for feature normalization"
+    }
+  ]
+}

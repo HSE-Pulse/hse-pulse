@@ -1,0 +1,90 @@
+{
+  "model_name": "MediSync-MADDPG",
+  "version": "1.0.0",
+  "description": "Multi-Agent DDPG for hospital resource allocation optimization",
+  "framework": "PyTorch",
+  "architecture": {
+    "type": "MADDPG + MAPPO",
+    "agents": 4,
+    "state_dim": 20,
+    "action_dim": 5,
+    "hidden_dim": 256,
+    "actor_layers": 3,
+    "critic_layers": 3
+  },
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "Emergency": {"$ref": "#/definitions/DepartmentState"},
+      "ICU": {"$ref": "#/definitions/DepartmentState"},
+      "Surgery": {"$ref": "#/definitions/DepartmentState"},
+      "General Ward": {"$ref": "#/definitions/DepartmentState"}
+    },
+    "definitions": {
+      "DepartmentState": {
+        "type": "object",
+        "properties": {
+          "current_patients": {"type": "integer", "minimum": 0},
+          "available_beds": {"type": "integer", "minimum": 0},
+          "staff_on_duty": {"type": "integer", "minimum": 0},
+          "incoming_rate": {"type": "number", "minimum": 0},
+          "severity_index": {"type": "number", "minimum": 0, "maximum": 1}
+        }
+      }
+    }
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "allocations": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "allocation_level": {"type": "integer"},
+            "confidence": {"type": "number"},
+            "recommended_resources": {"type": "object"}
+          }
+        }
+      },
+      "inference_time_ms": {"type": "number"}
+    }
+  },
+  "example_request": {
+    "Emergency": {"current_patients": 25, "available_beds": 30, "staff_on_duty": 12, "incoming_rate": 5, "severity_index": 0.4},
+    "ICU": {"current_patients": 18, "available_beds": 20, "staff_on_duty": 15, "incoming_rate": 2, "severity_index": 0.8}
+  },
+  "example_response": {
+    "allocations": {
+      "Emergency": {"allocation_level": 3, "confidence": 0.85, "recommended_resources": {"beds": 33, "nurses": 8, "doctors": 4}}
+    },
+    "inference_time_ms": 12.45
+  },
+  "inference_endpoints": {
+    "allocate": "/allocate",
+    "simulate": "/simulate"
+  },
+  "evaluation_metrics": {
+    "episode_reward": "Total reward per episode",
+    "avg_wait_time": "Average patient wait time reduction",
+    "resource_utilization": "Resource utilization efficiency",
+    "throughput": "Patient throughput improvement"
+  },
+  "training_config": {
+    "algorithm": "MADDPG with prioritized experience replay",
+    "episodes": 10000,
+    "batch_size": 256,
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "tau": 0.01
+  },
+  "artifacts": [
+    {"name": "maddpg_checkpoint.pth", "type": "model_weights", "description": "MADDPG actor-critic weights"},
+    {"name": "mappo_checkpoint.pth", "type": "model_weights", "description": "MAPPO policy weights"}
+  ],
+  "performance": {
+    "wait_time_reduction": "93.4%",
+    "resource_utilization_improvement": "23.7%",
+    "baseline_comparison": "vs rule-based allocation"
+  }
+}
