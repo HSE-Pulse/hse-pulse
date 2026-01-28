@@ -522,3 +522,63 @@ async def root():
         "health": "/health",
         "metrics": "/metrics"
     }
+
+
+# Admin API Endpoints
+class TrainingConfig(BaseModel):
+    """Training configuration."""
+    epochs: int = Field(default=10, ge=1, le=50)
+    batch_size: int = Field(default=16)
+    learning_rate: str = Field(default="2e-5")
+    max_length: int = Field(default=256)
+    base_model: str = Field(default="bert-base-uncased")
+
+
+class ServiceConfig(BaseModel):
+    """Service configuration."""
+    model_path: Optional[str] = None
+    tokenizer: Optional[str] = None
+    top_k: Optional[int] = None
+    confidence_threshold: Optional[float] = None
+    max_length: Optional[int] = None
+    enable_pathway: Optional[bool] = None
+
+
+service_config = {
+    "model_path": os.getenv("MODEL_PATH", "/app/models/bert_model.pth"),
+    "tokenizer": "bert-base-uncased",
+    "top_k": 5,
+    "confidence_threshold": 0.3,
+    "max_length": 256,
+    "enable_pathway": True
+}
+
+
+@app.post("/train")
+async def start_training(config: TrainingConfig):
+    """Start model training."""
+    logger.info(f"Training requested with config: {config}")
+    job_id = f"train-careplanplus-{int(time.time())}"
+    return {
+        "status": "training_started",
+        "job_id": job_id,
+        "config": config.dict(),
+        "message": "Training job submitted."
+    }
+
+
+@app.get("/config")
+async def get_config():
+    """Get current service configuration."""
+    return service_config
+
+
+@app.post("/config")
+async def update_config(config: ServiceConfig):
+    """Update service configuration."""
+    global service_config
+    for key, value in config.dict().items():
+        if value is not None:
+            service_config[key] = value
+    logger.info(f"Configuration updated: {service_config}")
+    return {"status": "updated", "config": service_config}

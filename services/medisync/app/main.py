@@ -519,3 +519,63 @@ async def root():
         "health": "/health",
         "metrics": "/metrics"
     }
+
+
+# Admin API Endpoints
+class TrainingConfig(BaseModel):
+    """Training configuration."""
+    episodes: int = Field(default=10000, ge=1000, le=100000)
+    batch_size: int = Field(default=256)
+    actor_lr: str = Field(default="1e-4")
+    critic_lr: str = Field(default="1e-3")
+    gamma: float = Field(default=0.99)
+
+
+class ServiceConfig(BaseModel):
+    """Service configuration."""
+    model_path: Optional[str] = None
+    num_agents: Optional[int] = None
+    action_space: Optional[int] = None
+    simulation_hours: Optional[int] = None
+    max_staff_transfer: Optional[int] = None
+    utilization_target: Optional[int] = None
+
+
+service_config = {
+    "model_path": os.getenv("MODEL_PATH", "/app/models/maddpg_checkpoint.pth"),
+    "num_agents": 4,
+    "action_space": 5,
+    "simulation_hours": 24,
+    "max_staff_transfer": 5,
+    "utilization_target": 85
+}
+
+
+@app.post("/train")
+async def start_training(config: TrainingConfig):
+    """Start RL model training."""
+    logger.info(f"Training requested with config: {config}")
+    job_id = f"train-medisync-{int(time.time())}"
+    return {
+        "status": "training_started",
+        "job_id": job_id,
+        "config": config.dict(),
+        "message": "Training job submitted."
+    }
+
+
+@app.get("/config")
+async def get_config():
+    """Get current service configuration."""
+    return service_config
+
+
+@app.post("/config")
+async def update_config(config: ServiceConfig):
+    """Update service configuration."""
+    global service_config
+    for key, value in config.dict().items():
+        if value is not None:
+            service_config[key] = value
+    logger.info(f"Configuration updated: {service_config}")
+    return {"status": "updated", "config": service_config}

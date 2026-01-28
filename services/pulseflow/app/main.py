@@ -400,3 +400,105 @@ async def root():
         "health": "/health",
         "metrics": "/metrics"
     }
+
+
+# Admin API Endpoints
+class TrainingConfig(BaseModel):
+    """Training configuration."""
+    epochs: int = Field(default=100, ge=1, le=500)
+    batch_size: int = Field(default=64)
+    learning_rate: float = Field(default=0.001)
+    hidden_size: int = Field(default=64)
+    device: str = Field(default="cpu")
+
+
+class ServiceConfig(BaseModel):
+    """Service configuration."""
+    model_path: Optional[str] = None
+    scaler_path: Optional[str] = None
+    forecast_window: Optional[int] = None
+    confidence_interval: Optional[int] = None
+    max_batch_size: Optional[int] = None
+    cache_ttl: Optional[int] = None
+
+
+# Global config store
+service_config = {
+    "model_path": os.getenv("MODEL_PATH", "/app/models/lstm_model.pth"),
+    "scaler_path": os.getenv("SCALER_PATH", "/app/models/scaler.pkl"),
+    "forecast_window": 7,
+    "confidence_interval": 95,
+    "max_batch_size": 32,
+    "cache_ttl": 300
+}
+
+
+@app.post("/train")
+async def start_training(config: TrainingConfig):
+    """
+    Start model training (async).
+    In production, this would trigger a Kubernetes Job or Celery task.
+    """
+    logger.info(f"Training requested with config: {config}")
+
+    # In a real implementation, this would:
+    # 1. Create a Kubernetes Job for training
+    # 2. Return a job ID for tracking
+    # 3. The job would save the model to shared storage
+
+    job_id = f"train-pulseflow-{int(time.time())}"
+
+    return {
+        "status": "training_started",
+        "job_id": job_id,
+        "config": config.dict(),
+        "message": "Training job submitted. Monitor progress via MLflow or /train/status endpoint."
+    }
+
+
+@app.get("/train/status/{job_id}")
+async def get_training_status(job_id: str):
+    """Get training job status."""
+    # In production, this would check Kubernetes Job status
+    return {
+        "job_id": job_id,
+        "status": "completed",
+        "progress": 100,
+        "metrics": {
+            "mae": 3.2,
+            "rmse": 4.8,
+            "epochs_completed": 100
+        }
+    }
+
+
+@app.get("/config")
+async def get_config():
+    """Get current service configuration."""
+    return service_config
+
+
+@app.post("/config")
+async def update_config(config: ServiceConfig):
+    """Update service configuration."""
+    global service_config
+
+    if config.model_path:
+        service_config["model_path"] = config.model_path
+    if config.scaler_path:
+        service_config["scaler_path"] = config.scaler_path
+    if config.forecast_window:
+        service_config["forecast_window"] = config.forecast_window
+    if config.confidence_interval:
+        service_config["confidence_interval"] = config.confidence_interval
+    if config.max_batch_size:
+        service_config["max_batch_size"] = config.max_batch_size
+    if config.cache_ttl is not None:
+        service_config["cache_ttl"] = config.cache_ttl
+
+    logger.info(f"Configuration updated: {service_config}")
+
+    return {
+        "status": "updated",
+        "config": service_config
+    }

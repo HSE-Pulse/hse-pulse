@@ -847,3 +847,75 @@ async def root():
         "docs": "/docs",
         "health": "/health"
     }
+
+
+# Admin API Endpoints
+class TrainingConfig(BaseModel):
+    """Index building configuration."""
+    embedding_model: str = Field(default="emilyalsentzer/Bio_ClinicalBERT")
+    chunk_size: int = Field(default=512)
+    index_type: str = Field(default="flat")
+
+
+class ServiceConfig(BaseModel):
+    """Service configuration."""
+    embedding_model: Optional[str] = None
+    index_path: Optional[str] = None
+    top_k: Optional[int] = None
+    ner_model: Optional[str] = None
+    similarity_threshold: Optional[float] = None
+    enable_sections: Optional[bool] = None
+
+
+service_config = {
+    "embedding_model": "emilyalsentzer/Bio_ClinicalBERT",
+    "index_path": "/app/models/faiss.index",
+    "top_k": 5,
+    "ner_model": "en_core_sci_lg",
+    "similarity_threshold": 0.7,
+    "enable_sections": True
+}
+
+
+@app.post("/train")
+async def rebuild_index(config: TrainingConfig):
+    """Rebuild the FAISS index with new embeddings."""
+    logger.info(f"Index rebuild requested with config: {config}")
+
+    # In production, this would rebuild the index
+    if db is not None:
+        try:
+            nlp_manager.build_index_from_db(db['clinical_notes'])
+            return {
+                "status": "completed",
+                "message": "Index rebuilt successfully",
+                "config": config.dict()
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": str(e)
+            }
+
+    return {
+        "status": "completed",
+        "message": "Index rebuild simulated (no database)",
+        "config": config.dict()
+    }
+
+
+@app.get("/config")
+async def get_config():
+    """Get current service configuration."""
+    return service_config
+
+
+@app.post("/config")
+async def update_config(config: ServiceConfig):
+    """Update service configuration."""
+    global service_config
+    for key, value in config.dict().items():
+        if value is not None:
+            service_config[key] = value
+    logger.info(f"Configuration updated: {service_config}")
+    return {"status": "updated", "config": service_config}
