@@ -22,8 +22,8 @@ Integrated healthcare machine learning portfolio featuring four AI/ML projects f
 
 ```bash
 # Clone the repository
-git clone https://github.com/HSE-Pulse/portfolio-ml-health.git
-cd portfolio-ml-health
+git clone https://github.com/HSE-Pulse/hse-pulse.git
+cd hse-pulse
 
 # Copy environment file and configure
 cp env.example .env
@@ -46,7 +46,7 @@ docker-compose up --build
 ## Project Structure
 
 ```
-portfolio-ml-health/
+hse-pulse/
 ├── docker-compose.yml          # Development compose
 ├── docker-compose.prod.yml     # Production compose (GCP VM)
 ├── env.example                 # Environment template
@@ -96,8 +96,8 @@ Each service exposes:
 
 ```bash
 # On your GCP VM
-git clone https://github.com/HSE-Pulse/portfolio-ml-health.git
-cd portfolio-ml-health
+git clone https://github.com/HSE-Pulse/hse-pulse.git
+cd hse-pulse
 
 # Configure production settings
 cp env.example .env.prod

@@ -1,0 +1,316 @@
+---
+# PulseFlow Service - LSTM Patient Flow Prediction
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulseflow
+  namespace: hse-pulse
+  labels:
+    app: pulseflow
+    component: ml-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pulseflow
+  template:
+    metadata:
+      labels:
+        app: pulseflow
+        component: ml-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: pulseflow
+          image: hse-pulse/pulseflow:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: hse-pulse-config
+          env:
+            - name: ROOT_PATH
+              value: "/pulseflow"
+            - name: MODEL_PATH
+              value: "/app/models/lstm_model.pth"
+          volumeMounts:
+            - name: models
+              mountPath: /app/models
+              subPath: pulseflow
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulseflow-service
+  namespace: hse-pulse
+spec:
+  selector:
+    app: pulseflow
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
+---
+# CarePlanPlus Service - BERT Procedure Prediction
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: careplanplus
+  namespace: hse-pulse
+  labels:
+    app: careplanplus
+    component: ml-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: careplanplus
+  template:
+    metadata:
+      labels:
+        app: careplanplus
+        component: ml-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: careplanplus
+          image: hse-pulse/careplanplus:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: hse-pulse-config
+          env:
+            - name: ROOT_PATH
+              value: "/careplanplus"
+            - name: MODEL_PATH
+              value: "/app/models/bert_model.pth"
+          volumeMounts:
+            - name: models
+              mountPath: /app/models
+              subPath: careplanplus
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 5
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: careplanplus-service
+  namespace: hse-pulse
+spec:
+  selector:
+    app: careplanplus
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
+---
+# PulseNotes Service - Clinical NLP RAG
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulsenotes
+  namespace: hse-pulse
+  labels:
+    app: pulsenotes
+    component: ml-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pulsenotes
+  template:
+    metadata:
+      labels:
+        app: pulsenotes
+        component: ml-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: pulsenotes
+          image: hse-pulse/pulsenotes:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: hse-pulse-config
+          env:
+            - name: ROOT_PATH
+              value: "/pulsenotes"
+            - name: MODEL_PATH
+              value: "/app/models/clinicalbert"
+          volumeMounts:
+            - name: models
+              mountPath: /app/models
+              subPath: pulsenotes
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 5
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulsenotes-service
+  namespace: hse-pulse
+spec:
+  selector:
+    app: pulsenotes
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
+---
+# MediSync Service - RL Resource Optimization
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medisync
+  namespace: hse-pulse
+  labels:
+    app: medisync
+    component: ml-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: medisync
+  template:
+    metadata:
+      labels:
+        app: medisync
+        component: ml-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: medisync
+          image: hse-pulse/medisync:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: hse-pulse-config
+          env:
+            - name: ROOT_PATH
+              value: "/medisync"
+            - name: MODEL_PATH
+              value: "/app/models/maddpg_checkpoint.pth"
+          volumeMounts:
+            - name: models
+              mountPath: /app/models
+              subPath: medisync
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: models-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: medisync-service
+  namespace: hse-pulse
+spec:
+  selector:
+    app: medisync
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP

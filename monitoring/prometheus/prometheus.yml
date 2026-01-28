@@ -2,7 +2,7 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
   external_labels:
-    monitor: 'healthcare-ml-portfolio'
+    monitor: 'hse-pulse'
 
 alerting:
   alertmanagers:

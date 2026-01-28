@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hse-pulse
+  labels:
+    app.kubernetes.io/name: hse-pulse
+    app.kubernetes.io/part-of: healthcare-ml

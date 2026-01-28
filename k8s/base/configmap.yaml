@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hse-pulse-config
+  namespace: hse-pulse
+data:
+  MONGO_URI: "mongodb://mongodb-service:27017/"
+  MONGO_DB: "healthcare"
+  LOG_LEVEL: "INFO"
+  DEVICE: "cpu"
+  MLFLOW_TRACKING_URI: "http://mlflow-service:5000"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-init-script
+  namespace: hse-pulse
+data:
+  01-init-database.js: |
+    // HSE-Pulse MongoDB Initialization Script
+    // Creates collections and seed data for all services
+
+    db = db.getSiblingDB('healthcare');
+
+    // Create hospitals collection
+    db.hospitals.insertMany([
+        {
+            hospital_code: "UHK", name: "University Hospital Kerry", full_name: "University Hospital Kerry",
+            region: "South West", hse_area: "HSE South", beds_total: 318, ed_capacity: 30, icu_beds: 8,
+            location: { city: "Tralee", county: "Kerry" }
+        },
+        {
+            hospital_code: "CUH", name: "Cork University Hospital", full_name: "Cork University Hospital",
+            region: "South", hse_area: "HSE South", beds_total: 800, ed_capacity: 55, icu_beds: 24,
+            location: { city: "Cork", county: "Cork" }
+        },
+        {
+            hospital_code: "UHW", name: "University Hospital Waterford", full_name: "University Hospital Waterford",
+            region: "South East", hse_area: "HSE South", beds_total: 450, ed_capacity: 35, icu_beds: 12,
+            location: { city: "Waterford", county: "Waterford" }
+        },
+        {
+            hospital_code: "UHG", name: "University Hospital Galway", full_name: "University Hospital Galway",
+            region: "West", hse_area: "HSE West", beds_total: 650, ed_capacity: 45, icu_beds: 18,
+            location: { city: "Galway", county: "Galway" }
+        },
+        {
+            hospital_code: "UHL", name: "University Hospital Limerick", full_name: "University Hospital Limerick",
+            region: "Mid-West", hse_area: "HSE West", beds_total: 500, ed_capacity: 40, icu_beds: 14,
+            location: { city: "Limerick", county: "Limerick" }
+        },
+        {
+            hospital_code: "SVH", name: "St Vincent's University Hospital", full_name: "St Vincent's University Hospital",
+            region: "Dublin South", hse_area: "HSE Dublin Mid-Leinster", beds_total: 550, ed_capacity: 42, icu_beds: 16,
+            location: { city: "Dublin", county: "Dublin" }
+        },
+        {
+            hospital_code: "MUH", name: "Mater Misericordiae University Hospital", full_name: "Mater Misericordiae University Hospital",
+            region: "Dublin North", hse_area: "HSE Dublin North East", beds_total: 600, ed_capacity: 48, icu_beds: 20,
+            location: { city: "Dublin", county: "Dublin" }
+        },
+        {
+            hospital_code: "TUH", name: "Tallaght University Hospital", full_name: "Tallaght University Hospital",
+            region: "Dublin South West", hse_area: "HSE Dublin Mid-Leinster", beds_total: 550, ed_capacity: 40, icu_beds: 15,
+            location: { city: "Dublin", county: "Dublin" }
+        }
+    ]);
+
+    print('HSE-Pulse database initialized successfully');

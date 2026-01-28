@@ -1,0 +1,197 @@
+# HSE-Pulse Helm Chart Values
+# Default configuration for all environments
+
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: "standard"
+
+# Namespace
+namespace: hse-pulse
+
+# Image configuration
+image:
+  registry: ghcr.io/hse-pulse
+  pullPolicy: Always
+  tag: latest
+
+# MongoDB configuration
+mongodb:
+  enabled: true
+  auth:
+    enabled: false
+  persistence:
+    enabled: true
+    size: 10Gi
+
+# Redis configuration
+redis:
+  enabled: true
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 5Gi
+
+# Model storage
+modelStorage:
+  enabled: true
+  size: 20Gi
+  storageClass: ""  # Use default
+
+# PulseFlow - LSTM Patient Flow Prediction
+pulseflow:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: pulseflow
+    tag: ""
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# CarePlanPlus - BERT Procedure Prediction
+careplanplus:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: careplanplus
+    tag: ""
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# PulseNotes - Clinical NLP RAG
+pulsenotes:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: pulsenotes
+    tag: ""
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "500m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# MediSync - RL Resource Optimization
+medisync:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: medisync
+    tag: ""
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# MLflow configuration
+mlflow:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 10Gi
+
+# MinIO for artifact storage
+minio:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 50Gi
+  auth:
+    rootUser: "minio_admin"
+    rootPassword: "minio_secret_password_change_me"
+
+# Monitoring
+monitoring:
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+    adminPassword: "admin"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+  hosts:
+    - host: ""
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# GPU Training configuration
+training:
+  gpu:
+    enabled: false
+    nodeSelector:
+      accelerator: nvidia-gpu
+    tolerations:
+      - key: "nvidia.com/gpu"
+        operator: "Exists"
+        effect: "NoSchedule"
+    resources:
+      limits:
+        nvidia.com/gpu: "1"
+
+# Cloud provider specific settings
+cloudProvider:
+  # Options: minikube, gcp, aws, azure
+  type: "minikube"
+
+  # GCP specific
+  gcp:
+    project: ""
+    region: "europe-west1"
+    zone: "europe-west1-b"
+    gpuType: "nvidia-tesla-t4"
+
+  # AWS specific
+  aws:
+    region: "eu-west-1"
+    gpuInstanceType: "p3.2xlarge"
+
+  # Azure specific
+  azure:
+    resourceGroup: ""
+    location: "westeurope"
+    gpuVmSize: "Standard_NC6s_v3"

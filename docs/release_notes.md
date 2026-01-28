@@ -83,7 +83,7 @@ python services/careplanplus/train.py --mongo-uri mongodb://localhost:27017/ --d
 ## Directory Structure
 
 ```
-portfolio-ml-health/
+hse-pulse/
 ├── .github/workflows/     # CI/CD pipelines
 ├── demo-ui/               # Static demo website
 ├── docs/                  # Documentation
@@ -126,11 +126,11 @@ portfolio-ml-health/
 | Demo UX | Hybrid (interactive + samples) |
 | PulseFlow model | LSTM only |
 | Auto-deploy | Yes, on merge to main |
-| Repo strategy | New repo (portfolio-ml-health) |
+| Repo strategy | New repo (hse-pulse) |
 
 ## Support
 
-- Issues: https://github.com/HSE-Pulse/portfolio-ml-health/issues
+- Issues: https://github.com/HSE-Pulse/hse-pulse/issues
 - Documentation: See `/docs` folder
 - Demo: http://localhost:8080 (local) or https://your-domain.com (production)
 

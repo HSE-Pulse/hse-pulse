@@ -1,0 +1,219 @@
+---
+# GPU Training Job Template for PulseFlow (LSTM)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pulseflow-training
+  namespace: hse-pulse
+  labels:
+    app: pulseflow-training
+    component: training
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: pulseflow-training
+    spec:
+      restartPolicy: OnFailure
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      nodeSelector:
+        accelerator: nvidia-gpu  # For GKE
+        # cloud.google.com/gke-accelerator: nvidia-tesla-t4  # GKE specific
+        # node.kubernetes.io/instance-type: p3.2xlarge  # AWS specific
+      containers:
+        - name: trainer
+          image: hse-pulse/pulseflow-trainer:latest
+          imagePullPolicy: Always
+          command:
+            - python
+            - -m
+            - training.train_pulseflow
+          args:
+            - --epochs=100
+            - --batch-size=64
+            - --learning-rate=0.001
+          env:
+            - name: DEVICE
+              value: "cuda"
+            - name: MLFLOW_TRACKING_URI
+              value: "http://mlflow-service:5000"
+            - name: MLFLOW_EXPERIMENT_NAME
+              value: "pulseflow-lstm"
+          envFrom:
+            - configMapRef:
+                name: hse-pulse-config
+          resources:
+            requests:
+              memory: "8Gi"
+              cpu: "2000m"
+              nvidia.com/gpu: "1"
+            limits:
+              memory: "16Gi"
+              cpu: "4000m"
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: models
+              mountPath: /app/models
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: models-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: training-data-pvc
+---
+# GPU Training Job Template for CarePlanPlus (BERT)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: careplanplus-training
+  namespace: hse-pulse
+  labels:
+    app: careplanplus-training
+    component: training
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: careplanplus-training
+    spec:
+      restartPolicy: OnFailure
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      nodeSelector:
+        accelerator: nvidia-gpu
+      containers:
+        - name: trainer
+          image: hse-pulse/careplanplus-trainer:latest
+          imagePullPolicy: Always
+          command:
+            - python
+            - -m
+            - training.train_careplanplus
+          args:
+            - --epochs=10
+            - --batch-size=16
+            - --learning-rate=2e-5
+          env:
+            - name: DEVICE
+              value: "cuda"
+            - name: MLFLOW_TRACKING_URI
+              value: "http://mlflow-service:5000"
+            - name: MLFLOW_EXPERIMENT_NAME
+              value: "careplanplus-bert"
+          envFrom:
+            - configMapRef:
+                name: hse-pulse-config
+          resources:
+            requests:
+              memory: "16Gi"
+              cpu: "4000m"
+              nvidia.com/gpu: "1"
+            limits:
+              memory: "32Gi"
+              cpu: "8000m"
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: models
+              mountPath: /app/models
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: models-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: training-data-pvc
+---
+# GPU Training Job Template for MediSync (MADDPG)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: medisync-training
+  namespace: hse-pulse
+  labels:
+    app: medisync-training
+    component: training
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app: medisync-training
+    spec:
+      restartPolicy: OnFailure
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      nodeSelector:
+        accelerator: nvidia-gpu
+      containers:
+        - name: trainer
+          image: hse-pulse/medisync-trainer:latest
+          imagePullPolicy: Always
+          command:
+            - python
+            - -m
+            - training.train_medisync
+          args:
+            - --episodes=10000
+            - --batch-size=256
+          env:
+            - name: DEVICE
+              value: "cuda"
+            - name: MLFLOW_TRACKING_URI
+              value: "http://mlflow-service:5000"
+            - name: MLFLOW_EXPERIMENT_NAME
+              value: "medisync-maddpg"
+          envFrom:
+            - configMapRef:
+                name: hse-pulse-config
+          resources:
+            requests:
+              memory: "8Gi"
+              cpu: "2000m"
+              nvidia.com/gpu: "1"
+            limits:
+              memory: "16Gi"
+              cpu: "4000m"
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: models
+              mountPath: /app/models
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: models-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: training-data-pvc
+---
+# PVC for training data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: training-data-pvc
+  namespace: hse-pulse
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: standard

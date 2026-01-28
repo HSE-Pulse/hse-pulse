@@ -38,7 +38,7 @@ jobs:
             set -e
 
             # Navigate to project directory
-            cd ~/portfolio-ml-health || git clone https://github.com/${{ github.repository }}.git ~/portfolio-ml-health && cd ~/portfolio-ml-health
+            cd ~/hse-pulse || git clone https://github.com/${{ github.repository }}.git ~/hse-pulse && cd ~/hse-pulse
 
             # Pull latest changes
             git fetch origin main
@@ -63,7 +63,7 @@ jobs:
       - name: Run smoke tests
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} << 'ENDSSH'
-            cd ~/portfolio-ml-health
+            cd ~/hse-pulse
             chmod +x scripts/smoke_test.sh
             ./scripts/smoke_test.sh
           ENDSSH
@@ -95,7 +95,7 @@ jobs:
       - name: Rollback deployment
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_HOST }} << 'ENDSSH'
-            cd ~/portfolio-ml-health
+            cd ~/hse-pulse
             git reset --hard HEAD~1
             docker-compose -f docker-compose.prod.yml up -d --remove-orphans
             echo "Rolled back to previous version"

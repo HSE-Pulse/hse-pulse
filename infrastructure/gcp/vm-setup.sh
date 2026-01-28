@@ -41,8 +41,8 @@ sudo ufw --force enable
 
 # Create application directory
 echo "Setting up application directory..."
-mkdir -p ~/portfolio-ml-health
-cd ~/portfolio-ml-health
+mkdir -p ~/hse-pulse
+cd ~/hse-pulse
 
 # Clone repository (user needs to provide URL)
 echo ""
@@ -51,9 +51,9 @@ echo ""
 echo "Next steps:"
 echo "1. Log out and log back in (for docker group)"
 echo "2. Clone the repository:"
-echo "   git clone https://github.com/HSE-Pulse/portfolio-ml-health.git ~/portfolio-ml-health"
+echo "   git clone https://github.com/HSE-Pulse/hse-pulse.git ~/hse-pulse"
 echo "3. Configure environment:"
-echo "   cd ~/portfolio-ml-health && cp env.example .env.prod && nano .env.prod"
+echo "   cd ~/hse-pulse && cp env.example .env.prod && nano .env.prod"
 echo "4. Deploy:"
 echo "   docker compose -f docker-compose.prod.yml up -d"
 echo "5. Setup SSL (optional):"

@@ -12,8 +12,8 @@ This guide walks through demonstrating each project in the Healthcare ML Portfol
 
 ```bash
 # Clone and start all services
-git clone https://github.com/HSE-Pulse/portfolio-ml-health.git
-cd portfolio-ml-health
+git clone https://github.com/HSE-Pulse/hse-pulse.git
+cd hse-pulse
 cp env.example .env
 docker-compose up -d
 
