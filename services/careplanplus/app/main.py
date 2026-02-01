@@ -463,6 +463,8 @@ async def recommend_full_pathway(request: RecommendationRequest):
         current_procedures = list(request.procedure_history or [])
         max_steps = 5
 
+        used_procedures = set(current_procedures)
+
         for step in range(max_steps):
             # Build sequence text
             diag_parts = [
@@ -475,11 +477,21 @@ async def recommend_full_pathway(request: RecommendationRequest):
                 proc_parts = [f"PROC_{i+1}:{proc}" for i, proc in enumerate(current_procedures)]
                 sequence_text += " [SEP] " + " [SEP] ".join(proc_parts)
 
-            recommendations = model_manager.predict(sequence_text, top_k=1)
+            # Request extra candidates so we can skip already-used procedures
+            recommendations = model_manager.predict(sequence_text, top_k=10)
             if not recommendations:
                 break
 
-            best = recommendations[0]
+            # Pick the highest-ranked procedure not already in the pathway
+            best = None
+            for rec in recommendations:
+                if rec['procedure_code'] not in used_procedures:
+                    best = rec
+                    break
+
+            if best is None:
+                break
+
             pathway.append(PathwayStep(
                 step_number=step + 1,
                 procedure_code=best['procedure_code'],
@@ -487,6 +499,7 @@ async def recommend_full_pathway(request: RecommendationRequest):
                 confidence=best['confidence']
             ))
             current_procedures.append(best['procedure_code'])
+            used_procedures.add(best['procedure_code'])
 
         inference_time = (time.time() - start_time) * 1000
 
