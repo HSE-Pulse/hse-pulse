@@ -103,7 +103,7 @@ QUERY_PATTERNS = {
     'segment': [
         r'(?:what\s+(?:is|was|were|are)\s+(?:the\s+)?)(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?)',
         r'(?:show|get|find|extract|list)\s+(?:the\s+)?(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?|discharge\s+summary)',
-        r'(chief\s+complaint|hpi|history\s+of\s+present\s+illness|past\s+medical\s+history|medications?|allergies|physical\s+exam|assessment|plan|discharge|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?)\s+(?:for|of|from)',
+        r'(chief\s+complaint|hpi|history\s+of\s+present\s+illness|past\s+medical\s+history|medications?|allergies|physical\s+exam|assessment|plan|discharge\s+summary|discharge\s+diagnosis|discharge\s+instructions|discharge|diagnosis|diagnoses|vitals?|labs?)\s*[,\s]+(?:for|of|from|patient|admission)',
     ]
 }
 
