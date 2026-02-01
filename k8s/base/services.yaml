@@ -157,6 +157,68 @@ spec:
       targetPort: 8000
   type: ClusterIP
 ---
+# CarePlanPlus UI - React Dashboard
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: careplanplus-ui
+  namespace: hse-pulse
+  labels:
+    app: careplanplus-ui
+    component: ui
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: careplanplus-ui
+  template:
+    metadata:
+      labels:
+        app: careplanplus-ui
+        component: ui
+    spec:
+      containers:
+        - name: careplanplus-ui
+          image: hse-pulse/careplanplus-ui:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: CAREPLANPLUS_API_BASE
+              value: "/careplanplus/api"
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: careplanplus-ui-service
+  namespace: hse-pulse
+spec:
+  selector:
+    app: careplanplus-ui
+  ports:
+    - port: 5000
+      targetPort: 5000
+  type: ClusterIP
+---
 # PulseNotes Service - Clinical NLP RAG
 apiVersion: apps/v1
 kind: Deployment

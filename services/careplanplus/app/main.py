@@ -10,6 +10,20 @@ from datetime import datetime
 from contextlib import asynccontextmanager
 from typing import Optional, List, Dict, Any
 
+from app.data_loader import (
+    load_all_data,
+    get_stats as data_get_stats,
+    get_patients as data_get_patients,
+    get_patient_detail as data_get_patient_detail,
+    get_admissions as data_get_admissions,
+    get_diagnoses as data_get_diagnoses,
+    get_procedures as data_get_procedures,
+    search_icd_diagnoses,
+    search_icd_procedures,
+    get_nies as data_get_nies,
+    get_nies_summary as data_get_nies_summary,
+)
+
 import torch
 import torch.nn as nn
 import numpy as np
@@ -277,6 +291,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"MongoDB connection failed: {e}. Using demo data.")
         db = None
+
+    # Load JSON data files
+    try:
+        load_all_data()
+    except Exception as e:
+        logger.warning(f"Could not load data files: {e}")
 
     yield
 
@@ -628,3 +648,70 @@ async def update_config(config: ServiceConfig):
             service_config[key] = value
     logger.info(f"Configuration updated: {service_config}")
     return {"status": "updated", "config": service_config}
+
+
+# ==========================================================================
+# Data Endpoints
+# ==========================================================================
+
+@app.get("/data/stats")
+async def data_stats():
+    """Get aggregate counts of patients, admissions, diagnoses, procedures."""
+    return data_get_stats()
+
+
+@app.get("/data/patients")
+async def data_patients(page: int = 1, per_page: int = 20):
+    """Get paginated patient list."""
+    return data_get_patients(page=page, per_page=per_page)
+
+
+@app.get("/data/patients/{subject_id}")
+async def data_patient_detail(subject_id: int):
+    """Get patient detail with admissions, diagnoses, and procedures."""
+    result = data_get_patient_detail(subject_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    return result
+
+
+@app.get("/data/admissions")
+async def data_admissions(subject_id: Optional[int] = None, page: int = 1, per_page: int = 20):
+    """Get admissions, optionally filtered by subject_id."""
+    return data_get_admissions(subject_id=subject_id, page=page, per_page=per_page)
+
+
+@app.get("/data/diagnoses")
+async def data_diagnoses(hadm_id: Optional[int] = None, page: int = 1, per_page: int = 50):
+    """Get diagnoses, optionally filtered by hadm_id."""
+    return data_get_diagnoses(hadm_id=hadm_id, page=page, per_page=per_page)
+
+
+@app.get("/data/procedures")
+async def data_procedures(hadm_id: Optional[int] = None, page: int = 1, per_page: int = 50):
+    """Get procedures, optionally filtered by hadm_id."""
+    return data_get_procedures(hadm_id=hadm_id, page=page, per_page=per_page)
+
+
+@app.get("/data/icd/diagnoses/search")
+async def data_icd_diagnoses_search(q: str = "", limit: int = 20):
+    """Search ICD diagnosis lookup by code or title."""
+    return search_icd_diagnoses(query=q, limit=limit)
+
+
+@app.get("/data/icd/procedures/search")
+async def data_icd_procedures_search(q: str = "", limit: int = 20):
+    """Search ICD procedure lookup by code or title."""
+    return search_icd_procedures(query=q, limit=limit)
+
+
+@app.get("/data/nies")
+async def data_nies(condition_label: Optional[str] = None, page: int = 1, per_page: int = 50):
+    """Get NIES satisfaction data, optionally filtered by condition_label."""
+    return data_get_nies(condition_label=condition_label, page=page, per_page=per_page)
+
+
+@app.get("/data/nies/summary")
+async def data_nies_summary():
+    """Get aggregated satisfaction scores by condition category."""
+    return data_get_nies_summary()

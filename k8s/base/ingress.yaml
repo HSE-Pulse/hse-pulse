@@ -20,13 +20,20 @@ spec:
                 name: pulseflow-service
                 port:
                   number: 8000
-          - path: /careplanplus(/|$)(.*)
+          - path: /careplanplus/api(/|$)(.*)
             pathType: Prefix
             backend:
               service:
                 name: careplanplus-service
                 port:
                   number: 8000
+          - path: /careplanplus(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: careplanplus-ui-service
+                port:
+                  number: 5000
           - path: /pulsenotes(/|$)(.*)
             pathType: Prefix
             backend:

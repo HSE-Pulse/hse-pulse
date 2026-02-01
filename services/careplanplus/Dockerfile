@@ -22,6 +22,9 @@ RUN python -c "from transformers import BertTokenizer, BertModel; \
 # Copy application code
 COPY app/ ./app/
 
+# Copy data files
+COPY data/ ./data/
+
 # Create models directory
 RUN mkdir -p /app/models
 

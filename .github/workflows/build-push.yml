@@ -22,6 +22,7 @@ jobs:
     outputs:
       pulseflow: ${{ steps.changes.outputs.pulseflow }}
       careplanplus: ${{ steps.changes.outputs.careplanplus }}
+      careplanplus-ui: ${{ steps.changes.outputs.careplanplus-ui }}
       pulsenotes: ${{ steps.changes.outputs.pulsenotes }}
       medisync: ${{ steps.changes.outputs.medisync }}
       medisync-ui: ${{ steps.changes.outputs.medisync-ui }}
@@ -39,6 +40,11 @@ jobs:
               - 'services/pulsenotes/**'
             medisync:
               - 'services/medisync/**'
+            careplanplus-ui:
+              - 'services/careplanplus/ui/**'
+              - 'services/careplanplus/Dockerfile.ui'
+              - 'services/careplanplus/nginx-ui.conf'
+              - 'services/careplanplus/docker-entrypoint-ui.sh'
             medisync-ui:
               - 'services/medisync/ui/**'
               - 'services/medisync/Dockerfile.ui'
@@ -183,6 +189,43 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./services/medisync
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-careplanplus-ui:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.careplanplus-ui == 'true' || github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.DOCKER_USERNAME }}/careplanplus-ui
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/careplanplus
+          file: ./services/careplanplus/Dockerfile.ui
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

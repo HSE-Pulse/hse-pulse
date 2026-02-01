@@ -14,6 +14,7 @@ services:
     depends_on:
       - pulseflow
       - careplanplus
+      - careplanplus-ui
       - pulsenotes
       - medisync
       - medisync-ui
@@ -75,6 +76,7 @@ services:
       - MLFLOW_EXPERIMENT_NAME=careplanplus
     volumes:
       - ./models/careplanplus:/app/models
+      - ./services/careplanplus/data:/app/data:ro
     depends_on:
       mongodb:
         condition: service_healthy
@@ -87,6 +89,20 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  careplanplus-ui:
+    build:
+      context: ./services/careplanplus
+      dockerfile: Dockerfile.ui
+    container_name: careplanplus-ui
+    environment:
+      - CAREPLANPLUS_API_BASE=/careplanplus/api
+    networks:
+      - frontend_net
+    restart: unless-stopped
+    depends_on:
+      careplanplus:
+        condition: service_healthy
 
   pulsenotes:
     build:

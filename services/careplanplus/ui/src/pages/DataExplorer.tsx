@@ -1,0 +1,271 @@
+import { useState, useEffect, useCallback } from 'react'
+import { Users, Building2, ClipboardList, Stethoscope, BarChart3, ArrowLeft } from 'lucide-react'
+import DataTable from '../components/DataTable'
+import ErrorState from '../components/ErrorState'
+import { api } from '../api/client'
+import type { Patient, Admission, DiagnosisIcd, ProcedureIcd, NiesRecord, PatientDetail, PaginatedResponse } from '../types'
+
+type Tab = 'patients' | 'admissions' | 'diagnoses' | 'procedures' | 'nies'
+
+const tabs: { key: Tab; label: string; icon: typeof Users }[] = [
+  { key: 'patients', label: 'Patients', icon: Users },
+  { key: 'admissions', label: 'Admissions', icon: Building2 },
+  { key: 'diagnoses', label: 'Diagnoses', icon: ClipboardList },
+  { key: 'procedures', label: 'Procedures', icon: Stethoscope },
+  { key: 'nies', label: 'NIES', icon: BarChart3 },
+]
+
+export default function DataExplorer() {
+  const [activeTab, setActiveTab] = useState<Tab>('patients')
+  const [page, setPage] = useState(1)
+  const [data, setData] = useState<PaginatedResponse<Record<string, unknown>> | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedPatient, setSelectedPatient] = useState<PatientDetail | null>(null)
+  const [patientLoading, setPatientLoading] = useState(false)
+
+  const fetchData = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      let result: PaginatedResponse<unknown>
+      switch (activeTab) {
+        case 'patients':
+          result = await api.patients(page, 20)
+          break
+        case 'admissions':
+          result = await api.admissions(undefined, page, 20)
+          break
+        case 'diagnoses':
+          result = await api.diagnoses(undefined, page, 50)
+          break
+        case 'procedures':
+          result = await api.procedures(undefined, page, 50)
+          break
+        case 'nies':
+          result = await api.nies(undefined, page, 50)
+          break
+      }
+      setData(result as PaginatedResponse<Record<string, unknown>>)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load data')
+    } finally {
+      setLoading(false)
+    }
+  }, [activeTab, page])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  const handleTabChange = (tab: Tab) => {
+    setActiveTab(tab)
+    setPage(1)
+    setSelectedPatient(null)
+  }
+
+  const handlePatientClick = async (row: Record<string, unknown>) => {
+    const subjectId = row.subject_id as number
+    if (!subjectId) return
+    setPatientLoading(true)
+    try {
+      const detail = await api.patientDetail(subjectId)
+      setSelectedPatient(detail)
+    } catch {
+      setSelectedPatient(null)
+    } finally {
+      setPatientLoading(false)
+    }
+  }
+
+  const patientColumns = [
+    { key: 'subject_id', header: 'Subject ID', render: (r: Patient) => (
+      <span className="font-mono font-bold text-primary-600">{r.subject_id}</span>
+    )},
+    { key: 'gender', header: 'Gender' },
+    { key: 'anchor_age', header: 'Age' },
+    { key: 'anchor_year_group', header: 'Year Group' },
+  ]
+
+  const admissionColumns = [
+    { key: 'hadm_id', header: 'Admission ID', render: (r: Admission) => (
+      <span className="font-mono text-xs">{r.hadm_id}</span>
+    )},
+    { key: 'subject_id', header: 'Patient' },
+    { key: 'admission_type', header: 'Type' },
+    { key: 'admittime', header: 'Admitted', render: (r: Admission) => (
+      <span className="text-xs">{r.admittime?.split(' ')[0]}</span>
+    )},
+    { key: 'dischtime', header: 'Discharged', render: (r: Admission) => (
+      <span className="text-xs">{r.dischtime?.split(' ')[0]}</span>
+    )},
+    { key: 'insurance', header: 'Insurance' },
+  ]
+
+  const diagnosisColumns = [
+    { key: 'hadm_id', header: 'Admission ID', render: (r: DiagnosisIcd) => (
+      <span className="font-mono text-xs">{r.hadm_id}</span>
+    )},
+    { key: 'seq_num', header: 'Seq' },
+    { key: 'icd_code', header: 'ICD Code', render: (r: DiagnosisIcd) => (
+      <span className="font-mono font-bold text-purple-600">{r.icd_code}</span>
+    )},
+    { key: 'icd_version', header: 'Version' },
+  ]
+
+  const procedureColumns = [
+    { key: 'hadm_id', header: 'Admission ID', render: (r: ProcedureIcd) => (
+      <span className="font-mono text-xs">{r.hadm_id}</span>
+    )},
+    { key: 'seq_num', header: 'Seq' },
+    { key: 'icd_code', header: 'ICD Code', render: (r: ProcedureIcd) => (
+      <span className="font-mono font-bold text-amber-600">{r.icd_code}</span>
+    )},
+    { key: 'icd_version', header: 'Version' },
+    { key: 'chartdate', header: 'Date', render: (r: ProcedureIcd) => (
+      <span className="text-xs">{r.chartdate ? String(r.chartdate).split('T')[0] : '-'}</span>
+    )},
+  ]
+
+  const niesColumns = [
+    { key: 'condition_label', header: 'Condition' },
+    { key: 'satisfaction_score', header: 'Satisfaction', render: (r: NiesRecord) => (
+      <span className="font-semibold">{(r.satisfaction_score * 100).toFixed(1)}%</span>
+    )},
+    { key: 'agegroup', header: 'Age Group' },
+    { key: 'Gender', header: 'Gender', render: (r: NiesRecord) => (
+      <span>{r.Gender === 1 ? 'M' : 'F'}</span>
+    )},
+    { key: 'icd10_from', header: 'ICD10 Range', render: (r: NiesRecord) => (
+      <span className="font-mono text-xs">{r.icd10_from}-{r.icd10_to}</span>
+    )},
+  ]
+
+  const columnMap: Record<Tab, { key: string; header: string; render?: (row: never) => React.ReactNode }[]> = {
+    patients: patientColumns as never,
+    admissions: admissionColumns as never,
+    diagnoses: diagnosisColumns as never,
+    procedures: procedureColumns as never,
+    nies: niesColumns as never,
+  }
+
+  // Patient detail view
+  if (selectedPatient) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <button
+          onClick={() => setSelectedPatient(null)}
+          className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Patients
+        </button>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
+            Patient {selectedPatient.subject_id}
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+            <div>
+              <span className="text-slate-500">Gender</span>
+              <p className="font-semibold">{selectedPatient.gender}</p>
+            </div>
+            <div>
+              <span className="text-slate-500">Age</span>
+              <p className="font-semibold">{selectedPatient.anchor_age}</p>
+            </div>
+            <div>
+              <span className="text-slate-500">Admissions</span>
+              <p className="font-semibold">{selectedPatient.admissions.length}</p>
+            </div>
+            <div>
+              <span className="text-slate-500">Diagnoses</span>
+              <p className="font-semibold">{selectedPatient.diagnoses.length}</p>
+            </div>
+          </div>
+        </div>
+
+        {selectedPatient.admissions.length > 0 && (
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h4 className="font-semibold text-slate-900 mb-3">Admissions ({selectedPatient.admissions.length})</h4>
+            <div className="space-y-2">
+              {selectedPatient.admissions.map((a) => (
+                <div key={a.hadm_id} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg text-sm">
+                  <span className="font-mono font-bold text-primary-600">{a.hadm_id}</span>
+                  <span className="text-slate-600">{a.admission_type}</span>
+                  <span className="text-xs text-slate-400">{a.admittime?.split(' ')[0]} - {a.dischtime?.split(' ')[0]}</span>
+                  <span className="ml-auto text-xs text-slate-500">{a.insurance}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {selectedPatient.diagnoses.length > 0 && (
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h4 className="font-semibold text-slate-900 mb-3">Diagnoses ({selectedPatient.diagnoses.length})</h4>
+            <div className="flex flex-wrap gap-2">
+              {selectedPatient.diagnoses.map((d, i) => (
+                <span key={i} className="px-2 py-1 bg-purple-50 border border-purple-200 rounded-lg text-xs font-mono text-purple-700">
+                  {d.icd_code}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {selectedPatient.procedures.length > 0 && (
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h4 className="font-semibold text-slate-900 mb-3">Procedures ({selectedPatient.procedures.length})</h4>
+            <div className="flex flex-wrap gap-2">
+              {selectedPatient.procedures.map((p, i) => (
+                <span key={i} className="px-2 py-1 bg-amber-50 border border-amber-200 rounded-lg text-xs font-mono text-amber-700">
+                  {p.icd_code}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Tabs */}
+      <div className="flex gap-1 bg-white rounded-xl border border-slate-200 p-1 overflow-x-auto">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => handleTabChange(tab.key)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+              activeTab === tab.key
+                ? 'bg-primary-50 text-primary-700 shadow-sm'
+                : 'text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            <tab.icon className="w-4 h-4" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {patientLoading && <LoadingState message="Loading patient details..." />}
+
+      {error ? (
+        <ErrorState message={error} onRetry={fetchData} />
+      ) : (
+        <DataTable
+          columns={columnMap[activeTab]}
+          data={data?.items ?? []}
+          page={page}
+          totalPages={data?.pages ?? 1}
+          total={data?.total ?? 0}
+          onPageChange={setPage}
+          onRowClick={activeTab === 'patients' ? handlePatientClick : undefined}
+          loading={loading}
+        />
+      )}
+    </div>
+  )
+}
