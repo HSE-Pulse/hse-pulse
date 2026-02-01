@@ -1,9 +1,10 @@
-import { ArrowRight, Github, ExternalLink } from 'lucide-react'
+import { ArrowRight, Download, Github, Linkedin, FileText } from 'lucide-react'
+
+const BASE = import.meta.env.BASE_URL
 
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden grid-bg">
-      {/* Background effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-500/8 rounded-full blur-3xl animate-pulse-glow" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/6 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1.5s' }} />
@@ -13,86 +14,86 @@ export default function Hero() {
         <div className="animate-fade-up">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium bg-white/5 text-slate-400 border border-white/10 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            Production-grade AI Platform
+            Open to senior AI &amp; ML engineering roles
           </span>
         </div>
 
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 animate-fade-up" style={{ animationDelay: '0.1s' }}>
-          <span className="text-white">HSE-</span>
-          <span className="gradient-text">Pulse</span>
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+          <span className="text-white">Harishankar</span>{' '}
+          <span className="gradient-text">Somasundaram</span>
         </h1>
 
         <p className="text-xl sm:text-2xl text-slate-400 max-w-3xl mx-auto mb-4 leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
-          AI-Driven Healthcare Intelligence Platform
+          Senior AI &amp; ML Engineer
         </p>
 
-        <p className="text-base text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-up" style={{ animationDelay: '0.3s' }}>
-          Three specialised deep learning services — real-time ICU vitals monitoring,
-          BERT-based treatment pathway recommendation, and ClinicalBERT medical document
-          intelligence — integrated into a single observable, containerised platform.
+        <p className="text-base text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-up" style={{ animationDelay: '0.3s' }}>
+          11+ years building production systems across AI/ML, data engineering,
+          and platform architecture. MSc in Artificial Intelligence with First
+          Class Honours from Dublin Business School. Based in Dublin, Ireland.
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-16 animate-fade-up" style={{ animationDelay: '0.4s' }}>
-          <a
-            href="#capabilities"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium text-sm hover:from-primary-500 hover:to-primary-400 transition-all shadow-lg shadow-primary-500/20"
-          >
-            Explore Platform
-            <ArrowRight className="w-4 h-4" />
-          </a>
-          <a
-            href="#platform"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass glass-hover text-slate-300 font-medium text-sm transition-all"
-          >
-            View Architecture
-            <ExternalLink className="w-4 h-4" />
-          </a>
-        </div>
-
-        {/* Service preview cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto animate-fade-up" style={{ animationDelay: '0.5s' }}>
-          <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
-              <span className="text-emerald-400 text-lg font-bold">M</span>
-            </div>
-            <h3 className="text-sm font-semibold text-white mb-1">MediSync</h3>
-            <p className="text-xs text-slate-500">LSTM vitals monitoring & anomaly detection</p>
-          </a>
-          <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3">
-              <span className="text-blue-400 text-lg font-bold">C</span>
-            </div>
-            <h3 className="text-sm font-semibold text-white mb-1">CarePlanPlus</h3>
-            <p className="text-xs text-slate-500">BERT treatment pathway recommendation</p>
-          </a>
-          <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-3">
-              <span className="text-purple-400 text-lg font-bold">P</span>
-            </div>
-            <h3 className="text-sm font-semibold text-white mb-1">PulseNotes</h3>
-            <p className="text-xs text-slate-500">ClinicalBERT document intelligence</p>
-          </a>
-        </div>
-
-        {/* Tech badges */}
-        <div className="flex flex-wrap justify-center gap-2 mt-12 animate-fade-up" style={{ animationDelay: '0.6s' }}>
-          {['PyTorch', 'BERT', 'LSTM', 'FastAPI', 'React', 'Docker', 'Kubernetes', 'MLflow', 'Prometheus'].map((tech) => (
-            <span key={tech} className="px-2.5 py-1 rounded-md text-xs text-slate-500 bg-white/3 border border-white/5">
-              {tech}
+        {/* Expertise badges */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10 animate-fade-up" style={{ animationDelay: '0.35s' }}>
+          {['AI / ML', 'Deep Learning', 'MLOps', 'LLMs', 'NLP', 'Reinforcement Learning', 'Systems Architecture'].map((area) => (
+            <span key={area} className="px-3 py-1 rounded-full text-xs text-slate-400 bg-white/5 border border-white/8">
+              {area}
             </span>
           ))}
         </div>
 
-        {/* GitHub link */}
-        <div className="mt-8 animate-fade-up" style={{ animationDelay: '0.7s' }}>
+        {/* CTA buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-4 mb-14 animate-fade-up" style={{ animationDelay: '0.4s' }}>
+          <a
+            href="#projects"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium text-sm hover:from-primary-500 hover:to-primary-400 transition-all shadow-lg shadow-primary-500/20"
+          >
+            View Projects
+            <ArrowRight className="w-4 h-4" />
+          </a>
+          <a
+            href={`${BASE}resume/HarishankarSomasundaram_Resume.pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass glass-hover text-slate-300 font-medium text-sm transition-all"
+          >
+            <Download className="w-4 h-4" />
+            Download CV
+          </a>
+          <a
+            href="#academic"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass glass-hover text-slate-300 font-medium text-sm transition-all"
+          >
+            <FileText className="w-4 h-4" />
+            Thesis &amp; Research
+          </a>
+        </div>
+
+        {/* Professional links */}
+        <div className="flex items-center justify-center gap-6 animate-fade-up" style={{ animationDelay: '0.5s' }}>
           <a
             href="https://github.com/HSE-Pulse"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-xs text-slate-600 hover:text-slate-400 transition-colors"
+            className="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300 transition-colors"
           >
-            <Github className="w-3.5 h-3.5" />
-            github.com/HSE-Pulse
+            <Github className="w-4 h-4" />
+            GitHub
+          </a>
+          <a
+            href="https://www.linkedin.com/in/harishankar-somasundaram"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            <Linkedin className="w-4 h-4" />
+            LinkedIn
+          </a>
+          <a
+            href="mailto:harishankar.info@gmail.com"
+            className="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            harishankar.info@gmail.com
           </a>
         </div>
       </div>

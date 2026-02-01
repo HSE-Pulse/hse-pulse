@@ -1,59 +1,36 @@
-import { MapPin, Briefcase, GraduationCap, Download, Code, Database, Cloud, Brain } from 'lucide-react'
+import { MapPin, Briefcase, GraduationCap } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
-
-const skillGroups = [
-  {
-    icon: Brain,
-    label: 'ML & AI',
-    skills: ['PyTorch', 'TensorFlow', 'Keras', 'Scikit-learn', 'LLMs (GPT, LLaMA, Falcon)', 'NLP', 'Deep Learning', 'Time Series', 'Computer Vision'],
-  },
-  {
-    icon: Code,
-    label: 'Languages & Frameworks',
-    skills: ['Python', 'Java', 'TypeScript', 'React', 'FastAPI', 'Django', 'Flask', 'Spring'],
-  },
-  {
-    icon: Database,
-    label: 'Data Engineering',
-    skills: ['Apache Kafka', 'Apache Spark', 'MongoDB', 'Elasticsearch', 'Redis', 'Neo4j', 'ETL Pipelines'],
-  },
-  {
-    icon: Cloud,
-    label: 'Cloud & DevOps',
-    skills: ['AWS', 'Azure', 'GCP', 'Docker', 'Kubernetes', 'Terraform', 'Jenkins', 'GitLab CI', 'Prometheus', 'Grafana'],
-  },
-]
 
 const experience = [
   {
     role: 'Data Scientist Lead',
     company: 'ABI-Health (AB Innovative)',
     location: 'Bengaluru, India',
-    period: '2020 - 2024',
+    period: '2020 – 2024',
     highlights: [
-      'LLM-powered infrastructure automation (GPT, Falcon, LLaMA)',
-      'AIOps anomaly detection platform with explainable AI',
-      'Production ML on Kubernetes with self-healing pipelines',
+      'Led a team building LLM-powered infrastructure automation (GPT, Falcon, LLaMA) that reduced incident resolution time.',
+      'Designed and deployed an AIOps anomaly detection platform with explainable AI on Kubernetes.',
+      'Built self-healing production ML pipelines with automated retraining, monitoring, and rollback.',
     ],
   },
   {
     role: 'Lead Engineer',
     company: 'Sathyanarayana United Software',
     location: 'Chennai, India',
-    period: '2018 - 2020',
+    period: '2018 – 2020',
     highlights: [
-      'Microservice architecture with zero-downtime deployment',
-      'ELK stack monitoring and service coordination',
+      'Architected microservice systems with zero-downtime deployment strategies.',
+      'Implemented ELK stack monitoring and service coordination across distributed systems.',
     ],
   },
   {
     role: 'Software Engineer',
     company: 'Altisource Labs',
     location: 'Bengaluru, India',
-    period: '2016 - 2018',
+    period: '2016 – 2018',
     highlights: [
-      'Spark MLlib data analytics and time-series forecasting',
-      'Deep learning OCR with TensorFlow',
+      'Built data analytics and time-series forecasting pipelines using Spark MLlib.',
+      'Developed deep learning OCR systems with TensorFlow for document processing.',
     ],
   },
 ]
@@ -64,29 +41,49 @@ export default function About() {
       <div className="max-w-7xl mx-auto">
         <SectionHeading
           tag="About"
-          title="Harishankar Somasundaram"
-          description="Data Scientist Lead with 11+ years of experience in machine learning, deep learning, data engineering, and enterprise software architecture."
+          title="Professional Profile"
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left column: bio + education */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {/* Left column: philosophy + credentials */}
           <div className="lg:col-span-1 space-y-6">
             {/* Bio card */}
             <div className="glass rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-3">
                 <MapPin className="w-4 h-4 text-primary-400" />
                 <span className="text-sm text-slate-300">Dublin, Ireland</span>
               </div>
               <div className="flex items-center gap-3 mb-4">
                 <Briefcase className="w-4 h-4 text-primary-400" />
-                <span className="text-sm text-slate-300">Stamp 1G — Eligible to work in Ireland</span>
+                <span className="text-sm text-slate-300">Stamp 1G — Full-time work eligibility</span>
               </div>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                Proven expertise in designing and deploying large language models for infrastructure
-                automation and business process optimisation. Strong background in AIOps, anomaly detection,
-                MLOps, and cloud platforms. Experienced in leading cross-functional teams and delivering
-                production-ready AI solutions.
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Based in Ireland on Stamp 1G with full-time work eligibility.
+                Holds an MSc in Artificial Intelligence with First Class Honours (1:1).
+                No sponsorship required during visa validity.
               </p>
+            </div>
+
+            {/* Engineering philosophy */}
+            <div className="glass rounded-2xl p-6">
+              <h3 className="text-sm font-semibold text-white mb-3">Engineering Philosophy</h3>
+              <div className="space-y-3 text-xs text-slate-400 leading-relaxed">
+                <p>
+                  Build systems that work under real constraints. Favour measured
+                  simplicity over speculative complexity. A well-instrumented
+                  simple model outperforms an unmonitored complex one.
+                </p>
+                <p>
+                  Models are only as valuable as the systems they run in.
+                  Inference latency, data quality, monitoring, and graceful
+                  degradation matter as much as accuracy metrics.
+                </p>
+                <p>
+                  Clear documentation, reproducible experiments, and honest
+                  evaluation are non-negotiable. Technical decisions should be
+                  traceable and reversible.
+                </p>
+              </div>
             </div>
 
             {/* Education */}
@@ -98,37 +95,23 @@ export default function About() {
               <div className="space-y-4">
                 <div>
                   <div className="text-sm font-medium text-white">MSc Artificial Intelligence</div>
+                  <div className="text-xs text-primary-400">First Class Honours (1:1)</div>
                   <div className="text-xs text-slate-400">Dublin Business School, Dublin</div>
-                  <div className="text-xs text-slate-500">2025 - 2026</div>
+                  <div className="text-xs text-slate-500">2025 – 2026</div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-white">BE Computer Science & Engineering</div>
+                  <div className="text-sm font-medium text-white">BE Computer Science &amp; Engineering</div>
                   <div className="text-xs text-slate-400">Anna University, Tamil Nadu</div>
-                  <div className="text-xs text-slate-500">2008 - 2012</div>
+                  <div className="text-xs text-slate-500">2008 – 2012</div>
                 </div>
               </div>
             </div>
-
-            {/* Resume download */}
-            <a
-              href="/resume/HarishankarSomasundaram_Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 glass glass-hover rounded-2xl p-5 transition-all group"
-            >
-              <Download className="w-5 h-5 text-primary-400 group-hover:text-primary-300" />
-              <div>
-                <div className="text-sm font-semibold text-white">Download Resume</div>
-                <div className="text-xs text-slate-500">PDF format</div>
-              </div>
-            </a>
           </div>
 
-          {/* Right column: experience + skills */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Experience */}
+          {/* Right column: experience */}
+          <div className="lg:col-span-2">
             <div className="glass rounded-2xl p-6">
-              <h3 className="text-sm font-semibold text-white mb-5">Professional Experience</h3>
+              <h3 className="text-sm font-semibold text-white mb-6">Professional Experience</h3>
               <div className="space-y-6">
                 {experience.map((exp) => (
                   <div key={exp.company} className="relative pl-5 border-l border-slate-700">
@@ -137,8 +120,10 @@ export default function About() {
                       <h4 className="text-sm font-semibold text-white">{exp.role}</h4>
                       <span className="text-xs text-slate-500">{exp.period}</span>
                     </div>
-                    <div className="text-xs text-primary-400 mb-2">{exp.company} — {exp.location}</div>
-                    <ul className="space-y-1">
+                    <div className="text-xs text-primary-400 mb-2">
+                      {exp.company} — {exp.location}
+                    </div>
+                    <ul className="space-y-1.5">
                       {exp.highlights.map((h) => (
                         <li key={h} className="text-sm text-slate-400 flex items-start gap-2">
                           <span className="text-slate-600 mt-1.5 flex-shrink-0">&#8226;</span>
@@ -149,25 +134,6 @@ export default function About() {
                   </div>
                 ))}
               </div>
-            </div>
-
-            {/* Skills */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {skillGroups.map((group) => (
-                <div key={group.label} className="glass rounded-2xl p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <group.icon className="w-4 h-4 text-primary-400" />
-                    <h4 className="text-xs font-semibold text-white uppercase tracking-wider">{group.label}</h4>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {group.skills.map((s) => (
-                      <span key={s} className="px-2 py-0.5 rounded text-xs text-slate-400 bg-white/5 border border-white/5">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
