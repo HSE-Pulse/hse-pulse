@@ -34,13 +34,27 @@ spec:
                 name: pulsenotes-service
                 port:
                   number: 8000
-          - path: /medisync(/|$)(.*)
+          - path: /medisync/api(/|$)(.*)
             pathType: Prefix
             backend:
               service:
                 name: medisync-service
                 port:
                   number: 8000
+          - path: /medisync/ws(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: medisync-service
+                port:
+                  number: 8000
+          - path: /medisync(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: medisync-ui-service
+                port:
+                  number: 3000
           - path: /mlflow(/|$)(.*)
             pathType: Prefix
             backend:

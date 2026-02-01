@@ -40,12 +40,14 @@ models/
 
 # Data - NEVER commit patient data
 data/
+!services/medisync/app/data/
 *.csv
 *.parquet
 *.json
 !**/sample_*.json
 !**/config.json
 !**/model_manifest.json
+!services/medisync/app/data/*.json
 !**/dashboards/*.json
 !**/provisioning/**/*.yml
 !package.json

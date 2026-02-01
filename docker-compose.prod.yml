@@ -24,6 +24,7 @@ services:
       - careplanplus
       - pulsenotes
       - medisync
+      - medisync-ui
     networks:
       - frontend_net
     restart: always
@@ -137,10 +138,7 @@ services:
     environment:
       - DEVICE=cpu
       - LOG_LEVEL=WARNING
-      - MODEL_PATH=/app/models/maddpg_checkpoint.pth
-      - WORKERS=1
-    volumes:
-      - ./models/medisync:/app/models:ro
+      - PYTHONPATH=/app
     networks:
       - frontend_net
       - backend_net
@@ -150,6 +148,26 @@ services:
         limits:
           cpus: '1'
           memory: 2G
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  medisync-ui:
+    image: ${DOCKER_REGISTRY}/medisync-ui:${VERSION:-latest}
+    container_name: medisync-ui
+    environment:
+      - MEDISYNC_API_BASE=/medisync/api
+      - MEDISYNC_WS_BASE=/medisync/ws
+    networks:
+      - frontend_net
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     logging:
       driver: json-file
       options:

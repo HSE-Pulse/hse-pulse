@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from starlette.responses import Response
+import mlflow
 
 try:
     import torch
@@ -100,9 +101,9 @@ QUERY_PATTERNS = {
         r'admission\s*#?\s*(\d+)',
     ],
     'segment': [
-        r'(?:what\s+(?:is|was|were)\s+(?:the\s+)?)(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|vitals?|labs?)',
-        r'(?:show|get|find|extract)\s+(?:the\s+)?(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|vitals?|labs?)',
-        r'(chief\s+complaint|hpi|history\s+of\s+present\s+illness|past\s+medical\s+history|medications?|allergies|physical\s+exam|assessment|plan|discharge)',
+        r'(?:what\s+(?:is|was|were|are)\s+(?:the\s+)?)(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?)',
+        r'(?:show|get|find|extract|list)\s+(?:the\s+)?(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?|discharge\s+summary)',
+        r'(chief\s+complaint|hpi|history\s+of\s+present\s+illness|past\s+medical\s+history|medications?|allergies|physical\s+exam|assessment|plan|discharge|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?)\s+(?:for|of|from)',
     ]
 }
 
@@ -362,6 +363,11 @@ Plan: Urinalysis, Urine culture, IV fluids, Empiric antibiotics (Ciprofloxacin)"
                 results.append(doc)
         return results
 
+    # Regex for detecting MIMIC-IV section headers (e.g. "History of Present Illness:", "Major Surgical...")
+    _SECTION_BOUNDARY = re.compile(
+        r'\n\s*\n\s*(?=[A-Z][A-Za-z /\-]+(?:\s+[A-Za-z /\-]+)*:\s*\n)',
+    )
+
     def extract_section(self, text: str, section: str) -> Optional[str]:
         """Extract a specific section from clinical note text."""
         section_key = section.lower().replace(' ', '_')
@@ -376,21 +382,36 @@ Plan: Urinalysis, Urine culture, IV fluids, Empiric antibiotics (Ciprofloxacin)"
             'allergy': 'allergies',
             'pe': 'physical_exam',
             'exam': 'physical_exam',
-            'diagnosis': 'assessment',
-            'diagnoses': 'assessment',
+            'diagnosis': 'discharge_diagnosis',
+            'diagnoses': 'discharge_diagnosis',
             'vitals': 'vital_signs',
             'labs': 'lab_results',
             'history': 'history_of_present_illness',
             'discharge': 'discharge_diagnosis',
+            'discharge_summary': 'discharge_diagnosis',
+            'discharge_instructions': 'discharge_instructions',
         }
 
         section_key = section_aliases.get(section_key, section_key)
 
-        if section_key in SECTION_PATTERNS:
-            for pattern in SECTION_PATTERNS[section_key]:
-                match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
-                if match:
-                    return match.group(1).strip()
+        # Try primary section, then fallbacks
+        keys_to_try = [section_key]
+        if section_key == 'discharge_diagnosis':
+            keys_to_try.append('assessment')
+        elif section_key == 'assessment':
+            keys_to_try.append('discharge_diagnosis')
+
+        for key in keys_to_try:
+            if key in SECTION_PATTERNS:
+                for pattern in SECTION_PATTERNS[key]:
+                    match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+                    if match:
+                        extracted = match.group(1).strip()
+                        # Truncate at the next MIMIC-IV section boundary
+                        boundary = self._SECTION_BOUNDARY.search(extracted)
+                        if boundary:
+                            extracted = extracted[:boundary.start()].strip()
+                        return extracted
 
         return None
 
@@ -679,6 +700,7 @@ async def rag_query(request: RAGQueryRequest):
                                 'subject_id': note.get('subject_id'),
                                 'hadm_id': note.get('hadm_id'),
                                 'text': note.get('text', ''),
+                                'charttime': note.get('charttime', ''),
                                 'category': note.get('category', 'General'),
                                 'note_type': note.get('note_type', 'Clinical Note')
                             })
@@ -686,15 +708,19 @@ async def rag_query(request: RAGQueryRequest):
                     logger.warning(f"Database query failed: {e}")
 
             if notes:
+                # Limit source_notes to 10 most relevant and include useful metadata
+                display_notes = notes[:10]
                 result["source_notes"] = [
                     {
                         'id': n.get('id'),
                         'subject_id': n.get('subject_id'),
                         'hadm_id': n.get('hadm_id'),
                         'note_type': n.get('note_type'),
-                        'category': n.get('category')
+                        'category': n.get('category'),
+                        'charttime': n.get('charttime', ''),
+                        'text_preview': (n.get('text', '') or '')[:300],
                     }
-                    for n in notes
+                    for n in display_notes
                 ]
 
                 # Extract requested segment if specified
@@ -881,27 +907,72 @@ service_config = {
 async def rebuild_index(config: TrainingConfig):
     """Rebuild the FAISS index with new embeddings."""
     logger.info(f"Index rebuild requested with config: {config}")
+    job_id = f"train-pulsenotes-{int(time.time())}"
 
-    # In production, this would rebuild the index
-    if db is not None:
-        try:
-            nlp_manager.build_index_from_db(db['clinical_notes'])
+    # Set up MLflow tracking
+    mlflow_uri = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000")
+    experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME", "pulsenotes")
+
+    try:
+        mlflow.set_tracking_uri(mlflow_uri)
+        mlflow.set_experiment(experiment_name)
+
+        with mlflow.start_run(run_name=job_id):
+            mlflow.log_params({
+                "embedding_model": config.embedding_model,
+                "chunk_size": config.chunk_size,
+                "index_type": config.index_type,
+                "model_type": "ClinicalBERT+FAISS"
+            })
+
+            mlflow.set_tags({
+                "service": "pulsenotes",
+                "job_id": job_id,
+                "status": "started"
+            })
+
+            # Perform the index rebuild
+            if db is not None:
+                try:
+                    nlp_manager.build_index_from_db(db['clinical_notes'])
+                    mlflow.log_metrics({"status": 1, "index_size": nlp_manager.index_size if hasattr(nlp_manager, 'index_size') else 0})
+                    mlflow.set_tag("status", "completed")
+
+                    return {
+                        "status": "completed",
+                        "job_id": job_id,
+                        "mlflow_run_id": mlflow.active_run().info.run_id,
+                        "message": "Index rebuilt successfully",
+                        "config": config.dict()
+                    }
+                except Exception as e:
+                    mlflow.log_metrics({"status": -1})
+                    mlflow.set_tag("status", "error")
+                    return {
+                        "status": "error",
+                        "job_id": job_id,
+                        "message": str(e)
+                    }
+
+            mlflow.log_metrics({"status": 1})
+            mlflow.set_tag("status", "completed")
+
             return {
                 "status": "completed",
-                "message": "Index rebuilt successfully",
+                "job_id": job_id,
+                "mlflow_run_id": mlflow.active_run().info.run_id,
+                "message": "Index rebuild simulated (no database)",
                 "config": config.dict()
             }
-        except Exception as e:
-            return {
-                "status": "error",
-                "message": str(e)
-            }
 
-    return {
-        "status": "completed",
-        "message": "Index rebuild simulated (no database)",
-        "config": config.dict()
-    }
+    except Exception as e:
+        logger.error(f"MLflow logging failed: {e}")
+        return {
+            "status": "completed",
+            "job_id": job_id,
+            "message": f"Index rebuild completed. MLflow logging failed: {str(e)}",
+            "config": config.dict()
+        }
 
 
 @app.get("/config")

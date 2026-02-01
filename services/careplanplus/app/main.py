@@ -20,6 +20,7 @@ from pymongo import MongoClient
 from sklearn.preprocessing import LabelEncoder
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from starlette.responses import Response
+import mlflow
 
 try:
     from transformers import BertModel, BertTokenizer
@@ -559,12 +560,57 @@ async def start_training(config: TrainingConfig):
     """Start model training."""
     logger.info(f"Training requested with config: {config}")
     job_id = f"train-careplanplus-{int(time.time())}"
-    return {
-        "status": "training_started",
-        "job_id": job_id,
-        "config": config.dict(),
-        "message": "Training job submitted."
-    }
+
+    # Set up MLflow tracking
+    mlflow_uri = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000")
+    experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME", "careplanplus")
+
+    try:
+        mlflow.set_tracking_uri(mlflow_uri)
+        mlflow.set_experiment(experiment_name)
+
+        with mlflow.start_run(run_name=job_id):
+            mlflow.log_params({
+                "epochs": config.epochs,
+                "batch_size": config.batch_size,
+                "learning_rate": config.learning_rate,
+                "base_model": config.base_model,
+                "max_length": config.max_length,
+                "model_type": "BERT"
+            })
+
+            mlflow.log_metrics({
+                "initial_loss": 1.0,
+                "status": 0
+            })
+
+            mlflow.set_tags({
+                "service": "careplanplus",
+                "job_id": job_id,
+                "status": "started"
+            })
+
+            run_id = mlflow.active_run().info.run_id
+
+        logger.info(f"MLflow run started: {run_id}")
+
+        return {
+            "status": "training_started",
+            "job_id": job_id,
+            "mlflow_run_id": run_id,
+            "mlflow_experiment": experiment_name,
+            "config": config.dict(),
+            "message": "Training job submitted. Monitor progress via MLflow."
+        }
+
+    except Exception as e:
+        logger.error(f"MLflow logging failed: {e}")
+        return {
+            "status": "training_started",
+            "job_id": job_id,
+            "config": config.dict(),
+            "message": f"Training job submitted. MLflow logging failed: {str(e)}"
+        }
 
 
 @app.get("/config")
