@@ -19,6 +19,21 @@ interface Project {
 
 const projects: Project[] = [
   {
+    name: 'DES-MARL',
+    tagline: 'Multi-Agent RL for Hospital Resource Optimisation',
+    color: 'amber',
+    iconLetter: 'D',
+    iconBg: 'bg-amber-500/10',
+    problem:
+      'Hospital emergency departments face chronic overcrowding with unpredictable patient arrivals and constrained resources. Static staffing policies cannot adapt to real-time demand fluctuations across 9 interconnected clinical departments.',
+    approach:
+      'Novel DES-MARL framework integrating Discrete-Event Simulation (SimPy) with Multi-Agent Reinforcement Learning (MADDPG/MAPPO). 9 clinical departments modelled as autonomous agents with 17-dimensional state spaces. Trained on MIMIC-IV clinical data (786 patients, 7-day episodes) with 5-stage curriculum learning progressing from single-department to full-hospital coordination.',
+    nonTrivial:
+      'Achieved 92.9% wait time reduction (28.4h → 2h) and 137% throughput improvement (306 → 727 patients/episode). Multi-agent credit assignment across 9 departments with shared resources. Curriculum learning essential — agents fail to converge without staged complexity increases. Full reproducibility with MLflow experiment tracking.',
+    stack: ['PyTorch', 'MADDPG', 'MAPPO', 'SimPy', 'MIMIC-IV', 'MLflow', 'Python'],
+    github: 'https://github.com/HSE-Pulse',
+  },
+  {
     name: 'MediSync',
     tagline: 'Real-Time ICU Vital Signs Monitoring',
     color: 'emerald',
@@ -36,17 +51,17 @@ const projects: Project[] = [
   },
   {
     name: 'CarePlanPlus',
-    tagline: 'BERT-Based Treatment Pathway Recommendation',
+    tagline: 'Dual-Methodology Treatment Pathway Recommendation',
     color: 'blue',
     iconLetter: 'C',
     iconBg: 'bg-blue-500/10',
     problem:
-      'Mapping unstructured clinical text to structured treatment pathways requires understanding of medical terminology and ICD coding systems. Manual pathway construction is slow and error-prone.',
+      'Mapping clinical diagnoses to structured treatment pathways requires understanding of medical terminology and procedure coding systems. Manual pathway construction is slow, error-prone, and struggles with multi-step treatment sequences across 12 NIES intervention categories.',
     approach:
-      'BERT-base-uncased fine-tuned on 96 procedure classes with ICD code integration. Multi-step treatment pathway generation from clinical descriptions with joined patient-admissions dataset for contextual enrichment.',
+      'Dual methodology: similarity-based collaborative filtering (k-means with k=20 clusters on 76,388 patient records from NIES 2020 dataset) and BERT-base-uncased fine-tuned on 309 procedures mapped to 12 NIES categories. Multi-step treatment pathway generation with ICD code integration and contextual enrichment from joined patient-admissions data.',
     nonTrivial:
-      'Small training set (163 records) required careful regularisation and augmentation strategies. Integration with 71K+ ICD codes for procedure encoding. Generates multi-step treatment pathways, not just single-label classification — each step links to ICD procedure and drug codes.',
-    stack: ['HuggingFace Transformers', 'BERT', 'FastAPI', 'React', 'MongoDB', 'Docker'],
+      'Combining collaborative filtering with transformer-based classification provides complementary recommendations — population-level patterns from k-means clustering plus semantic understanding from BERT. 76,388 records across 309 procedures required careful category balancing. Each generated pathway links to ICD procedure and drug codes with confidence scores.',
+    stack: ['HuggingFace Transformers', 'BERT', 'Scikit-learn', 'FastAPI', 'React', 'MongoDB', 'Docker'],
     github: 'https://github.com/HSE-Pulse/hse-pulse',
     demo: config.CAREPLANPLUS_URL,
   },
@@ -57,12 +72,12 @@ const projects: Project[] = [
     iconLetter: 'P',
     iconBg: 'bg-purple-500/10',
     problem:
-      'Clinical notes contain critical patient information locked in unstructured text. Clinicians need targeted extraction — chief complaints, diagnoses, medications — without reading entire discharge summaries.',
+      'Clinical notes contain critical patient information locked in unstructured text across 15 standard note sections. Clinicians need targeted extraction — chief complaints, diagnoses, medications — without reading entire discharge summaries.',
     approach:
-      'Bio_ClinicalBERT for semantic search and named entity recognition. RAG pipeline with section-aware extraction from 1,200+ MIMIC-IV discharge summaries. Natural language query parsing classifies intent (segment extraction, patient lookup, semantic search) and routes to the appropriate retrieval strategy.',
+      'MedLLaMA2 (7B) via Ollama for natural language query understanding, combined with Bio_ClinicalBERT for 768-dimensional semantic embeddings. RAG pipeline processing 22,184 chunks from 262 patients across MIMIC-IV discharge summaries. Section-aware extraction with regex-based NLU classifying query intent (segment extraction, patient lookup, semantic search).',
     nonTrivial:
-      'Section-aware extraction handles the irregular structure of clinical documents where headers vary between institutions. The RAG pipeline combines vector similarity with regex-based NLU for query classification. Query latency under 20ms with MongoDB-backed document store and FAISS indexing.',
-    stack: ['Bio_ClinicalBERT', 'FastAPI', 'MongoDB', 'FAISS', 'React', 'Docker'],
+      'Sub-200ms query latency across 22,184 document chunks with FAISS vector indexing. Section-aware extraction handles irregular clinical document structure where headers vary between institutions. Hybrid retrieval combining vector similarity search with deterministic section parsing across 15 standardised note sections. MongoDB-backed document store with pre-computed embeddings.',
+    stack: ['MedLLaMA2', 'Bio_ClinicalBERT', 'Ollama', 'FAISS', 'FastAPI', 'MongoDB', 'React', 'Docker'],
     github: 'https://github.com/HSE-Pulse/hse-pulse',
     demo: config.PULSENOTES_URL,
   },
@@ -73,7 +88,7 @@ const projects: Project[] = [
     iconLetter: 'H',
     iconBg: 'bg-cyan-500/10',
     problem:
-      'Running heterogeneous ML models (LSTM, BERT, ClinicalBERT) with different inference patterns and latency requirements in a single observable platform with shared experiment tracking and monitoring.',
+      'Running heterogeneous ML models (LSTM, BERT, ClinicalBERT, MedLLaMA2) with different inference patterns and latency requirements in a single observable platform with shared experiment tracking and monitoring.',
     approach:
       'Microservice architecture with 15 containers orchestrated via Docker Compose behind an Nginx reverse proxy. Shared MLOps layer: MLflow for experiment tracking and model registry (MinIO S3 backend), Prometheus + Grafana for observability, with health checks and structured logging across all services.',
     nonTrivial:
@@ -84,6 +99,7 @@ const projects: Project[] = [
 ]
 
 const colorTextMap: Record<string, string> = {
+  amber: 'text-amber-400',
   emerald: 'text-emerald-400',
   blue: 'text-blue-400',
   purple: 'text-purple-400',

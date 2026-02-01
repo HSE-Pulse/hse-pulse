@@ -24,18 +24,19 @@ export default function Hero() {
         </h1>
 
         <p className="text-xl sm:text-2xl text-slate-400 max-w-3xl mx-auto mb-4 leading-relaxed animate-fade-up" style={{ animationDelay: '0.2s' }}>
-          Senior AI &amp; ML Engineer
+          Data Science Leader &amp; AI/ML Engineer
         </p>
 
         <p className="text-base text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-up" style={{ animationDelay: '0.3s' }}>
-          11+ years building production systems across AI/ML, data engineering,
-          and platform architecture. MSc in Artificial Intelligence with First
-          Class Honours from Dublin Business School. Based in Dublin, Ireland.
+          11+ years specialising in Large Language Models, Multi-Agent Reinforcement
+          Learning, Healthcare AI, and MLOps. Proven track record delivering
+          production AI with measurable impact — 92.9% wait time reduction,
+          137% throughput improvement, 40% faster delivery cycles.
         </p>
 
         {/* Expertise badges */}
         <div className="flex flex-wrap justify-center gap-2 mb-10 animate-fade-up" style={{ animationDelay: '0.35s' }}>
-          {['AI / ML', 'Deep Learning', 'MLOps', 'LLMs', 'NLP', 'Reinforcement Learning', 'Systems Architecture'].map((area) => (
+          {['LLMs', 'Multi-Agent RL', 'Healthcare AI', 'MLOps', 'Deep Learning', 'NLP', 'Time Series', 'Cloud Platforms'].map((area) => (
             <span key={area} className="px-3 py-1 rounded-full text-xs text-slate-400 bg-white/5 border border-white/8">
               {area}
             </span>

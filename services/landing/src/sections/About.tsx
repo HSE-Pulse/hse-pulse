@@ -3,34 +3,56 @@ import SectionHeading from '../components/SectionHeading'
 
 const experience = [
   {
-    role: 'Data Scientist Lead',
-    company: 'ABI-Health (AB Innovative)',
+    role: 'Data Scientist Lead & Head of AI',
+    company: 'Kaiburr',
     location: 'Bengaluru, India',
-    period: '2020 – 2024',
+    period: 'May 2020 – Dec 2024',
     highlights: [
-      'Led a team building LLM-powered infrastructure automation (GPT, Falcon, LLaMA) that reduced incident resolution time.',
-      'Designed and deployed an AIOps anomaly detection platform with explainable AI on Kubernetes.',
-      'Built self-healing production ML pipelines with automated retraining, monitoring, and rollback.',
+      'Led a team of 8 engineers delivering 15+ production models with 95% SLA success rate across AWS, Azure, and GCP.',
+      'Built LLM-powered Terraform Engine (GPT-4, LLaMA-2-70B, Falcon-180B) automating 75+ DevOps tools — 40% faster deployment cycles, 35% cloud cost reduction.',
+      'Designed Generic Autonomous ML Engine using multi-agent LLM orchestration processing 5,000+ daily telemetry data points, reducing incident resolution from 30-60 minutes.',
+      'Deployed AIOps anomaly detection platform (LSTM, Autoencoders, Isolation Forest) processing 10M+ daily log events with SHAP/LIME explainability and 99.9% uptime.',
+      'Mentored 12+ data scientists and ML engineers across model development, deployment, and production monitoring.',
     ],
   },
   {
     role: 'Lead Engineer',
     company: 'Sathyanarayana United Software',
     location: 'Chennai, India',
-    period: '2018 – 2020',
+    period: 'Aug 2018 – Apr 2020',
     highlights: [
-      'Architected microservice systems with zero-downtime deployment strategies.',
-      'Implemented ELK stack monitoring and service coordination across distributed systems.',
+      'Architected Smart Recruitment Agent — microservices platform serving 500+ HR recruiters with 99.9% uptime and 15+ services.',
+      'Implemented zero-downtime deployment with ELK stack monitoring and CI/CD pipeline reducing deployment from 4 hours to 15 minutes.',
     ],
   },
   {
     role: 'Software Engineer',
     company: 'Altisource Labs',
     location: 'Bengaluru, India',
-    period: '2016 – 2018',
+    period: 'Jan 2016 – Jun 2018',
     highlights: [
-      'Built data analytics and time-series forecasting pipelines using Spark MLlib.',
-      'Developed deep learning OCR systems with TensorFlow for document processing.',
+      'Built ESB Advance Metrics platform processing 10M+ daily log entries with Spark MLlib time-series forecasting (ARIMA, Prophet) on Apache Camel/JBoss Fuse.',
+      'Developed enterprise data wrangling pipeline handling 100+ GB daily from 50+ sources, including TensorFlow OCR achieving 92% accuracy on 5,000+ monthly documents.',
+      'Built NLP-driven search and mortgage prediction model achieving 88% accuracy.',
+    ],
+  },
+  {
+    role: 'Software Engineer',
+    company: 'Techaffinity',
+    location: 'Chennai, India',
+    period: 'Jan 2015 – Dec 2015',
+    highlights: [
+      'Developed HIPAA-compliant IDTF Patient Tracking system for 100+ suppliers with pulse oximetry Bluetooth integration and 10K+ monthly transactions.',
+      'Built tour operator platform managing 1K+ packages and $2M+ annual transactions on Azure cloud.',
+    ],
+  },
+  {
+    role: 'Software Engineer',
+    company: 'Changepond Technologies',
+    location: 'Chennai, India',
+    period: 'May 2013 – Dec 2014',
+    highlights: [
+      'Built SOLO Order Management system with BizTalk integration processing 50K+ orders with 98% SLA compliance.',
     ],
   },
 ]
@@ -101,7 +123,7 @@ export default function About() {
                 </div>
                 <div>
                   <div className="text-sm font-medium text-white">BE Computer Science &amp; Engineering</div>
-                  <div className="text-xs text-slate-400">Anna University, Tamil Nadu</div>
+                  <div className="text-xs text-slate-400">Arunai Engineering College, Anna University</div>
                   <div className="text-xs text-slate-500">2008 – 2012</div>
                 </div>
               </div>

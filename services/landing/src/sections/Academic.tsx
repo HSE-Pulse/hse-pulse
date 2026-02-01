@@ -7,20 +7,20 @@ const documents = [
   {
     icon: BookOpen,
     title: 'MSc Thesis',
-    subtitle: 'Integrated Deep Learning Microservices for Healthcare Intelligence',
+    subtitle: 'DES-MARL: Multi-Agent Reinforcement Learning for Hospital Resource Optimisation',
     context: 'MSc Artificial Intelligence — Dublin Business School, 2025–2026',
     description:
-      'Investigates how domain-specific deep learning models (LSTM, BERT, ClinicalBERT) can be integrated into a unified, observable microservice platform for healthcare applications. Uses a design-science methodology with evaluation against MIMIC-III and MIMIC-IV clinical datasets.',
+      'Develops a novel framework integrating Discrete-Event Simulation with Multi-Agent Reinforcement Learning (MADDPG/MAPPO) for dynamic hospital staff allocation. Evaluated on MIMIC-IV clinical data achieving 92.9% wait time reduction and 137% throughput improvement.',
     href: `${BASE}resume/HarishankarSomasundaram_Thesis.pdf`,
     available: false,
   },
   {
     icon: FileText,
     title: 'CV / Resume',
-    subtitle: 'Harishankar Somasundaram — Senior AI & ML Engineer',
+    subtitle: 'Harishankar Somasundaram — Data Science Leader & AI/ML Engineer',
     context: 'Updated February 2026',
     description:
-      'Professional CV covering 11+ years of experience in software engineering, data science, and AI/ML. Includes roles at ABI-Health, Sathyanarayana United, and Altisource Labs.',
+      'Professional CV covering 11+ years of experience across software engineering, data science, and AI/ML leadership. Includes roles at Kaiburr, Sathyanarayana United, Altisource Labs, Techaffinity, and Changepond Technologies.',
     href: `${BASE}resume/HarishankarSomasundaram_Resume.pdf`,
     available: true,
   },
@@ -52,29 +52,29 @@ export default function Academic() {
               <div className="space-y-3 text-sm text-slate-400 leading-relaxed">
                 <p>
                   <span className="text-slate-500 font-medium">Research question: </span>
-                  How can heterogeneous deep learning models be composed into a
-                  unified, production-grade platform for clinical healthcare
-                  applications?
+                  How can Discrete-Event Simulation be integrated with Multi-Agent
+                  Reinforcement Learning to enable dynamic staff allocation across
+                  interconnected hospital departments?
                 </p>
                 <p>
                   <span className="text-slate-500 font-medium">Methodology: </span>
-                  Design-science approach with three ML services (LSTM vital
-                  sign prediction, BERT treatment recommendation, ClinicalBERT
-                  document intelligence) evaluated against MIMIC-III and MIMIC-IV
-                  clinical datasets.
+                  DES-MARL framework with 9 clinical departments modelled as autonomous
+                  agents (17-dimensional state space). MADDPG and MAPPO algorithms trained
+                  on MIMIC-IV clinical data (786 patients, 7-day episodes) using 5-stage
+                  curriculum learning from single-department to full-hospital coordination.
                 </p>
                 <p>
-                  <span className="text-slate-500 font-medium">Key contribution: </span>
-                  Demonstrates that heterogeneous deep learning models can be
-                  deployed as independent microservices sharing a common MLOps
-                  layer (experiment tracking, monitoring, artifact storage)
-                  without sacrificing inference performance or observability.
+                  <span className="text-slate-500 font-medium">Key results: </span>
+                  92.9% wait time reduction (28.4h → 2h), 137% throughput improvement
+                  (306 → 727 patients per episode). Demonstrates that multi-agent
+                  coordination with curriculum learning significantly outperforms
+                  static staffing policies and single-agent baselines.
                 </p>
               </div>
 
               {/* Focus areas */}
               <div className="flex flex-wrap gap-2 mt-4">
-                {['Healthcare AI', 'Deep Learning', 'MLOps', 'Microservices', 'Clinical NLP', 'Time Series'].map((tag) => (
+                {['Multi-Agent RL', 'MADDPG', 'MAPPO', 'Discrete-Event Simulation', 'Healthcare AI', 'MIMIC-IV', 'Curriculum Learning'].map((tag) => (
                   <span key={tag} className="px-2.5 py-1 rounded-md text-xs text-slate-400 bg-white/5 border border-white/5">
                     {tag}
                   </span>
