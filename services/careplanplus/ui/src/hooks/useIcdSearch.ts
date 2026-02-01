@@ -5,7 +5,7 @@ import type { IcdCode } from '../types'
 export function useIcdSearch(query: string, type: 'diagnoses' | 'procedures' = 'diagnoses') {
   const [results, setResults] = useState<IcdCode[]>([])
   const [loading, setLoading] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current)

@@ -39,10 +39,10 @@ export default function SatisfactionChart({ data, height = 400 }: SatisfactionCh
           label={{ value: 'Avg Satisfaction (%)', angle: -90, position: 'insideLeft', style: { fontSize: 12, fill: '#64748b' } }}
         />
         <Tooltip
-          formatter={(value: number, _name: string, props: { payload: { fullName: string; count: number } }) => [
-            `${value}% (${props.payload.count} records)`,
-            props.payload.fullName,
-          ]}
+          formatter={(value, _name, props) => {
+            const p = props?.payload as { fullName?: string; count?: number } | undefined
+            return [`${value}% (${p?.count ?? 0} records)`, p?.fullName ?? '']
+          }}
           contentStyle={{ borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 13 }}
         />
         <Bar dataKey="satisfaction" radius={[6, 6, 0, 0]}>

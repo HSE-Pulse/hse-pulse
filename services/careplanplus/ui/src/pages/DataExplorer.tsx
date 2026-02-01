@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Users, Building2, ClipboardList, Stethoscope, BarChart3, ArrowLeft } from 'lucide-react'
 import DataTable from '../components/DataTable'
+import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
 import { api } from '../api/client'
 import type { Patient, Admission, DiagnosisIcd, ProcedureIcd, NiesRecord, PatientDetail, PaginatedResponse } from '../types'
@@ -141,12 +142,13 @@ export default function DataExplorer() {
     )},
   ]
 
-  const columnMap: Record<Tab, { key: string; header: string; render?: (row: never) => React.ReactNode }[]> = {
-    patients: patientColumns as never,
-    admissions: admissionColumns as never,
-    diagnoses: diagnosisColumns as never,
-    procedures: procedureColumns as never,
-    nies: niesColumns as never,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columnMap: Record<Tab, any[]> = {
+    patients: patientColumns,
+    admissions: admissionColumns,
+    diagnoses: diagnosisColumns,
+    procedures: procedureColumns,
+    nies: niesColumns,
   }
 
   // Patient detail view
