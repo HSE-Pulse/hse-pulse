@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Users, Building2, ClipboardList, Stethoscope, BarChart3, ArrowLeft } from 'lucide-react'
+import { Users, Building2, ClipboardList, Stethoscope, BarChart3, ArrowLeft, Database } from 'lucide-react'
 import DataTable from '../components/DataTable'
 import LoadingState from '../components/LoadingState'
 import ErrorState from '../components/ErrorState'
 import { api } from '../api/client'
-import type { Patient, Admission, DiagnosisIcd, ProcedureIcd, NiesRecord, PatientDetail, PaginatedResponse } from '../types'
+import type { Patient, Admission, DiagnosisIcd, ProcedureIcd, NiesRecord, PatientDetail, PatientAdmissionRecord, PaginatedResponse } from '../types'
 
-type Tab = 'patients' | 'admissions' | 'diagnoses' | 'procedures' | 'nies'
+type Tab = 'patients' | 'admissions' | 'diagnoses' | 'procedures' | 'nies' | 'training'
 
 const tabs: { key: Tab; label: string; icon: typeof Users }[] = [
   { key: 'patients', label: 'Patients', icon: Users },
@@ -14,6 +14,7 @@ const tabs: { key: Tab; label: string; icon: typeof Users }[] = [
   { key: 'diagnoses', label: 'Diagnoses', icon: ClipboardList },
   { key: 'procedures', label: 'Procedures', icon: Stethoscope },
   { key: 'nies', label: 'NIES', icon: BarChart3 },
+  { key: 'training', label: 'Training Data', icon: Database },
 ]
 
 export default function DataExplorer() {
@@ -23,6 +24,7 @@ export default function DataExplorer() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedPatient, setSelectedPatient] = useState<PatientDetail | null>(null)
+  const [selectedTrainingRecord, setSelectedTrainingRecord] = useState<PatientAdmissionRecord | null>(null)
   const [patientLoading, setPatientLoading] = useState(false)
 
   const fetchData = useCallback(async () => {
@@ -46,6 +48,9 @@ export default function DataExplorer() {
         case 'nies':
           result = await api.nies(undefined, page, 50)
           break
+        case 'training':
+          result = await api.patientAdmissions(undefined, page, 20)
+          break
       }
       setData(result as PaginatedResponse<Record<string, unknown>>)
     } catch (e) {
@@ -63,6 +68,7 @@ export default function DataExplorer() {
     setActiveTab(tab)
     setPage(1)
     setSelectedPatient(null)
+    setSelectedTrainingRecord(null)
   }
 
   const handlePatientClick = async (row: Record<string, unknown>) => {
@@ -128,6 +134,30 @@ export default function DataExplorer() {
     )},
   ]
 
+  const handleTrainingRecordClick = (row: Record<string, unknown>) => {
+    setSelectedTrainingRecord(row as unknown as PatientAdmissionRecord)
+  }
+
+  const trainingColumns = [
+    { key: 'subject_id', header: 'Patient', render: (r: PatientAdmissionRecord) => (
+      <span className="font-mono font-bold text-primary-600">{r.subject_id}</span>
+    )},
+    { key: 'hadm_id', header: 'Admission', render: (r: PatientAdmissionRecord) => (
+      <span className="font-mono text-xs">{r.hadm_id}</span>
+    )},
+    { key: 'gender', header: 'Gender' },
+    { key: 'age', header: 'Age' },
+    { key: 'diagnoses', header: 'Diagnoses', render: (r: PatientAdmissionRecord) => (
+      <span className="text-xs">{r.diagnoses?.length ?? 0}</span>
+    )},
+    { key: 'procedures', header: 'Procedures', render: (r: PatientAdmissionRecord) => (
+      <span className="text-xs">{r.procedures?.length ?? 0}</span>
+    )},
+    { key: 'admittime', header: 'Admitted', render: (r: PatientAdmissionRecord) => (
+      <span className="text-xs">{r.admittime?.split(' ')[0]}</span>
+    )},
+  ]
+
   const niesColumns = [
     { key: 'condition_label', header: 'Condition' },
     { key: 'satisfaction_score', header: 'Satisfaction', render: (r: NiesRecord) => (
@@ -149,6 +179,84 @@ export default function DataExplorer() {
     diagnoses: diagnosisColumns,
     procedures: procedureColumns,
     nies: niesColumns,
+    training: trainingColumns,
+  }
+
+  // Training record detail view
+  if (selectedTrainingRecord) {
+    const rec = selectedTrainingRecord
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <button
+          onClick={() => setSelectedTrainingRecord(null)}
+          className="flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Training Data
+        </button>
+
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
+            Patient {rec.subject_id} &mdash; Admission {rec.hadm_id}
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-sm">
+            <div>
+              <span className="text-slate-500">Gender</span>
+              <p className="font-semibold">{rec.gender}</p>
+            </div>
+            <div>
+              <span className="text-slate-500">Age</span>
+              <p className="font-semibold">{rec.age}</p>
+            </div>
+            <div>
+              <span className="text-slate-500">Admitted</span>
+              <p className="font-semibold">{rec.admittime?.split(' ')[0]}</p>
+            </div>
+            <div>
+              <span className="text-slate-500">Discharged</span>
+              <p className="font-semibold">{rec.dischtime?.split(' ')[0]}</p>
+            </div>
+            <div>
+              <span className="text-slate-500">Records</span>
+              <p className="font-semibold">{rec.diagnoses?.length ?? 0} diag / {rec.procedures?.length ?? 0} proc</p>
+            </div>
+          </div>
+        </div>
+
+        {rec.diagnoses && rec.diagnoses.length > 0 && (
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h4 className="font-semibold text-slate-900 mb-3">Diagnoses ({rec.diagnoses.length})</h4>
+            <div className="space-y-2">
+              {rec.diagnoses.map((d, i) => (
+                <div key={i} className="flex items-center gap-3 p-2 bg-purple-50 rounded-lg text-sm">
+                  <span className="font-mono font-bold text-purple-700 w-16 shrink-0">{d.icd_code}</span>
+                  <span className="text-slate-700">{d.long_title}</span>
+                  <span className="ml-auto text-xs text-slate-400">seq {d.seq_num} &middot; v{d.icd_version}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {rec.procedures && rec.procedures.length > 0 && (
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h4 className="font-semibold text-slate-900 mb-3">Procedures ({rec.procedures.length})</h4>
+            <div className="space-y-2">
+              {rec.procedures.map((p, i) => (
+                <div key={i} className="flex items-center gap-3 p-2 bg-amber-50 rounded-lg text-sm">
+                  <span className="font-mono font-bold text-amber-700 w-20 shrink-0">{p.icd_code}</span>
+                  <span className="text-slate-700">{p.long_title}</span>
+                  <span className="ml-auto text-xs text-slate-400 whitespace-nowrap">
+                    seq {p.seq_num} &middot; v{p.icd_version}
+                    {p.chartdate && <> &middot; {String(p.chartdate).split('T')[0]}</>}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    )
   }
 
   // Patient detail view
@@ -264,7 +372,7 @@ export default function DataExplorer() {
           totalPages={data?.pages ?? 1}
           total={data?.total ?? 0}
           onPageChange={setPage}
-          onRowClick={activeTab === 'patients' ? handlePatientClick : undefined}
+          onRowClick={activeTab === 'patients' ? handlePatientClick : activeTab === 'training' ? handleTrainingRecordClick : undefined}
           loading={loading}
         />
       )}

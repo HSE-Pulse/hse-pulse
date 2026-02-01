@@ -72,6 +72,16 @@ export default function Dashboard() {
             color="amber"
             loading={stats.loading}
           />
+          {(stats.data?.training_records ?? 0) > 0 && (
+            <StatCard
+              title="Training Data"
+              value={stats.data?.training_records ?? 0}
+              subtitle="Patient-admission records"
+              icon={<Database className="w-6 h-6" />}
+              color="blue"
+              loading={stats.loading}
+            />
+          )}
         </div>
       )}
 

@@ -22,6 +22,9 @@ from app.data_loader import (
     search_icd_procedures,
     get_nies as data_get_nies,
     get_nies_summary as data_get_nies_summary,
+    get_patient_admissions as data_get_patient_admissions,
+    get_all_procedure_descriptions,
+    get_training_stats as data_get_training_stats,
 )
 
 import torch
@@ -182,7 +185,12 @@ class ModelManager:
                 if 'procedure_classes' in checkpoint:
                     self.procedure_encoder.classes_ = np.array(checkpoint['procedure_classes'])
 
-                logger.info(f"Model loaded from {model_path}")
+                # Load procedure descriptions from checkpoint
+                if 'procedure_descriptions' in checkpoint:
+                    self.procedure_descriptions.update(checkpoint['procedure_descriptions'])
+                    logger.info(f"Loaded {len(checkpoint['procedure_descriptions'])} procedure descriptions from model")
+
+                logger.info(f"Model loaded from {model_path} ({n_procedures} procedures)")
                 MODEL_LOADED.set(1)
             else:
                 logger.warning(f"Model file not found at {model_path}, using demo mode")
@@ -295,6 +303,11 @@ async def lifespan(app: FastAPI):
     # Load JSON data files
     try:
         load_all_data()
+        # Enrich model procedure descriptions from data files
+        desc = get_all_procedure_descriptions()
+        if desc:
+            model_manager.procedure_descriptions.update(desc)
+            logger.info(f"Enriched model with {len(desc)} procedure descriptions from data files")
     except Exception as e:
         logger.warning(f"Could not load data files: {e}")
 
@@ -517,28 +530,31 @@ async def recommend_full_pathway(request: RecommendationRequest):
 
 @app.get("/sample-diagnoses")
 async def get_sample_diagnoses():
-    """Get sample diagnoses for demo purposes."""
+    """Get sample diagnoses from real training data."""
     return {
         "samples": [
             {
                 "name": "Cardiovascular Case",
                 "diagnoses": [
-                    {"icd_code": "I10", "seq_num": 1, "long_title": "Essential hypertension"},
-                    {"icd_code": "I25.10", "seq_num": 2, "long_title": "Atherosclerotic heart disease"}
+                    {"icd_code": "78551", "seq_num": 1, "long_title": "Cardiogenic shock"},
+                    {"icd_code": "42823", "seq_num": 2, "long_title": "Acute on chronic systolic heart failure"},
+                    {"icd_code": "5845", "seq_num": 3, "long_title": "Acute kidney failure with lesion of tubular necrosis"}
                 ]
             },
             {
                 "name": "Respiratory Case",
                 "diagnoses": [
-                    {"icd_code": "J44.1", "seq_num": 1, "long_title": "Chronic obstructive pulmonary disease with acute exacerbation"},
-                    {"icd_code": "J96.01", "seq_num": 2, "long_title": "Acute respiratory failure with hypoxia"}
+                    {"icd_code": "51881", "seq_num": 1, "long_title": "Acute respiratory failure"},
+                    {"icd_code": "3842", "seq_num": 2, "long_title": "Septicemia due to escherichia coli [E. coli]"},
+                    {"icd_code": "42833", "seq_num": 3, "long_title": "Acute on chronic diastolic heart failure"}
                 ]
             },
             {
                 "name": "Gastrointestinal Case",
                 "diagnoses": [
-                    {"icd_code": "K92.2", "seq_num": 1, "long_title": "Gastrointestinal hemorrhage"},
-                    {"icd_code": "K25.4", "seq_num": 2, "long_title": "Chronic gastric ulcer with hemorrhage"}
+                    {"icd_code": "A419", "seq_num": 1, "long_title": "Sepsis, unspecified organism"},
+                    {"icd_code": "K631", "seq_num": 2, "long_title": "Perforation of intestine (nontraumatic)"},
+                    {"icd_code": "K650", "seq_num": 3, "long_title": "Generalized (acute) peritonitis"}
                 ]
             }
         ]
@@ -728,3 +744,15 @@ async def data_nies(condition_label: Optional[str] = None, page: int = 1, per_pa
 async def data_nies_summary():
     """Get aggregated satisfaction scores by condition category."""
     return data_get_nies_summary()
+
+
+@app.get("/data/patient-admissions")
+async def data_patient_admissions(subject_id: Optional[int] = None, page: int = 1, per_page: int = 20):
+    """Get joined patient-admission-diagnosis-procedure records (training data)."""
+    return data_get_patient_admissions(subject_id=subject_id, page=page, per_page=per_page)
+
+
+@app.get("/data/training-stats")
+async def data_training_stats():
+    """Get statistics about the training dataset."""
+    return data_get_training_stats()

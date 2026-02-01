@@ -64,6 +64,7 @@ def load_all_data() -> None:
         "nies": "recommender_system.nies.json",
         "d_icd_diagnoses": "recommender_system.d_icd_diagnoses.json",
         "d_icd_procedures": "recommender_system.d_icd_procedures.json",
+        "patient_admissions": "recommender_system.patient_admissions_procedues_diagnoses.json",
     }
 
     for key, filename in files.items():
@@ -108,6 +109,46 @@ def load_all_data() -> None:
         if code is not None:
             _indexes["proc_icd_by_code"][str(code)] = r
 
+    # Index joined patient-admission records
+    _indexes["patient_admissions_by_subject"] = {}
+    for r in _data_store.get("patient_admissions", []):
+        sid = r.get("subject_id")
+        if sid is not None:
+            _indexes["patient_admissions_by_subject"].setdefault(sid, []).append(r)
+
+    # Build procedure description lookup from all sources
+    # Load ICD lookup table first, then override with joined dataset (more specific)
+    _indexes["procedure_descriptions"] = {}
+    for r in _data_store.get("d_icd_procedures", []):
+        code = str(r.get("icd_code", ""))
+        title = r.get("long_title", "")
+        if code and title:
+            _indexes["procedure_descriptions"][code] = title
+    # Joined dataset overrides lookup table (contextually correct descriptions)
+    for r in _data_store.get("patient_admissions", []):
+        for proc in r.get("procedures", []):
+            code = str(proc.get("icd_code", ""))
+            title = proc.get("long_title", "")
+            if code and title:
+                _indexes["procedure_descriptions"][code] = title
+
+    # Build diagnosis description lookup
+    _indexes["diagnosis_descriptions"] = {}
+    for r in _data_store.get("d_icd_diagnoses", []):
+        code = str(r.get("icd_code", ""))
+        title = r.get("long_title", "")
+        if code and title:
+            _indexes["diagnosis_descriptions"][code] = title
+    # Joined dataset overrides lookup table
+    for r in _data_store.get("patient_admissions", []):
+        for diag in r.get("diagnoses", []):
+            code = str(diag.get("icd_code", ""))
+            title = diag.get("long_title", "")
+            if code and title:
+                _indexes["diagnosis_descriptions"][code] = title
+
+    logger.info(f"Procedure descriptions: {len(_indexes['procedure_descriptions'])}")
+    logger.info(f"Diagnosis descriptions: {len(_indexes['diagnosis_descriptions'])}")
     logger.info("All data loaded and indexed successfully")
 
 
@@ -121,6 +162,7 @@ def get_stats() -> Dict[str, int]:
         "nies_records": len(_data_store.get("nies", [])),
         "icd_diagnosis_codes": len(_data_store.get("d_icd_diagnoses", [])),
         "icd_procedure_codes": len(_data_store.get("d_icd_procedures", [])),
+        "training_records": len(_data_store.get("patient_admissions", [])),
     }
 
 
@@ -273,6 +315,64 @@ def get_nies(
         "page": page,
         "per_page": per_page,
         "pages": math.ceil(total / per_page) if per_page > 0 else 0,
+    }
+
+
+def get_patient_admissions(
+    subject_id: Optional[int] = None, page: int = 1, per_page: int = 20
+) -> Dict[str, Any]:
+    """Get joined patient-admission records, optionally filtered by subject_id."""
+    if subject_id is not None:
+        data = _indexes.get("patient_admissions_by_subject", {}).get(subject_id, [])
+    else:
+        data = _data_store.get("patient_admissions", [])
+    total = len(data)
+    start = (page - 1) * per_page
+    end = start + per_page
+    return {
+        "items": data[start:end],
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "pages": math.ceil(total / per_page) if per_page > 0 else 0,
+    }
+
+
+def get_procedure_description(code: str) -> str:
+    """Get procedure description by ICD code."""
+    return _indexes.get("procedure_descriptions", {}).get(str(code), "")
+
+
+def get_all_procedure_descriptions() -> Dict[str, str]:
+    """Get all procedure descriptions."""
+    return dict(_indexes.get("procedure_descriptions", {}))
+
+
+def get_training_stats() -> Dict[str, Any]:
+    """Get statistics about the training dataset."""
+    data = _data_store.get("patient_admissions", [])
+    if not data:
+        return {"available": False}
+
+    total_diagnoses = sum(len(r.get("diagnoses", [])) for r in data)
+    total_procedures = sum(len(r.get("procedures", [])) for r in data)
+    unique_procedures: set = set()
+    unique_diagnoses: set = set()
+    for r in data:
+        for p in r.get("procedures", []):
+            unique_procedures.add(str(p.get("icd_code", "")))
+        for d in r.get("diagnoses", []):
+            unique_diagnoses.add(str(d.get("icd_code", "")))
+
+    return {
+        "available": True,
+        "total_records": len(data),
+        "total_diagnoses": total_diagnoses,
+        "total_procedures": total_procedures,
+        "unique_diagnosis_codes": len(unique_diagnoses),
+        "unique_procedure_codes": len(unique_procedures),
+        "avg_diagnoses_per_record": round(total_diagnoses / len(data), 1) if data else 0,
+        "avg_procedures_per_record": round(total_procedures / len(data), 1) if data else 0,
     }
 
 

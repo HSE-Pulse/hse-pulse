@@ -24,6 +24,8 @@ from tqdm import tqdm
 from pymongo import MongoClient
 import joblib
 
+import math
+
 try:
     from transformers import BertModel, BertTokenizer, get_linear_schedule_with_warmup
     TRANSFORMERS_AVAILABLE = True
@@ -109,6 +111,49 @@ def load_data_from_mongodb(mongo_uri: str, db_name: str, patient_collection: str
     return patient_data, nies_data
 
 
+def _clean_mongo_value(val):
+    """Convert MongoDB extended JSON types to plain Python types."""
+    if isinstance(val, dict):
+        if "$oid" in val:
+            return val["$oid"]
+        if "$date" in val:
+            return val["$date"]
+        if "$numberDouble" in val:
+            raw = val["$numberDouble"]
+            if raw in ("NaN", "Infinity", "-Infinity"):
+                return None
+            return float(raw)
+        if "$numberInt" in val:
+            return int(val["$numberInt"])
+        if "$numberLong" in val:
+            return int(val["$numberLong"])
+        return {k: _clean_mongo_value(v) for k, v in val.items()}
+    if isinstance(val, list):
+        return [_clean_mongo_value(item) for item in val]
+    if isinstance(val, float) and (math.isnan(val) or math.isinf(val)):
+        return None
+    return val
+
+
+def load_data_from_json(data_file: str):
+    """Load patient data from a pre-joined JSON file (MongoDB extended JSON format)."""
+    logger.info(f"Loading data from JSON file: {data_file}")
+    import json
+    with open(data_file, "r", encoding="utf-8") as f:
+        raw = json.load(f)
+    patient_data = [_clean_mongo_value(record) for record in raw]
+    logger.info(f"Loaded {len(patient_data)} patient-admission records from JSON")
+
+    # Ensure icd_code is string for all diagnoses and procedures
+    for record in patient_data:
+        for diag in record.get('diagnoses', []):
+            diag['icd_code'] = str(diag.get('icd_code', ''))
+        for proc in record.get('procedures', []):
+            proc['icd_code'] = str(proc.get('icd_code', ''))
+
+    return patient_data, []
+
+
 def build_pathways(patient_data: list) -> pd.DataFrame:
     """Build training pathways from patient data."""
     pathway_data = []
@@ -124,11 +169,11 @@ def build_pathways(patient_data: list) -> pd.DataFrame:
 
             # Create diagnosis sequence text
             diag_sequence = " [SEP] ".join([
-                f"DIAG_{diag.get('seq_num', i)}:{diag.get('icd_code', '')}:{diag.get('long_title', '')}"
+                f"DIAG_{diag.get('seq_num', i)}:{str(diag.get('icd_code', ''))}:{diag.get('long_title', '')}"
                 for i, diag in enumerate(diagnoses)
             ])
 
-            proc_codes = [proc.get('icd_code', '') for proc in procedures]
+            proc_codes = [str(proc.get('icd_code', '')) for proc in procedures]
 
             # Create training examples for each procedure in sequence
             for i, target_proc in enumerate(proc_codes):
@@ -278,7 +323,7 @@ def evaluate_model(model, test_loader, device, procedure_encoder, k_values=[1, 3
     return metrics
 
 
-def save_model(model, procedure_encoder, output_dir, n_procedures):
+def save_model(model, procedure_encoder, output_dir, n_procedures, procedure_descriptions=None):
     """Save model and encoder."""
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -288,6 +333,8 @@ def save_model(model, procedure_encoder, output_dir, n_procedures):
         'n_procedures': n_procedures,
         'procedure_classes': procedure_encoder.classes_.tolist()
     }
+    if procedure_descriptions:
+        checkpoint['procedure_descriptions'] = procedure_descriptions
     torch.save(checkpoint, output_path / 'bert_model.pth')
     joblib.dump(procedure_encoder, output_path / 'procedure_encoder.pkl')
     logger.info(f"Model saved to {output_path}")
@@ -295,11 +342,15 @@ def save_model(model, procedure_encoder, output_dir, n_procedures):
 
 def main():
     parser = argparse.ArgumentParser(description='Train CarePlanPlus BERT model')
+    parser.add_argument('--data-file', type=str, default=None,
+                        help='Path to pre-joined JSON data file (bypasses MongoDB)')
     parser.add_argument('--mongo-uri', type=str, default='mongodb://localhost:27017/')
     parser.add_argument('--db-name', type=str, default='recommender_system')
     parser.add_argument('--patient-collection', type=str, default='patients')
     parser.add_argument('--nies-collection', type=str, default='nies_data')
     parser.add_argument('--output-dir', type=str, default='./models')
+    parser.add_argument('--min-samples', type=int, default=2,
+                        help='Minimum samples per procedure class (default: 2)')
     parser.add_argument('--epochs', type=int, default=8)
     parser.add_argument('--batch-size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=3e-5)
@@ -314,9 +365,12 @@ def main():
         return
 
     # Load data
-    patient_data, nies_data = load_data_from_mongodb(
-        args.mongo_uri, args.db_name, args.patient_collection, args.nies_collection
-    )
+    if args.data_file:
+        patient_data, nies_data = load_data_from_json(args.data_file)
+    else:
+        patient_data, nies_data = load_data_from_mongodb(
+            args.mongo_uri, args.db_name, args.patient_collection, args.nies_collection
+        )
 
     # Build pathways
     pathway_df = build_pathways(patient_data)
@@ -324,17 +378,26 @@ def main():
 
     # Prepare data
     procedure_encoder = LabelEncoder()
-    sequences, targets = prepare_data(pathway_df, procedure_encoder)
+    sequences, targets = prepare_data(pathway_df, procedure_encoder, min_samples=args.min_samples)
     n_procedures = len(procedure_encoder.classes_)
     logger.info(f"Number of procedures: {n_procedures}")
 
-    # Split data
-    X_train, X_temp, y_train, y_temp = train_test_split(
-        sequences, targets, test_size=0.3, random_state=42, stratify=targets
-    )
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_temp, y_temp, test_size=0.5, random_state=42, stratify=y_temp
-    )
+    # Split data - use stratified split when possible, fall back to random
+    try:
+        X_train, X_temp, y_train, y_temp = train_test_split(
+            sequences, targets, test_size=0.3, random_state=42, stratify=targets
+        )
+        X_val, X_test, y_val, y_test = train_test_split(
+            X_temp, y_temp, test_size=0.5, random_state=42, stratify=y_temp
+        )
+    except ValueError:
+        logger.warning("Stratified split failed (small classes), using random split")
+        X_train, X_temp, y_train, y_temp = train_test_split(
+            sequences, targets, test_size=0.3, random_state=42
+        )
+        X_val, X_test, y_val, y_test = train_test_split(
+            X_temp, y_temp, test_size=0.5, random_state=42
+        )
 
     # Create datasets
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -385,8 +448,17 @@ def main():
         mlflow.log_metrics(metrics)
         mlflow.end_run()
 
+    # Build procedure description lookup from training data
+    procedure_descriptions = {}
+    for record in patient_data:
+        for proc in record.get('procedures', []):
+            code = str(proc.get('icd_code', ''))
+            title = proc.get('long_title', '')
+            if code and title:
+                procedure_descriptions[code] = title
+
     # Save
-    save_model(model, procedure_encoder, args.output_dir, n_procedures)
+    save_model(model, procedure_encoder, args.output_dir, n_procedures, procedure_descriptions)
     logger.info("Training complete!")
 
 

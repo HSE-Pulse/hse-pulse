@@ -25,8 +25,8 @@ COPY app/ ./app/
 # Copy data files
 COPY data/ ./data/
 
-# Create models directory
-RUN mkdir -p /app/models
+# Copy trained model if available
+COPY models/ ./models/
 
 # Set environment variables
 ENV PYTHONPATH=/app

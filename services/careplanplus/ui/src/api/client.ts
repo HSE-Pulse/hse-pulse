@@ -2,9 +2,11 @@ import { API_BASE } from '../config'
 import type {
   HealthResponse,
   DataStats,
+  TrainingStats,
   PaginatedResponse,
   Patient,
   PatientDetail,
+  PatientAdmissionRecord,
   Admission,
   DiagnosisIcd,
   ProcedureIcd,
@@ -92,4 +94,12 @@ export const api = {
     return request<PaginatedResponse<NiesRecord>>(`/data/nies?${params}`)
   },
   niesSummary: () => request<NiesSummary>('/data/nies/summary'),
+
+  // Training data
+  patientAdmissions: (subjectId?: number, page = 1, perPage = 20) => {
+    const params = new URLSearchParams({ page: String(page), per_page: String(perPage) })
+    if (subjectId) params.set('subject_id', String(subjectId))
+    return request<PaginatedResponse<PatientAdmissionRecord>>(`/data/patient-admissions?${params}`)
+  },
+  trainingStats: () => request<TrainingStats>('/data/training-stats'),
 }

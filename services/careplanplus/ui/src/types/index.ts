@@ -14,6 +14,30 @@ export interface DataStats {
   nies_records: number
   icd_diagnosis_codes: number
   icd_procedure_codes: number
+  training_records: number
+}
+
+export interface TrainingStats {
+  available: boolean
+  total_records: number
+  total_diagnoses: number
+  total_procedures: number
+  unique_diagnosis_codes: number
+  unique_procedure_codes: number
+  avg_diagnoses_per_record: number
+  avg_procedures_per_record: number
+}
+
+export interface PatientAdmissionRecord {
+  _id: string
+  subject_id: number
+  hadm_id: number
+  admittime: string
+  dischtime: string
+  gender: string
+  age: number
+  diagnoses: { icd_code: string | number; seq_num: number; long_title: string; icd_version: number }[]
+  procedures: { icd_code: string | number; seq_num: number; long_title: string; icd_version: number; chartdate: string | null }[]
 }
 
 export interface Patient {
