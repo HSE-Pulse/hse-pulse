@@ -20,10 +20,14 @@ from __future__ import annotations
 import glob
 import logging
 import os
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import Response
+from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
+import mlflow
 
 from app.simulation import SimulationManager
 from app.schemas import (
@@ -50,6 +54,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("medisync.server")
 
+# Prometheus metrics
+REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
+REQUEST_LATENCY = Histogram('http_request_duration_seconds', 'HTTP request latency', ['method', 'endpoint'])
+MODEL_INFERENCE_TIME = Histogram('model_inference_duration_seconds', 'Model inference latency')
+MODEL_LOADED = Gauge('model_loaded', 'Whether the model is loaded')
+ALLOCATIONS_TOTAL = Counter('allocations_total', 'Total resource allocations')
+SIMULATION_STEPS = Counter('simulation_steps_total', 'Total simulation steps')
+
 
 # ======================================================================
 # Lifespan — initialise the shared SimulationManager
@@ -59,6 +71,7 @@ logger = logging.getLogger("medisync.server")
 async def lifespan(app: FastAPI):
     mgr = SimulationManager()
     app.state.sim_manager = mgr
+    MODEL_LOADED.set(1)
     logger.info("SimulationManager initialised.")
     yield
     await mgr.stop()
@@ -90,6 +103,22 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    @app.middleware("http")
+    async def metrics_middleware(request: Request, call_next):
+        start_time = time.time()
+        response = await call_next(request)
+        duration = time.time() - start_time
+        REQUEST_COUNT.labels(
+            method=request.method,
+            endpoint=request.url.path,
+            status=response.status_code,
+        ).inc()
+        REQUEST_LATENCY.labels(
+            method=request.method,
+            endpoint=request.url.path,
+        ).observe(duration)
+        return response
+
     # ----- backward-compat routers (/sim/*, /control/*, /ws/simulation) -----
     app.include_router(sim_router)
     app.include_router(control_router)
@@ -110,6 +139,12 @@ def create_app() -> FastAPI:
     @app.get("/health", tags=["health"])
     async def health():
         return {"status": "ok"}
+
+    # --- GET /metrics ---
+
+    @app.get("/metrics", tags=["metrics"])
+    async def metrics():
+        return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
     # --- POST /start ---
 
@@ -162,6 +197,38 @@ def create_app() -> FastAPI:
         mgr.speed = body.speed
 
         await mgr.start()
+
+        ALLOCATIONS_TOTAL.inc()
+
+        # Log simulation run to MLflow
+        mlflow_uri = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000")
+        experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME", "medisync")
+        try:
+            mlflow.set_tracking_uri(mlflow_uri)
+            mlflow.set_experiment(experiment_name)
+            with mlflow.start_run(run_name=f"sim-{int(time.time())}"):
+                mlflow.log_params({
+                    "episode_hours": body.episode_hours,
+                    "seed": body.seed,
+                    "algo": body.algo.value,
+                    "deterministic": body.deterministic,
+                    "speed": body.speed,
+                    "max_patients": body.max_patients,
+                    "use_synthetic": body.use_synthetic,
+                })
+                mlflow.log_metrics({
+                    "patients_loaded": count,
+                    "status": 1,
+                })
+                mlflow.set_tags({
+                    "service": "medisync",
+                    "policy": body.algo.value,
+                    "status": "started",
+                })
+            logger.info("MLflow run logged for simulation start")
+        except Exception as e:
+            logger.warning("MLflow logging failed: %s", e)
+
         return SimStatus(**mgr.get_status())
 
     # --- POST /pause ---
