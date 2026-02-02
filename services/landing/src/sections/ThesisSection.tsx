@@ -1,6 +1,8 @@
 import { BookOpen, Microscope, Target, Lightbulb, Download } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
 
+const BASE = import.meta.env.BASE_URL
+
 const researchAreas = [
   {
     icon: Microscope,
@@ -10,12 +12,12 @@ const researchAreas = [
   {
     icon: Target,
     title: 'Methodology',
-    content: 'Design-science research approach: iterative development of four specialised ML services, each evaluated against clinical benchmarks (MIMIC-IV, HSE data), integrated through microservice architecture, and assessed for production viability.',
+    content: 'Design-science research approach: four specialised ML services — DES-MARL (9 clinical departments, MADDPG/MAPPO), CarePlanPlus (BERT, 309 nursing procedures), PulseNotes (ClinicalBERT RAG, 22,184 chunks), and PulseFlow (LSTM, 8 hospitals) — each evaluated against clinical benchmarks (MIMIC-IV, HSE TrolleyGAR, NIES 2020), integrated through microservice architecture, and assessed for production viability.',
   },
   {
     icon: Lightbulb,
     title: 'Key Contributions',
-    content: 'Demonstrates that heterogeneous deep learning models (MADDPG/MAPPO, LSTM, BERT, ClinicalBERT) can be deployed as independent microservices with shared MLOps infrastructure, achieving inference latencies suitable for clinical workflows.',
+    content: 'Demonstrates that heterogeneous deep learning models (MADDPG/MAPPO, LSTM, BERT, ClinicalBERT, MedLLaMA2) can be deployed as independent microservices with shared MLOps infrastructure (MLflow, Prometheus, Grafana), orchestrated across 17 Docker containers, achieving inference latencies suitable for clinical workflows.',
   },
 ]
 
@@ -57,6 +59,8 @@ export default function ThesisSection() {
                     'Microservice Architecture',
                     'Clinical NLP',
                     'Time Series Analysis',
+                    'Reinforcement Learning',
+                    'RAG',
                   ].map((area) => (
                     <span
                       key={area}
@@ -70,16 +74,21 @@ export default function ThesisSection() {
               <div>
                 <span className="text-xs text-slate-500 uppercase tracking-wider">Clinical Datasets</span>
                 <p className="text-sm text-slate-300 mt-1">
-                  MIMIC-IV (Medical Information Mart for Intensive Care) — de-identified clinical data from Beth Israel Deaconess Medical Center. HSE TrolleyGAR — Irish hospital trolley census data.
+                  MIMIC-IV (Medical Information Mart for Intensive Care) — de-identified clinical data from Beth Israel Deaconess Medical Center. HSE TrolleyGAR — Irish hospital trolley census data. NIES 2020 — Nursing Interventions Equivalence Scale used by CarePlanPlus for procedure classification.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-3">
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-slate-400">
+              <a
+                href={`${BASE}reports/desmarl-applied-research.pdf`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-400 text-sm font-medium hover:bg-primary-500/20 transition-colors"
+              >
                 <Download className="w-4 h-4" />
-                Thesis PDF — Available upon completion
-              </span>
+                Download Applied Research PDF
+              </a>
             </div>
           </div>
 
@@ -105,9 +114,11 @@ export default function ThesisSection() {
                   { label: 'ML Frameworks', value: 'PyTorch, HuggingFace' },
                   { label: 'Serving', value: 'FastAPI, Uvicorn' },
                   { label: 'Frontend', value: 'React 19, TypeScript' },
-                  { label: 'Infra', value: 'Docker, K8s, Helm' },
+                  { label: 'Infra', value: 'Docker Compose, Nginx' },
                   { label: 'Tracking', value: 'MLflow, MinIO' },
                   { label: 'Monitoring', value: 'Prometheus, Grafana' },
+                  { label: 'Data', value: 'MongoDB, FAISS' },
+                  { label: 'LLM Inference', value: 'Ollama, MedLLaMA2' },
                 ].map((item) => (
                   <div key={item.label}>
                     <div className="text-xs text-slate-500">{item.label}</div>

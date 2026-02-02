@@ -1,5 +1,5 @@
 import {
-  Brain, FileText, ExternalLink,
+  Brain, FileText, ExternalLink, Download,
   Stethoscope, Layers,
   Network, GitBranch, Search, BookOpen,
   Activity, Calendar, Building2, BarChart3
@@ -26,12 +26,13 @@ interface ServiceCardProps {
   techStack: { label: string; color: 'green' | 'blue' | 'purple' | 'cyan' | 'amber' }[]
   demoUrl: string
   metrics: { label: string; value: string }[]
+  reports?: { label: string; url: string }[]
 }
 
 function ServiceCard({
   colorClass, bgClass, borderClass,
   title, subtitle, description, model,
-  features, techStack, demoUrl, metrics,
+  features, techStack, demoUrl, metrics, reports,
 }: ServiceCardProps) {
   return (
     <div className={`glass rounded-2xl overflow-hidden transition-all hover:border-white/10`}>
@@ -39,14 +40,28 @@ function ServiceCard({
       <div className={`${bgClass} px-6 py-5 border-b ${borderClass}`}>
         <div className="flex items-center justify-between mb-2">
           <h3 className={`text-lg font-bold ${colorClass}`}>{title}</h3>
-          <a
-            href={demoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`inline-flex items-center gap-1.5 text-xs font-medium ${colorClass} opacity-80 hover:opacity-100 transition-opacity`}
-          >
-            Live Demo <ExternalLink className="w-3 h-3" />
-          </a>
+          <div className="flex items-center gap-3">
+            {reports?.map((r) => (
+              <a
+                key={r.label}
+                href={r.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                <Download className="w-3 h-3" /> {r.label}
+              </a>
+            ))}
+            <a
+              href={demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-flex items-center gap-1.5 text-xs font-medium ${colorClass} opacity-80 hover:opacity-100 transition-opacity`}
+            >
+              Live Demo <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
         </div>
         <p className="text-sm text-slate-400">{subtitle}</p>
       </div>
@@ -122,6 +137,10 @@ const services: ServiceCardProps[] = [
       { label: 'Throughput', value: '+137%' },
       { label: 'Curriculum', value: '5 stages' },
     ],
+    reports: [
+      { label: 'Report', url: '/reports/desmarl-applied-research.pdf' },
+      { label: 'Paper', url: '/reports/desmarl-research-paper.pdf' },
+    ],
   },
   {
     color: 'blue',
@@ -152,6 +171,9 @@ const services: ServiceCardProps[] = [
       { label: 'Model Base', value: 'BERT' },
       { label: 'ICD Codes', value: '71K+' },
     ],
+    reports: [
+      { label: 'Report', url: '/reports/careplanplus-report.pdf' },
+    ],
   },
   {
     color: 'purple',
@@ -181,6 +203,9 @@ const services: ServiceCardProps[] = [
       { label: 'Model Base', value: 'ClinicalBERT' },
       { label: 'Patients', value: '1,203' },
       { label: 'Note Sections', value: '13' },
+    ],
+    reports: [
+      { label: 'Report', url: '/reports/pulsenotes-report.pdf' },
     ],
   },
   {

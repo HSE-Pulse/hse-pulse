@@ -21,6 +21,9 @@ const skillGroups = [
       'Computer Vision / OCR',
       'Anomaly Detection',
       'Time Series Forecasting',
+      'MedLLaMA2',
+      'Ollama',
+      'RAG Pipelines',
     ],
   },
   {
@@ -86,6 +89,7 @@ const skillGroups = [
       'Azure',
       'GCP',
       'Docker',
+      'Docker Compose',
       'Kubernetes',
       'Helm',
       'Terraform',

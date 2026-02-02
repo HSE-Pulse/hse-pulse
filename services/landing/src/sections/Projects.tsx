@@ -1,6 +1,11 @@
-import { Github, ExternalLink, FileText } from 'lucide-react'
+import { Github, ExternalLink, Download } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
 import { config } from '../config'
+
+interface Report {
+  label: string
+  url: string
+}
 
 interface Project {
   name: string
@@ -14,7 +19,7 @@ interface Project {
   stack: string[]
   github: string
   demo?: string
-  report?: string
+  reports?: Report[]
 }
 
 const projects: Project[] = [
@@ -33,6 +38,10 @@ const projects: Project[] = [
     stack: ['PyTorch', 'MADDPG', 'MAPPO', 'FastAPI', 'WebSocket', 'React', 'MIMIC-IV', 'Docker'],
     github: 'https://github.com/HSE-Pulse/medi-sync',
     demo: config.DESMARL_URL,
+    reports: [
+      { label: 'Applied Research Report', url: '/reports/desmarl-applied-research.pdf' },
+      { label: 'Research Paper', url: '/reports/desmarl-research-paper.pdf' },
+    ],
   },
   {
     name: 'CarePlanPlus',
@@ -49,6 +58,9 @@ const projects: Project[] = [
     stack: ['HuggingFace Transformers', 'BERT', 'Scikit-learn', 'FastAPI', 'React', 'MongoDB', 'Docker'],
     github: 'https://github.com/HSE-Pulse/care-plan-plus',
     demo: config.CAREPLANPLUS_URL,
+    reports: [
+      { label: 'Report', url: '/reports/careplanplus-report.pdf' },
+    ],
   },
   {
     name: 'PulseNotes',
@@ -65,6 +77,9 @@ const projects: Project[] = [
     stack: ['MedLLaMA2', 'Bio_ClinicalBERT', 'Ollama', 'FAISS', 'FastAPI', 'MongoDB', 'React', 'Docker'],
     github: 'https://github.com/HSE-Pulse/pulse-notes',
     demo: config.PULSENOTES_URL,
+    reports: [
+      { label: 'Report', url: '/reports/pulsenotes-report.pdf' },
+    ],
   },
   {
     name: 'PulseFlow',
@@ -179,17 +194,19 @@ export default function Projects() {
                         Live Demo
                       </a>
                     )}
-                    {p.report && (
+                    {p.reports?.map((r) => (
                       <a
-                        href={p.report}
+                        key={r.label}
+                        href={r.url}
                         target="_blank"
                         rel="noopener noreferrer"
+                        download
                         className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
                       >
-                        <FileText className="w-3.5 h-3.5" />
-                        Report
+                        <Download className="w-3.5 h-3.5" />
+                        {r.label}
                       </a>
-                    )}
+                    ))}
                   </div>
                 </div>
               </div>
