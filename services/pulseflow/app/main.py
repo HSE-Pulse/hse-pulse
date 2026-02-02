@@ -440,12 +440,7 @@ async def list_hospitals():
     # Return demo hospitals
     return {
         "hospitals": [
-            {"hospital_code": "UHK", "trolley_code": "UK", "name": "University Hospital Kerry", "region": "South West", "hse_area": "HSE South"},
             {"hospital_code": "CUH", "trolley_code": "CU", "name": "Cork University Hospital", "region": "South", "hse_area": "HSE South"},
-            {"hospital_code": "UHW", "trolley_code": "UW", "name": "University Hospital Waterford", "region": "South East", "hse_area": "HSE South"},
-            {"hospital_code": "UHG", "trolley_code": "GU", "name": "University Hospital Galway", "region": "West", "hse_area": "HSE West"},
-            {"hospital_code": "UHL", "trolley_code": "UL", "name": "University Hospital Limerick", "region": "Mid-West", "hse_area": "HSE West"},
-            {"hospital_code": "SVH", "trolley_code": "SVU", "name": "St Vincent's University Hospital", "region": "Dublin South", "hse_area": "HSE Dublin Mid-Leinster"},
             {"hospital_code": "MUH", "trolley_code": "MMU", "name": "Mater Misericordiae University Hospital", "region": "Dublin North", "hse_area": "HSE Dublin North East"},
             {"hospital_code": "TUH", "trolley_code": "TU", "name": "Tallaght University Hospital", "region": "Dublin South West", "hse_area": "HSE Dublin Mid-Leinster"}
         ]

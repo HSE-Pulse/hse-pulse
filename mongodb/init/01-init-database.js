@@ -15,17 +15,6 @@ db.hospitals.createIndex({ "hospital_code": 1 }, { unique: true });
 
 db.hospitals.insertMany([
     {
-        hospital_code: "UHK",
-        name: "University Hospital Kerry",
-        full_name: "University Hospital Kerry",
-        region: "South West",
-        hse_area: "HSE South",
-        beds_total: 318,
-        ed_capacity: 30,
-        icu_beds: 8,
-        location: { city: "Tralee", county: "Kerry" }
-    },
-    {
         hospital_code: "CUH",
         name: "Cork University Hospital",
         full_name: "Cork University Hospital",
@@ -35,50 +24,6 @@ db.hospitals.insertMany([
         ed_capacity: 55,
         icu_beds: 24,
         location: { city: "Cork", county: "Cork" }
-    },
-    {
-        hospital_code: "UHW",
-        name: "University Hospital Waterford",
-        full_name: "University Hospital Waterford",
-        region: "South East",
-        hse_area: "HSE South",
-        beds_total: 450,
-        ed_capacity: 35,
-        icu_beds: 12,
-        location: { city: "Waterford", county: "Waterford" }
-    },
-    {
-        hospital_code: "UHG",
-        name: "University Hospital Galway",
-        full_name: "University Hospital Galway",
-        region: "West",
-        hse_area: "HSE West",
-        beds_total: 642,
-        ed_capacity: 45,
-        icu_beds: 18,
-        location: { city: "Galway", county: "Galway" }
-    },
-    {
-        hospital_code: "UHL",
-        name: "University Hospital Limerick",
-        full_name: "University Hospital Limerick",
-        region: "Mid-West",
-        hse_area: "HSE West",
-        beds_total: 500,
-        ed_capacity: 40,
-        icu_beds: 15,
-        location: { city: "Limerick", county: "Limerick" }
-    },
-    {
-        hospital_code: "SVH",
-        name: "St Vincent's University Hospital",
-        full_name: "St Vincent's University Hospital",
-        region: "Dublin South",
-        hse_area: "HSE Dublin Mid-Leinster",
-        beds_total: 520,
-        ed_capacity: 42,
-        icu_beds: 16,
-        location: { city: "Dublin", county: "Dublin" }
     },
     {
         hospital_code: "MUH",
@@ -116,8 +61,8 @@ db.trolley_counts.createIndex({ "hospital_code": 1 });
 db.trolley_counts.createIndex({ "date": -1 });
 
 // Generate 90 days of synthetic trolley data
-var hospitals = ["UHK", "CUH", "UHW", "UHG", "UHL", "SVH", "MUH", "TUH"];
-var baseValues = { "UHK": 25, "CUH": 45, "UHW": 30, "UHG": 40, "UHL": 35, "SVH": 38, "MUH": 42, "TUH": 32 };
+var hospitals = ["CUH", "MUH", "TUH"];
+var baseValues = { "CUH": 45, "MUH": 42, "TUH": 32 };
 var trolleyData = [];
 
 for (var d = 0; d < 90; d++) {
