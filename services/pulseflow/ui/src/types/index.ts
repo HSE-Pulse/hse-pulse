@@ -9,6 +9,7 @@ export interface HealthResponse {
 // Hospital
 export interface Hospital {
   hospital_code: string
+  trolley_code: string
   name: string
   region: string
   hse_area: string
@@ -88,6 +89,11 @@ export interface TrainingStatus {
     rmse?: number
     epochs_completed?: number
   }
+}
+
+// Data Info
+export interface LatestDateResponse {
+  latest_date: string | null
 }
 
 // Service Config

@@ -2,6 +2,7 @@ import { API_BASE } from '../config'
 import type {
   HealthResponse,
   Hospital,
+  LatestDateResponse,
   PredictionRequest,
   PredictionResponse,
   TrolleyDataResponse,
@@ -46,6 +47,8 @@ export const api = {
     request<{ hospitals: Hospital[] }>('/hospitals'),
 
   // Historical data
+  latestDate: () =>
+    request<LatestDateResponse>('/data/latest-date'),
   trolleyData: (hospitalCode: string, days = 30) =>
     request<TrolleyDataResponse>(`/trolley-data/${hospitalCode}?days=${days}`),
 

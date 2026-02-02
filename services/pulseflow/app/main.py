@@ -134,6 +134,11 @@ class ModelManager:
                     )
                     last_seq = next_input
 
+            # Inverse-scale predictions from normalized to real trolley counts
+            if self.scaler is not None:
+                scale = self.scaler.data_max_[0] - self.scaler.data_min_[0]
+                predictions = [max(0, round(p * scale + self.scaler.data_min_[0], 1)) for p in predictions]
+
             PREDICTIONS_TOTAL.inc()
             return predictions
 
@@ -142,6 +147,73 @@ class ModelManager:
 model_manager = ModelManager()
 mongo_client: Optional[MongoClient] = None
 db = None
+
+# Mapping: hospitals collection code → trolley_counts collection code
+_TROLLEY_CODE_MAP: dict = {}
+
+
+def _build_trolley_code_map():
+    """Build a mapping from hospital names/codes to trolley_counts codes at startup."""
+    global _TROLLEY_CODE_MAP
+    if db is None:
+        return
+    try:
+        # Get distinct hospital codes + names from trolley_counts
+        trolley_hospitals = {}
+        for doc in db["trolley_counts"].aggregate([
+            {"$group": {"_id": "$hospital_code", "name": {"$first": "$hospital_name"}}}
+        ]):
+            code = doc["_id"]
+            name = doc.get("name", "")
+            trolley_hospitals[code] = name
+            # Map by trolley_counts name (lowercase) → trolley_counts code
+            if name:
+                _TROLLEY_CODE_MAP[name.lower()] = code
+
+        # Now map hospitals collection codes/names → trolley_counts codes
+        for doc in db["hospitals"].find({}, {"hospital_code": 1, "name": 1, "full_name": 1, "_id": 0}):
+            h_code = doc.get("hospital_code", "")
+            h_name = doc.get("name", "")
+            h_full = doc.get("full_name", h_name)
+
+            # Try to find a matching trolley code by partial name match
+            matched = None
+            for t_code, t_name in trolley_hospitals.items():
+                t_lower = t_name.lower()
+                h_lower = h_name.lower()
+                # Direct match, contains, or keyword overlap
+                if h_lower == t_lower or h_lower in t_lower or t_lower in h_lower:
+                    matched = t_code
+                    break
+                # Try full_name
+                if h_full and (h_full.lower() in t_lower or t_lower in h_full.lower()):
+                    matched = t_code
+                    break
+
+            if matched:
+                _TROLLEY_CODE_MAP[h_code.lower()] = matched
+                _TROLLEY_CODE_MAP[h_name.lower()] = matched
+                if h_full:
+                    _TROLLEY_CODE_MAP[h_full.lower()] = matched
+
+        logger.info(f"Trolley code map built: {len(_TROLLEY_CODE_MAP)} entries")
+    except Exception as e:
+        logger.warning(f"Error building trolley code map: {e}")
+
+
+def _resolve_trolley_code(hospital_ref: str) -> Optional[str]:
+    """Resolve a hospital name or code to its trolley_counts code."""
+    if not hospital_ref:
+        return None
+    # Direct lookup in trolley_counts
+    if db is not None:
+        try:
+            if db["trolley_counts"].find_one({"hospital_code": hospital_ref}, {"_id": 1}):
+                return hospital_ref
+        except Exception:
+            pass
+    # Map lookup
+    return _TROLLEY_CODE_MAP.get(hospital_ref.lower())
 
 
 @asynccontextmanager
@@ -164,6 +236,7 @@ async def lifespan(app: FastAPI):
         mongo_client.admin.command('ping')
         db = mongo_client[os.getenv("MONGO_DB", "HSE")]
         logger.info("Connected to MongoDB")
+        _build_trolley_code_map()
     except Exception as e:
         logger.warning(f"MongoDB connection failed: {e}. Using demo data.")
         db = None
@@ -294,8 +367,9 @@ async def predict_patient_flow(request: PredictionRequest):
         if db is not None:
             try:
                 collection = db["trolley_counts"]
+                trolley_code = _resolve_trolley_code(request.hospital) or request.hospital
                 df = pd.DataFrame(list(collection.find({
-                    'hospital_code': request.hospital
+                    'hospital_code': trolley_code
                 }).sort('date', -1).limit(100)))
 
                 if len(df) >= 7:
@@ -355,6 +429,10 @@ async def list_hospitals():
             hospitals_collection = db["hospitals"]
             hospitals = list(hospitals_collection.find({}, {"_id": 0}))
             if hospitals:
+                # Enrich with trolley_code for data lookups
+                for h in hospitals:
+                    tc = _resolve_trolley_code(h.get("hospital_code", "")) or _resolve_trolley_code(h.get("name", ""))
+                    h["trolley_code"] = tc or h.get("hospital_code", "")
                 return {"hospitals": hospitals}
         except Exception as e:
             logger.warning(f"Error fetching hospitals: {e}")
@@ -362,14 +440,14 @@ async def list_hospitals():
     # Return demo hospitals
     return {
         "hospitals": [
-            {"hospital_code": "UHK", "name": "University Hospital Kerry", "region": "South West", "hse_area": "HSE South"},
-            {"hospital_code": "CUH", "name": "Cork University Hospital", "region": "South", "hse_area": "HSE South"},
-            {"hospital_code": "UHW", "name": "University Hospital Waterford", "region": "South East", "hse_area": "HSE South"},
-            {"hospital_code": "UHG", "name": "University Hospital Galway", "region": "West", "hse_area": "HSE West"},
-            {"hospital_code": "UHL", "name": "University Hospital Limerick", "region": "Mid-West", "hse_area": "HSE West"},
-            {"hospital_code": "SVH", "name": "St Vincent's University Hospital", "region": "Dublin South", "hse_area": "HSE Dublin Mid-Leinster"},
-            {"hospital_code": "MUH", "name": "Mater Misericordiae University Hospital", "region": "Dublin North", "hse_area": "HSE Dublin North East"},
-            {"hospital_code": "TUH", "name": "Tallaght University Hospital", "region": "Dublin South West", "hse_area": "HSE Dublin Mid-Leinster"}
+            {"hospital_code": "UHK", "trolley_code": "UK", "name": "University Hospital Kerry", "region": "South West", "hse_area": "HSE South"},
+            {"hospital_code": "CUH", "trolley_code": "CU", "name": "Cork University Hospital", "region": "South", "hse_area": "HSE South"},
+            {"hospital_code": "UHW", "trolley_code": "UW", "name": "University Hospital Waterford", "region": "South East", "hse_area": "HSE South"},
+            {"hospital_code": "UHG", "trolley_code": "GU", "name": "University Hospital Galway", "region": "West", "hse_area": "HSE West"},
+            {"hospital_code": "UHL", "trolley_code": "UL", "name": "University Hospital Limerick", "region": "Mid-West", "hse_area": "HSE West"},
+            {"hospital_code": "SVH", "trolley_code": "SVU", "name": "St Vincent's University Hospital", "region": "Dublin South", "hse_area": "HSE Dublin Mid-Leinster"},
+            {"hospital_code": "MUH", "trolley_code": "MMU", "name": "Mater Misericordiae University Hospital", "region": "Dublin North", "hse_area": "HSE Dublin North East"},
+            {"hospital_code": "TUH", "trolley_code": "TU", "name": "Tallaght University Hospital", "region": "Dublin South West", "hse_area": "HSE Dublin Mid-Leinster"}
         ]
     }
 
@@ -377,18 +455,43 @@ async def list_hospitals():
 @app.get("/trolley-data/{hospital_code}")
 async def get_trolley_data(hospital_code: str, days: int = 30):
     """Get recent trolley data for a hospital."""
+    resolved = _resolve_trolley_code(hospital_code) or hospital_code
     if db is not None:
         try:
             collection = db["trolley_counts"]
             data = list(collection.find(
-                {"hospital_code": hospital_code},
+                {"hospital_code": resolved},
                 {"_id": 0}
             ).sort("date", -1).limit(days))
-            return {"hospital_code": hospital_code, "records": data}
+            return {"hospital_code": resolved, "records": data}
         except Exception as e:
             logger.warning(f"Error fetching trolley data: {e}")
 
-    return {"hospital_code": hospital_code, "records": [], "message": "No data available"}
+    return {"hospital_code": resolved, "records": [], "message": "No data available"}
+
+
+@app.get("/data/latest-date")
+async def get_latest_date():
+    """Get the most recent date available in trolley data."""
+    if db is not None:
+        try:
+            collection = db["trolley_counts"]
+            latest = collection.find_one(
+                {},
+                {"date": 1, "_id": 0},
+                sort=[("date", -1)]
+            )
+            if latest and "date" in latest:
+                date_val = latest["date"]
+                if isinstance(date_val, str):
+                    date_str = date_val[:10]
+                else:
+                    date_str = date_val.strftime("%Y-%m-%d")
+                return {"latest_date": date_str}
+        except Exception as e:
+            logger.warning(f"Error fetching latest date: {e}")
+
+    return {"latest_date": None}
 
 
 @app.get("/")

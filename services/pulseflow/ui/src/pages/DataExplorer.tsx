@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   Loader2,
   BarChart3,
@@ -19,6 +19,7 @@ import type { Hospital, TrolleyRecord } from '../types'
 
 export default function DataExplorer() {
   const { data: hospitalData } = useApi(() => api.hospitals(), [])
+  const { data: latestDateData } = useApi(() => api.latestDate(), [])
   const hospitals = hospitalData?.hospitals ?? []
 
   const [hospitalCode, setHospitalCode] = useState('')
@@ -28,12 +29,18 @@ export default function DataExplorer() {
   const [error, setError] = useState<string | null>(null)
   const [fetched, setFetched] = useState(false)
 
-  const handleFetch = async () => {
-    if (!hospitalCode) return
+  const resolveCode = (code: string) => {
+    const h = hospitals.find((h: Hospital) => h.hospital_code === code)
+    return h?.trolley_code || code
+  }
+
+  const handleFetch = async (code?: string) => {
+    const targetCode = code || hospitalCode
+    if (!targetCode) return
     setLoading(true)
     setError(null)
     try {
-      const res = await api.trolleyData(hospitalCode, days)
+      const res = await api.trolleyData(resolveCode(targetCode), days)
       setRecords(res.records)
       setFetched(true)
     } catch (e: unknown) {
@@ -43,9 +50,25 @@ export default function DataExplorer() {
     }
   }
 
+  // Auto-load first hospital on page load
+  useEffect(() => {
+    if (hospitals.length > 0 && !hospitalCode) {
+      const first = hospitals[0].hospital_code
+      setHospitalCode(first)
+    }
+  }, [hospitals, hospitalCode])
+
+  // Auto-fetch when hospital code is set
+  useEffect(() => {
+    if (hospitalCode && hospitals.length > 0) {
+      handleFetch(hospitalCode)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hospitalCode, hospitals])
+
   const chartData = useMemo(() =>
-    [...records].reverse().map((r) => ({
-      date: r.date?.slice(5, 10) ?? '',
+    [...records].sort((a, b) => a.date.localeCompare(b.date)).map((r) => ({
+      date: r.date?.slice(0, 10) ?? '',
       trolley_count: r.trolley_count ?? 0,
     })), [records])
 
@@ -61,11 +84,18 @@ export default function DataExplorer() {
     }
   }, [records])
 
+  const selectedName = hospitals.find((h: Hospital) => h.hospital_code === hospitalCode)?.name ?? hospitalCode
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Controls */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
-        <h3 className="text-sm font-semibold text-slate-900 mb-4">Query Historical Data</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-slate-900">Query Historical Data</h3>
+          {latestDateData?.latest_date && (
+            <span className="text-xs text-slate-500">Data available up to {latestDateData.latest_date}</span>
+          )}
+        </div>
         <div className="flex flex-wrap gap-4 items-end">
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">Hospital</label>
@@ -96,7 +126,7 @@ export default function DataExplorer() {
           </div>
 
           <button
-            onClick={handleFetch}
+            onClick={() => handleFetch()}
             disabled={loading || !hospitalCode}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
@@ -134,13 +164,13 @@ export default function DataExplorer() {
         <div className="bg-white rounded-2xl border border-slate-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="w-4 h-4 text-primary-600" />
-            <h3 className="text-sm font-semibold text-slate-900">Trolley Count Over Time</h3>
+            <h3 className="text-sm font-semibold text-slate-900">Trolley Count: {selectedName}</h3>
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#94a3b8" />
+                <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#94a3b8" interval="preserveStartEnd" />
                 <YAxis tick={{ fontSize: 12 }} stroke="#94a3b8" />
                 <Tooltip
                   contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13 }}
@@ -174,7 +204,7 @@ export default function DataExplorer() {
                 <tbody>
                   {records.map((r, i) => (
                     <tr key={i} className="border-t border-slate-50 hover:bg-slate-50/50">
-                      <td className="px-6 py-3 text-slate-900 font-medium">{r.date}</td>
+                      <td className="px-6 py-3 text-slate-900 font-medium">{r.date?.slice(0, 10)}</td>
                       <td className="px-6 py-3 text-right font-semibold text-primary-700">{r.trolley_count ?? '-'}</td>
                       <td className="px-6 py-3 text-right text-slate-600">{r.admissions ?? '-'}</td>
                       <td className="px-6 py-3 text-right text-slate-600">{r.discharges ?? '-'}</td>

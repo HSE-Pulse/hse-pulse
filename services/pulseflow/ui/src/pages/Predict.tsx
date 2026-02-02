@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
   TrendingUp,
@@ -15,19 +15,21 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from 'recharts'
 import { useApi } from '../hooks/useApi'
 import { api } from '../api/client'
-import type { Hospital, PredictionResponse } from '../types'
+import type { Hospital, PredictionResponse, TrolleyRecord } from '../types'
 
 export default function Predict() {
   const [searchParams] = useSearchParams()
   const { data: hospitalData } = useApi(() => api.hospitals(), [])
+  const { data: latestDateData } = useApi(() => api.latestDate(), [])
   const hospitals = hospitalData?.hospitals ?? []
 
   const [hospital, setHospital] = useState('')
   const [region, setRegion] = useState('')
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const [date, setDate] = useState('')
   const [forecastDays, setForecastDays] = useState(7)
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [surgeCapacity, setSurgeCapacity] = useState('')
@@ -36,8 +38,16 @@ export default function Predict() {
   const [waiting75y24hrs, setWaiting75y24hrs] = useState('')
 
   const [result, setResult] = useState<PredictionResponse | null>(null)
+  const [historicalRecords, setHistoricalRecords] = useState<TrolleyRecord[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Set date to last available data date once fetched
+  useEffect(() => {
+    if (latestDateData?.latest_date && !date) {
+      setDate(latestDateData.latest_date)
+    }
+  }, [latestDateData, date])
 
   // Auto-fill hospital from URL param
   useEffect(() => {
@@ -55,8 +65,18 @@ export default function Predict() {
     if (found) setRegion(found.region)
   }, [hospital, hospitals])
 
+  // Auto-fetch last 30 records when hospital changes
+  useEffect(() => {
+    if (!hospital || hospitals.length === 0) return
+    const found = hospitals.find((h: Hospital) => h.name === hospital)
+    if (!found) return
+    api.trolleyData(found.trolley_code || found.hospital_code, 30)
+      .then((res) => setHistoricalRecords(res.records))
+      .catch(() => setHistoricalRecords([]))
+  }, [hospital, hospitals])
+
   const handlePredict = async () => {
-    if (!hospital || !region) return
+    if (!hospital || !region || !date) return
     setLoading(true)
     setError(null)
     try {
@@ -78,13 +98,39 @@ export default function Predict() {
     }
   }
 
-  const chartData = result?.forecast.map((f) => ({
-    date: f.date.slice(5),
-    day: f.day.slice(0, 3),
-    predicted: f.predicted_trolleys,
-    lower: f.confidence_lower,
-    upper: f.confidence_upper,
-  })) ?? []
+  // Build combined chart: last 30 actual + predicted
+  const chartData = useMemo(() => {
+    const data: { date: string; actual: number | null; predicted: number | null; lower: number | null; upper: number | null }[] = []
+
+    // Add historical records (reverse to chronological order)
+    const sorted = [...historicalRecords].sort((a, b) => a.date.localeCompare(b.date))
+    for (const r of sorted) {
+      data.push({
+        date: r.date?.slice(0, 10) ?? '',
+        actual: r.trolley_count ?? null,
+        predicted: null,
+        lower: null,
+        upper: null,
+      })
+    }
+
+    // Add predictions
+    if (result) {
+      for (const f of result.forecast) {
+        data.push({
+          date: f.date,
+          actual: null,
+          predicted: f.predicted_trolleys,
+          lower: f.confidence_lower,
+          upper: f.confidence_upper,
+        })
+      }
+    }
+
+    return data
+  }, [historicalRecords, result])
+
+  const dividerDate = latestDateData?.latest_date || date
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -122,7 +168,9 @@ export default function Predict() {
 
           {/* Date */}
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">Start Date</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1.5">
+              Forecast From {latestDateData?.latest_date ? '(last data: ' + latestDateData.latest_date + ')' : ''}
+            </label>
             <input
               type="date"
               value={date}
@@ -190,7 +238,7 @@ export default function Predict() {
         <div className="flex items-center gap-4 mt-5">
           <button
             onClick={handlePredict}
-            disabled={loading || !hospital}
+            disabled={loading || !hospital || !date}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <TrendingUp className="w-4 h-4" />}
@@ -212,78 +260,90 @@ export default function Predict() {
         )}
       </div>
 
-      {/* Results */}
+      {/* Combined Chart: Actual + Predicted */}
+      {chartData.length > 0 && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-slate-900">
+              {result ? `Actual vs Predicted: ${result.hospital}` : `Last 30 Records: ${hospital}`}
+            </h3>
+            <div className="flex items-center gap-4 text-xs text-slate-500">
+              <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-blue-500 inline-block rounded" /> Actual</span>
+              {result && <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-amber-500 inline-block rounded" /> Predicted</span>}
+            </div>
+          </div>
+          {result && (
+            <p className="text-xs text-slate-400 mb-4">
+              {historicalRecords.length} historical records + {result.forecast.length} day forecast from {result.forecast_start}
+            </p>
+          )}
+
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorPred" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorCI" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#94a3b8" interval="preserveStartEnd" />
+                <YAxis tick={{ fontSize: 12 }} stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13 }}
+                  formatter={(value, name) => value != null ? [String(value), String(name)] : ['-', String(name)]}
+                />
+                {dividerDate && <ReferenceLine x={dividerDate} stroke="#94a3b8" strokeDasharray="4 4" label={{ value: 'Forecast →', position: 'top', fontSize: 11, fill: '#94a3b8' }} />}
+                <Area type="monotone" dataKey="upper" stroke="none" fill="url(#colorCI)" name="CI Upper" connectNulls={false} />
+                <Area type="monotone" dataKey="lower" stroke="none" fill="transparent" name="CI Lower" connectNulls={false} />
+                <Area type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={2} fill="url(#colorActual)" name="Actual Trolleys" connectNulls={false} />
+                <Area type="monotone" dataKey="predicted" stroke="#f59e0b" strokeWidth={2} fill="url(#colorPred)" name="Predicted Trolleys" connectNulls={false} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* Forecast Table */}
       {result && (
-        <>
-          {/* Chart */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-slate-900">
-                Forecast: {result.hospital}
-              </h3>
-              <span className="text-xs text-slate-500">
-                {result.forecast_start} + {result.forecast.length} days
-              </span>
-            </div>
-
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorPred" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="colorCI" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="#94a3b8" />
-                  <YAxis tick={{ fontSize: 12 }} stroke="#94a3b8" />
-                  <Tooltip
-                    contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13 }}
-                  />
-                  <Area type="monotone" dataKey="upper" stroke="none" fill="url(#colorCI)" name="CI Upper" />
-                  <Area type="monotone" dataKey="lower" stroke="none" fill="transparent" name="CI Lower" />
-                  <Area type="monotone" dataKey="predicted" stroke="#f59e0b" strokeWidth={2} fill="url(#colorPred)" name="Predicted Trolleys" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100">
+            <h3 className="text-sm font-semibold text-slate-900">Forecast Details</h3>
           </div>
-
-          {/* Forecast Table */}
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100">
-              <h3 className="text-sm font-semibold text-slate-900">Forecast Details</h3>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-slate-50">
-                    <th className="text-left px-6 py-3 font-medium text-slate-500">Date</th>
-                    <th className="text-left px-6 py-3 font-medium text-slate-500">Day</th>
-                    <th className="text-right px-6 py-3 font-medium text-slate-500">Predicted Trolleys</th>
-                    <th className="text-right px-6 py-3 font-medium text-slate-500">CI Lower</th>
-                    <th className="text-right px-6 py-3 font-medium text-slate-500">CI Upper</th>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-slate-50">
+                  <th className="text-left px-6 py-3 font-medium text-slate-500">Date</th>
+                  <th className="text-left px-6 py-3 font-medium text-slate-500">Day</th>
+                  <th className="text-right px-6 py-3 font-medium text-slate-500">Predicted Trolleys</th>
+                  <th className="text-right px-6 py-3 font-medium text-slate-500">CI Lower</th>
+                  <th className="text-right px-6 py-3 font-medium text-slate-500">CI Upper</th>
+                </tr>
+              </thead>
+              <tbody>
+                {result.forecast.map((f) => (
+                  <tr key={f.date} className="border-t border-slate-50 hover:bg-slate-50/50">
+                    <td className="px-6 py-3 text-slate-900 font-medium">{f.date}</td>
+                    <td className="px-6 py-3 text-slate-600">{f.day}</td>
+                    <td className="px-6 py-3 text-right font-semibold text-primary-700">{f.predicted_trolleys}</td>
+                    <td className="px-6 py-3 text-right text-slate-500">{f.confidence_lower}</td>
+                    <td className="px-6 py-3 text-right text-slate-500">{f.confidence_upper}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {result.forecast.map((f) => (
-                    <tr key={f.date} className="border-t border-slate-50 hover:bg-slate-50/50">
-                      <td className="px-6 py-3 text-slate-900 font-medium">{f.date}</td>
-                      <td className="px-6 py-3 text-slate-600">{f.day}</td>
-                      <td className="px-6 py-3 text-right font-semibold text-primary-700">{f.predicted_trolleys}</td>
-                      <td className="px-6 py-3 text-right text-slate-500">{f.confidence_lower}</td>
-                      <td className="px-6 py-3 text-right text-slate-500">{f.confidence_upper}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </>
+        </div>
       )}
     </div>
   )
