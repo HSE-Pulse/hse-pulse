@@ -51,41 +51,46 @@ QUERIES_TOTAL = Counter('queries_total', 'Total NLP queries processed')
 # Clinical note section patterns (MIMIC-IV style)
 SECTION_PATTERNS = {
     'chief_complaint': [
-        r'(?:chief\s+complaint|cc|reason\s+for\s+(?:visit|admission)|presenting\s+complaint)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+:)[^\n]+)*)',
-        r'(?:chief\s+complaint|cc)[:\s]*\n([^\n]+(?:\n(?![A-Z][a-z]+:)[^\n]+)*)'
+        r'(?:^|\n)\s*(?:Chief\s+Complaint|CC|Reason\s+for\s+(?:Visit|Admission)|Presenting\s+Complaint)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'history_of_present_illness': [
-        r'(?:history\s+of\s+present\s+illness|hpi|present\s+illness)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:History\s+of\s+Present\s+Illness|HPI|Present\s+Illness)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'past_medical_history': [
-        r'(?:past\s+medical\s+history|pmh|medical\s+history)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Past\s+Medical\s+History|PMH|Medical\s+History)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'medications': [
-        r'(?:medications|current\s+medications|home\s+medications|meds)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Discharge\s+Medications|Medications\s+on\s+Admission|Current\s+Medications|Home\s+Medications)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Medications)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'allergies': [
-        r'(?:allergies|drug\s+allergies|nkda)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Allergies|Drug\s+Allergies|NKDA)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'physical_exam': [
-        r'(?:physical\s+exam(?:ination)?|pe|exam)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Physical\s+Exam(?:ination)?|Discharge\s+Exam)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'assessment': [
-        r'(?:assessment|impression|diagnosis|diagnoses)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Assessment\s+and\s+Plan|Assessment|Impression)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'plan': [
-        r'(?:plan|treatment\s+plan|recommendations)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Discharge\s+Disposition|Plan|Treatment\s+Plan|Recommendations)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'discharge_diagnosis': [
-        r'(?:discharge\s+diagnos(?:is|es)|final\s+diagnos(?:is|es))[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Discharge\s+Diagnos(?:is|es)|Final\s+Diagnos(?:is|es)|Primary\s+Diagnos(?:is|es))[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Diagnos(?:is|es))[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'discharge_instructions': [
-        r'(?:discharge\s+instructions|instructions)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Discharge\s+Instructions|Discharge\s+Condition)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'vital_signs': [
-        r'(?:vital\s+signs|vitals)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Vital\s+Signs?|Vitals|Pertinent\s+Results)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ],
     'lab_results': [
-        r'(?:lab(?:oratory)?\s+results?|labs)[:\s]*([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Lab(?:oratory)?\s+Results?|Labs|Pertinent\s+Results)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+    ],
+    'surgical_procedures': [
+        r'(?:^|\n)\s*(?:Major\s+Surgical\s+or\s+Invasive\s+Procedures?)[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
+        r'(?:^|\n)\s*(?:Surgical?\s+Procedures?|Operative\s+(?:Procedure|Report))[:\s]*\n?([^\n]+(?:\n(?![A-Z][a-z]+\s*:)[^\n]+)*)',
     ]
 }
 
@@ -102,9 +107,10 @@ QUERY_PATTERNS = {
         r'admission\s*#?\s*(\d+)',
     ],
     'segment': [
-        r'(?:what\s+(?:is|was|were|are)\s+(?:the\s+)?)(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?)',
-        r'(?:show|get|find|extract|list)\s+(?:the\s+)?(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?|discharge\s+summary)',
-        r'(chief\s+complaint|hpi|history\s+of\s+present\s+illness|past\s+medical\s+history|medications?|allergies|physical\s+exam|assessment|plan|discharge\s+summary|discharge\s+diagnosis|discharge\s+instructions|discharge|diagnosis|diagnoses|vitals?|labs?)\s*[,\s]+(?:for|of|from|patient|admission)',
+        r'(?:what\s+(?:is|was|were|are)\s+(?:the\s+)?)(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?|surgical\s+procedures?|procedures?)',
+        r'(?:what\s+)(surgical\s+procedures?|medications?|procedures?|labs?|vitals?|allergies|diagnos[ei]s)(?:\s+(?:were|was|are|is)\s+)',
+        r'(?:show|get|find|extract|list)\s+(?:the\s+)?(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?|discharge\s+summary|surgical\s+procedures?|procedures?)',
+        r'(chief\s+complaint|hpi|history\s+of\s+present\s+illness|past\s+medical\s+history|medications?|allergies|physical\s+exam|assessment|plan|discharge\s+summary|discharge\s+diagnosis|discharge\s+instructions|discharge|diagnosis|diagnoses|vitals?|labs?|surgical\s+procedures?|procedures?)\s*[,\s]+(?:for|of|from|patient|admission)',
     ]
 }
 
@@ -469,13 +475,18 @@ Plan: Urinalysis, Urine culture, IV fluids, Empiric antibiotics (Ciprofloxacin)"
                 ]
 
     def find_patient_notes(self, subject_id: int = None, hadm_id: int = None) -> List[Dict[str, Any]]:
-        """Find all notes for a specific patient or admission."""
+        """Find all notes for a specific patient or admission in the FAISS index."""
         results = []
         for doc in self.documents:
-            if subject_id and doc.get('subject_id') == subject_id:
-                results.append(doc)
-            elif hadm_id and doc.get('hadm_id') == hadm_id:
-                results.append(doc)
+            if subject_id and hadm_id:
+                if doc.get('subject_id') == subject_id and doc.get('hadm_id') == hadm_id:
+                    results.append(doc)
+            elif subject_id:
+                if doc.get('subject_id') == subject_id:
+                    results.append(doc)
+            elif hadm_id:
+                if doc.get('hadm_id') == hadm_id:
+                    results.append(doc)
         return results
 
     # Regex for detecting MIMIC-IV section headers (e.g. "History of Present Illness:", "Major Surgical...")
@@ -500,11 +511,18 @@ Plan: Urinalysis, Urine culture, IV fluids, Empiric antibiotics (Ciprofloxacin)"
             'diagnosis': 'discharge_diagnosis',
             'diagnoses': 'discharge_diagnosis',
             'vitals': 'vital_signs',
+            'vital': 'vital_signs',
             'labs': 'lab_results',
+            'lab': 'lab_results',
+            'lab_result': 'lab_results',
             'history': 'history_of_present_illness',
             'discharge': 'discharge_diagnosis',
             'discharge_summary': 'discharge_diagnosis',
             'discharge_instructions': 'discharge_instructions',
+            'surgical_procedure': 'surgical_procedures',
+            'surgical_procedures': 'surgical_procedures',
+            'procedures': 'surgical_procedures',
+            'procedure': 'surgical_procedures',
         }
 
         section_key = section_aliases.get(section_key, section_key)
@@ -780,15 +798,17 @@ async def rag_query(request: RAGQueryRequest):
     """
     RAG-based query endpoint for natural language questions about patients.
 
+    For patient/admission lookups: queries MongoDB directly (source of truth).
+    For free-text semantic search: uses FAISS index with ClinicalBERT embeddings.
+
     Examples:
-    - "what was the chief complaint of patient 10188106"
-    - "show medications for admission 20001234"
-    - "find history of present illness for patient 10245789"
+    - "what was the chief complaint of patient 13297743"
+    - "show medications for admission 29174671"
+    - "patient with chest pain and ST elevation"
     """
     start_time = time.time()
 
     try:
-        # Parse the query to understand intent
         parsed = nlp_manager.parse_query(request.query)
 
         result = {
@@ -799,18 +819,15 @@ async def rag_query(request: RAGQueryRequest):
             "segment_requested": parsed['segment'],
             "answer": None,
             "source_notes": [],
+            "total_notes": 0,
             "inference_time_ms": 0
         }
 
-        if parsed['query_type'] == 'patient_lookup' or parsed['query_type'] == 'segment_extraction':
-            # Find patient notes
-            notes = nlp_manager.find_patient_notes(
-                subject_id=parsed['subject_id'],
-                hadm_id=parsed['hadm_id']
-            )
+        if parsed['query_type'] in ('patient_lookup', 'segment_extraction'):
+            # ── Patient / admission lookup: MongoDB is the primary source ──
+            notes = []
 
-            # Also search MongoDB if available
-            if db is not None and not notes:
+            if db is not None:
                 try:
                     query_filter = {}
                     if parsed['subject_id']:
@@ -819,56 +836,87 @@ async def rag_query(request: RAGQueryRequest):
                         query_filter['hadm_id'] = parsed['hadm_id']
 
                     if query_filter:
-                        db_notes = list(db['clinical_notes'].find(query_filter))
+                        db_notes = list(db['clinical_notes'].find(query_filter).sort('charttime', -1))
                         for note in db_notes:
                             notes.append({
                                 'id': str(note.get('_id')),
+                                'note_id': note.get('note_id'),
                                 'subject_id': note.get('subject_id'),
                                 'hadm_id': note.get('hadm_id'),
                                 'text': note.get('text', ''),
-                                'charttime': note.get('charttime', ''),
+                                'charttime': str(note.get('charttime', '') or note.get('chartdate', '') or ''),
                                 'category': note.get('category', 'General'),
                                 'note_type': note.get('note_type', 'Clinical Note')
                             })
                 except Exception as e:
                     logger.warning(f"Database query failed: {e}")
 
+            # Fallback to FAISS index if MongoDB unavailable or empty
+            if not notes:
+                notes = nlp_manager.find_patient_notes(
+                    subject_id=parsed['subject_id'],
+                    hadm_id=parsed['hadm_id']
+                )
+
+            result["total_notes"] = len(notes)
+
             if notes:
-                # Limit source_notes to 10 most relevant and include useful metadata
+                # Build source_notes with both preview and full text
                 display_notes = notes[:10]
                 result["source_notes"] = [
                     {
-                        'id': n.get('id'),
+                        'id': n.get('id') or n.get('note_id'),
                         'subject_id': n.get('subject_id'),
                         'hadm_id': n.get('hadm_id'),
                         'note_type': n.get('note_type'),
                         'category': n.get('category'),
                         'charttime': n.get('charttime', ''),
-                        'text_preview': (n.get('text', '') or '')[:300],
+                        'text_preview': (n.get('text', '') or '')[:500],
+                        'text': n.get('text', ''),
                     }
                     for n in display_notes
                 ]
 
                 # Extract requested segment if specified
                 if parsed['segment']:
+                    extracted_parts = []
                     for note in notes:
                         extracted = nlp_manager.extract_section(note.get('text', ''), parsed['segment'])
                         if extracted:
-                            result["answer"] = extracted
-                            break
+                            hadm_label = f"[Admission {note.get('hadm_id')}]" if note.get('hadm_id') else ""
+                            extracted_parts.append(f"{hadm_label}\n{extracted}" if hadm_label else extracted)
+                            if len(extracted_parts) >= 5:
+                                break
 
-                    if not result["answer"]:
-                        result["answer"] = f"Could not find '{parsed['segment']}' section in the patient's notes."
+                    if extracted_parts:
+                        result["answer"] = "\n\n".join(extracted_parts)
+                    else:
+                        result["answer"] = f"Could not find '{parsed['segment']}' section in the patient's {len(notes)} note(s). The full notes are shown below."
                 else:
-                    # Return summary of available notes
-                    result["answer"] = f"Found {len(notes)} note(s) for patient. Note types: {', '.join(set(n.get('note_type', 'Unknown') for n in notes))}"
-
+                    note_types = sorted(set(n.get('note_type', 'Unknown') for n in notes))
+                    hadm_ids = sorted(set(n.get('hadm_id') for n in notes if n.get('hadm_id')))
+                    summary = f"Found {len(notes)} note(s)"
+                    if parsed['subject_id']:
+                        summary += f" for patient {parsed['subject_id']}"
+                    if parsed['hadm_id']:
+                        summary += f" (admission {parsed['hadm_id']})"
+                    summary += f". Note types: {', '.join(note_types)}"
+                    if len(hadm_ids) > 1:
+                        summary += f". Across {len(hadm_ids)} admission(s): {', '.join(str(h) for h in hadm_ids[:5])}"
+                        if len(hadm_ids) > 5:
+                            summary += f" (+{len(hadm_ids) - 5} more)"
+                    result["answer"] = summary
             else:
-                result["answer"] = f"No notes found for {'patient ' + str(parsed['subject_id']) if parsed['subject_id'] else 'admission ' + str(parsed['hadm_id'])}"
+                target = []
+                if parsed['subject_id']:
+                    target.append(f"patient {parsed['subject_id']}")
+                if parsed['hadm_id']:
+                    target.append(f"admission {parsed['hadm_id']}")
+                result["answer"] = f"No notes found for {' / '.join(target)}"
 
         else:
-            # Regular semantic search
-            search_results = nlp_manager.search(request.query, 3)
+            # ── Semantic search: use FAISS index ──
+            search_results = nlp_manager.search(request.query, 5)
             if search_results:
                 result["source_notes"] = [
                     {
@@ -877,12 +925,15 @@ async def rag_query(request: RAGQueryRequest):
                         'hadm_id': r.get('hadm_id'),
                         'note_type': r.get('note_type'),
                         'category': r.get('category'),
+                        'charttime': r.get('charttime', ''),
+                        'text_preview': (r.get('text', '') or '')[:500],
+                        'text': r.get('text', ''),
                         'score': r.get('score')
                     }
                     for r in search_results
                 ]
-                # Return most relevant note excerpt
-                result["answer"] = search_results[0].get('text', '')[:500] + "..."
+                result["total_notes"] = len(search_results)
+                result["answer"] = search_results[0].get('text', '')[:500]
 
         result["inference_time_ms"] = round((time.time() - start_time) * 1000, 2)
         QUERIES_TOTAL.inc()
@@ -912,35 +963,43 @@ async def extract_entities(request: EntityExtractionRequest):
 
 
 @app.get("/patients/{subject_id}/notes")
-async def get_patient_notes(subject_id: int):
-    """Get all notes for a specific patient."""
+async def get_patient_notes(subject_id: int, hadm_id: Optional[int] = None):
+    """Get all notes for a specific patient, optionally filtered by admission."""
     start_time = time.time()
 
     try:
-        notes = nlp_manager.find_patient_notes(subject_id=subject_id)
+        notes = []
 
-        # Also check MongoDB
+        # MongoDB is the primary source
         if db is not None:
             try:
-                db_notes = list(db['clinical_notes'].find({'subject_id': subject_id}))
+                query_filter = {'subject_id': subject_id}
+                if hadm_id:
+                    query_filter['hadm_id'] = hadm_id
+                db_notes = list(db['clinical_notes'].find(query_filter).sort('charttime', -1))
                 for note in db_notes:
-                    # Avoid duplicates
-                    if not any(n.get('subject_id') == subject_id and n.get('text') == note.get('text') for n in notes):
-                        notes.append({
-                            'id': str(note.get('_id')),
-                            'subject_id': note.get('subject_id'),
-                            'hadm_id': note.get('hadm_id'),
-                            'text': note.get('text', ''),
-                            'category': note.get('category', 'General'),
-                            'note_type': note.get('note_type', 'Clinical Note')
-                        })
+                    notes.append({
+                        'id': str(note.get('_id')),
+                        'note_id': note.get('note_id'),
+                        'subject_id': note.get('subject_id'),
+                        'hadm_id': note.get('hadm_id'),
+                        'text': note.get('text', ''),
+                        'charttime': str(note.get('charttime', '') or note.get('chartdate', '') or ''),
+                        'category': note.get('category', 'General'),
+                        'note_type': note.get('note_type', 'Clinical Note')
+                    })
             except Exception as e:
                 logger.warning(f"Database query failed: {e}")
+
+        # Fallback to FAISS index
+        if not notes:
+            notes = nlp_manager.find_patient_notes(subject_id=subject_id, hadm_id=hadm_id)
 
         inference_time = (time.time() - start_time) * 1000
 
         return {
             'subject_id': subject_id,
+            'hadm_id': hadm_id,
             'notes_count': len(notes),
             'notes': notes,
             'inference_time_ms': round(inference_time, 2)

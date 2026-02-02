@@ -27,7 +27,10 @@ interface Message {
   content: string
   chunks?: RAGChunk[]
   patientId?: number | null
+  hadmId?: number | null
   numChunks?: number
+  totalNotes?: number
+  queryType?: string
   timestamp: Date
 }
 
@@ -137,24 +140,35 @@ export default function SearchEngine() {
         // Map FastAPI response format to UI format
         const chunks: RAGChunk[] = (data.source_notes || []).map((note: Record<string, unknown>) => ({
           text: (note.text_preview as string) || '',
-          original_text: (note.text_preview as string) || '',
+          original_text: (note.text as string) || (note.text_preview as string) || '',
           metadata: {
             subject_id: note.subject_id as number,
             hadm_id: note.hadm_id as number,
             note_type: (note.note_type || note.category || 'Unknown') as string,
             charttime: (note.charttime as string) || '',
-            note_id: note.id as string,
+            note_id: (note.id || note.note_id) as string,
           },
           distance: typeof note.score === 'number' ? note.score : 0,
         }))
 
+        const isPatientLookup = data.query_type === 'patient_lookup' || data.query_type === 'segment_extraction'
+        const msgId = `asst-${Date.now()}`
+
+        // Auto-expand evidence for patient lookups since notes ARE the result
+        if (isPatientLookup && chunks.length > 0) {
+          setExpandedChunks((prev) => new Set([...prev, msgId]))
+        }
+
         const assistantMsg: Message = {
-          id: `asst-${Date.now()}`,
+          id: msgId,
           role: 'assistant',
           content: data.answer || data.response || 'No answer available.',
           chunks: chunks.length > 0 ? chunks : data.chunks,
           patientId: data.subject_id || data.patient_id,
+          hadmId: data.hadm_id,
           numChunks: chunks.length || data.num_chunks,
+          totalNotes: data.total_notes,
+          queryType: data.query_type,
           timestamp: new Date(),
         }
         setMessages((prev) => [...prev, assistantMsg])
@@ -367,21 +381,31 @@ export default function SearchEngine() {
                     <div className="space-y-3">
                       {/* Response */}
                       <div className="bg-slate-50 border border-slate-200 rounded-2xl rounded-bl-md px-5 py-4 shadow-sm">
-                        {msg.patientId && (
-                          <button
-                            onClick={() => navigate(`/patients/${msg.patientId}`)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-100 text-violet-700 text-xs font-medium hover:bg-violet-200 transition-colors mb-3"
-                          >
-                            <User className="w-3 h-3" />
-                            Patient {msg.patientId}
-                          </button>
-                        )}
+                        <div className="flex items-center gap-2 flex-wrap mb-3">
+                          {msg.patientId && (
+                            <button
+                              onClick={() => navigate(`/patients/${msg.patientId}`)}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-100 text-violet-700 text-xs font-medium hover:bg-violet-200 transition-colors"
+                            >
+                              <User className="w-3 h-3" />
+                              Patient {msg.patientId}
+                            </button>
+                          )}
+                          {msg.hadmId && (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700 text-xs font-medium">
+                              <Hash className="w-3 h-3" />
+                              Admission {msg.hadmId}
+                            </span>
+                          )}
+                        </div>
                         <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
                           {msg.content}
                         </div>
                         {msg.numChunks != null && (
                           <p className="mt-3 text-xs text-slate-400">
-                            Based on {msg.numChunks} retrieved evidence chunk{msg.numChunks !== 1 ? 's' : ''}
+                            {msg.totalNotes && msg.totalNotes > msg.numChunks
+                              ? `Showing ${msg.numChunks} of ${msg.totalNotes} total note${msg.totalNotes !== 1 ? 's' : ''}`
+                              : `Based on ${msg.numChunks} retrieved note${msg.numChunks !== 1 ? 's' : ''}`}
                           </p>
                         )}
                       </div>
@@ -395,7 +419,7 @@ export default function SearchEngine() {
                           >
                             <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
                               <Server className="w-3.5 h-3.5" />
-                              Retrieved Evidence ({msg.chunks.length} chunks)
+                              Source Notes ({msg.chunks.length}{msg.totalNotes && msg.totalNotes > msg.chunks.length ? ` of ${msg.totalNotes}` : ''})
                             </div>
                             {expandedChunks.has(msg.id) ? (
                               <ChevronUp className="w-4 h-4 text-slate-400" />
@@ -425,12 +449,19 @@ export default function SearchEngine() {
                                       </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                      <span
-                                        className="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono"
-                                        title="Vector distance (lower = more relevant)"
-                                      >
-                                        d={chunk.distance.toFixed(3)}
-                                      </span>
+                                      {chunk.distance > 0 && (
+                                        <span
+                                          className="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono"
+                                          title="Similarity score (higher = more relevant)"
+                                        >
+                                          {chunk.distance.toFixed(3)}
+                                        </span>
+                                      )}
+                                      {chunk.metadata.hadm_id && (
+                                        <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200">
+                                          ADM {chunk.metadata.hadm_id}
+                                        </span>
+                                      )}
                                       <button
                                         onClick={() => navigate(`/patients/${chunk.metadata.subject_id}`)}
                                         className="text-xs text-violet-600 hover:text-violet-800 font-medium flex items-center gap-0.5"
@@ -440,9 +471,21 @@ export default function SearchEngine() {
                                       </button>
                                     </div>
                                   </div>
-                                  <p className="note-text text-xs max-h-32 overflow-y-auto">
-                                    {chunk.original_text}
-                                  </p>
+                                  <div className="note-text text-xs">
+                                    <p className="max-h-40 overflow-y-auto whitespace-pre-wrap">
+                                      {expandedChunks.has(`${msg.id}-${ci}`)
+                                        ? chunk.original_text
+                                        : chunk.text || chunk.original_text.slice(0, 500)}
+                                    </p>
+                                    {chunk.original_text.length > 500 && (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); toggleChunkExpansion(`${msg.id}-${ci}`) }}
+                                        className="mt-1 text-violet-600 hover:text-violet-800 text-xs font-medium"
+                                      >
+                                        {expandedChunks.has(`${msg.id}-${ci}`) ? 'Show less' : `Show full note (${Math.round(chunk.original_text.length / 1000)}k chars)`}
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
                               ))}
                             </div>
