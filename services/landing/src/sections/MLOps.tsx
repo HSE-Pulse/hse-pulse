@@ -40,7 +40,7 @@ const tools = [
   {
     icon: Container,
     title: 'Container Orchestration',
-    description: '15 containers orchestrated via Docker Compose with health checks, dependency ordering, and network isolation. Kubernetes manifests and Helm charts provided for production deployment.',
+    description: '17 containers orchestrated via Docker Compose with health checks, dependency ordering, and network isolation. Kubernetes-ready architecture with Helm chart structure for production deployment.',
     badges: [
       { label: 'Docker', color: 'blue' as const },
       { label: 'Kubernetes', color: 'blue' as const },
@@ -85,7 +85,7 @@ export default function MLOps() {
           <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-6">ML Lifecycle</h3>
           <div className="flex flex-wrap items-center justify-center gap-3">
             {[
-              { step: 'Data Prep', sub: 'MIMIC-III / JSON' },
+              { step: 'Data Prep', sub: 'MIMIC-IV / HSE' },
               { step: 'Training', sub: 'PyTorch' },
               { step: 'Tracking', sub: 'MLflow' },
               { step: 'Registry', sub: 'MinIO S3' },

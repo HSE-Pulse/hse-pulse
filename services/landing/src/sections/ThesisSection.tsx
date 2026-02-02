@@ -5,17 +5,17 @@ const researchAreas = [
   {
     icon: Microscope,
     title: 'Research Question',
-    content: 'How can domain-specific deep learning architectures be integrated into a unified, observable platform to improve clinical decision support across real-time monitoring, treatment planning, and document analysis?',
+    content: 'How can domain-specific deep learning architectures be integrated into a unified, observable platform to improve clinical decision support across hospital resource optimisation, treatment planning, document analysis, and capacity forecasting?',
   },
   {
     icon: Target,
     title: 'Methodology',
-    content: 'Design-science research approach: iterative development of three specialised ML services, each evaluated against clinical benchmarks (MIMIC-III), integrated through microservice architecture, and assessed for production viability.',
+    content: 'Design-science research approach: iterative development of four specialised ML services, each evaluated against clinical benchmarks (MIMIC-IV, HSE data), integrated through microservice architecture, and assessed for production viability.',
   },
   {
     icon: Lightbulb,
     title: 'Key Contributions',
-    content: 'Demonstrates that heterogeneous deep learning models (LSTM, BERT, ClinicalBERT) can be deployed as independent microservices with shared MLOps infrastructure, achieving inference latencies suitable for clinical workflows.',
+    content: 'Demonstrates that heterogeneous deep learning models (MADDPG/MAPPO, LSTM, BERT, ClinicalBERT) can be deployed as independent microservices with shared MLOps infrastructure, achieving inference latencies suitable for clinical workflows.',
   },
 ]
 
@@ -70,7 +70,7 @@ export default function ThesisSection() {
               <div>
                 <span className="text-xs text-slate-500 uppercase tracking-wider">Clinical Datasets</span>
                 <p className="text-sm text-slate-300 mt-1">
-                  MIMIC-III (Medical Information Mart for Intensive Care) — de-identified clinical data from Beth Israel Deaconess Medical Center ICU patients.
+                  MIMIC-IV (Medical Information Mart for Intensive Care) — de-identified clinical data from Beth Israel Deaconess Medical Center. HSE TrolleyGAR — Irish hospital trolley census data.
                 </p>
               </div>
             </div>

@@ -26,9 +26,9 @@ export default function PlatformHero() {
         </p>
 
         <p className="text-base text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-up" style={{ animationDelay: '0.3s' }}>
-          Three specialised deep learning services — real-time ICU vitals monitoring,
-          BERT-based treatment pathway recommendation, and ClinicalBERT medical document
-          intelligence — integrated into a single observable, containerised platform.
+          Four specialised deep learning services — Multi-Agent RL hospital optimisation,
+          BERT treatment pathway recommendation, ClinicalBERT document intelligence,
+          and LSTM ED trolley forecasting — integrated into a single observable, containerised platform.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-4 mb-16 animate-fade-up" style={{ animationDelay: '0.4s' }}>
@@ -49,13 +49,13 @@ export default function PlatformHero() {
         </div>
 
         {/* Service preview cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto animate-fade-up" style={{ animationDelay: '0.5s' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto animate-fade-up" style={{ animationDelay: '0.5s' }}>
           <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
-              <span className="text-emerald-400 text-lg font-bold">M</span>
+              <span className="text-emerald-400 text-lg font-bold">D</span>
             </div>
-            <h3 className="text-sm font-semibold text-white mb-1">MediSync</h3>
-            <p className="text-xs text-slate-500">LSTM vitals monitoring &amp; anomaly detection</p>
+            <h3 className="text-sm font-semibold text-white mb-1">DES-MARL</h3>
+            <p className="text-xs text-slate-500">Multi-Agent RL hospital optimisation</p>
           </a>
           <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3">
@@ -69,13 +69,20 @@ export default function PlatformHero() {
               <span className="text-purple-400 text-lg font-bold">P</span>
             </div>
             <h3 className="text-sm font-semibold text-white mb-1">PulseNotes</h3>
-            <p className="text-xs text-slate-500">ClinicalBERT document intelligence</p>
+            <p className="text-xs text-slate-500">ClinicalBERT document intelligence &amp; RAG</p>
+          </a>
+          <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3">
+              <span className="text-amber-400 text-lg font-bold">P</span>
+            </div>
+            <h3 className="text-sm font-semibold text-white mb-1">PulseFlow</h3>
+            <p className="text-xs text-slate-500">LSTM ED trolley forecasting</p>
           </a>
         </div>
 
         {/* Tech badges */}
         <div className="flex flex-wrap justify-center gap-2 mt-12 animate-fade-up" style={{ animationDelay: '0.6s' }}>
-          {['PyTorch', 'BERT', 'LSTM', 'FastAPI', 'React', 'Docker', 'Kubernetes', 'MLflow', 'Prometheus'].map((tech) => (
+          {['PyTorch', 'MADDPG', 'BERT', 'LSTM', 'FastAPI', 'React', 'Docker', 'MLflow', 'Prometheus'].map((tech) => (
             <span key={tech} className="px-2.5 py-1 rounded-md text-xs text-slate-500 bg-white/3 border border-white/5">
               {tech}
             </span>
@@ -85,13 +92,13 @@ export default function PlatformHero() {
         {/* GitHub link */}
         <div className="mt-8 animate-fade-up" style={{ animationDelay: '0.7s' }}>
           <a
-            href="https://github.com/HSE-Pulse"
+            href="https://github.com/HSE-Pulse/hse-pulse"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-xs text-slate-600 hover:text-slate-400 transition-colors"
           >
             <Github className="w-3.5 h-3.5" />
-            github.com/HSE-Pulse
+            github.com/HSE-Pulse/hse-pulse
           </a>
         </div>
       </div>

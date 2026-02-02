@@ -4,7 +4,7 @@ CONFIG_DIR="/usr/share/nginx/html"
 
 cat > "${CONFIG_DIR}/config.js" <<EOF
 window.__LANDING_CONFIG__ = {
-  MEDISYNC_URL: '${MEDISYNC_URL:-/medisync/}',
+  DESMARL_URL: '${DESMARL_URL:-/medisync/}',
   CAREPLANPLUS_URL: '${CAREPLANPLUS_URL:-/careplanplus/}',
   PULSENOTES_URL: '${PULSENOTES_URL:-/pulsenotes/}',
   PULSEFLOW_URL: '${PULSEFLOW_URL:-/pulseflow/}',

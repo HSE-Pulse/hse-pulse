@@ -11,6 +11,7 @@ export default defineConfig({
       '/medisync': 'http://localhost:8090',
       '/careplanplus': 'http://localhost:8090',
       '/pulsenotes': 'http://localhost:8090',
+      '/pulseflow': 'http://localhost:8090',
     },
   },
 })

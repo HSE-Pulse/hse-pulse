@@ -59,8 +59,8 @@ export default function Academic() {
                 <p>
                   <span className="text-slate-500 font-medium">Methodology: </span>
                   DES-MARL framework with 9 clinical departments modelled as autonomous
-                  agents (17-dimensional state space). MADDPG and MAPPO algorithms trained
-                  on MIMIC-IV clinical data (786 patients, 7-day episodes) using 5-stage
+                  agents (12-dimensional state space). MADDPG and MAPPO algorithms trained
+                  on MIMIC-IV clinical data (7-day episodes) using 5-stage
                   curriculum learning from single-department to full-hospital coordination.
                 </p>
                 <p>

@@ -5,7 +5,7 @@ import TechBadge from '../components/TechBadge'
 const stats = [
   { label: 'ML Services', value: '4' },
   { label: 'Containers', value: '17' },
-  { label: 'Model Architectures', value: 'LSTM / BERT' },
+  { label: 'Model Architectures', value: 'MARL / LSTM / BERT' },
   { label: 'Observability', value: 'Full Stack' },
 ]
 
@@ -13,7 +13,7 @@ const pillars = [
   {
     icon: Cpu,
     title: 'Deep Learning Inference',
-    description: 'Four domain-specific models — LSTM for time-series vitals, LSTM for ED trolley forecasting, BERT for treatment pathways, ClinicalBERT for document analysis — each served via FastAPI with GPU-optional inference.',
+    description: 'Four domain-specific models — MADDPG/MAPPO for hospital resource optimisation, LSTM for ED trolley forecasting, BERT for treatment pathways, ClinicalBERT for document analysis — each served via FastAPI with GPU-optional inference.',
   },
   {
     icon: Layers,
@@ -96,11 +96,11 @@ export default function PlatformOverview() {
             {/* Services */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/15 p-4 text-center">
-                <div className="text-sm font-semibold text-emerald-400 mb-1">MediSync</div>
-                <div className="text-xs text-slate-500 mb-2">LSTM Vitals Monitor</div>
+                <div className="text-sm font-semibold text-emerald-400 mb-1">DES-MARL</div>
+                <div className="text-xs text-slate-500 mb-2">Multi-Agent RL</div>
                 <div className="flex flex-wrap justify-center gap-1">
                   <TechBadge label="PyTorch" color="green" />
-                  <TechBadge label="LSTM" color="green" />
+                  <TechBadge label="MADDPG" color="green" />
                   <TechBadge label="WebSocket" color="green" />
                 </div>
               </div>
@@ -115,11 +115,11 @@ export default function PlatformOverview() {
               </div>
               <div className="rounded-xl bg-purple-500/5 border border-purple-500/15 p-4 text-center">
                 <div className="text-sm font-semibold text-purple-400 mb-1">PulseNotes</div>
-                <div className="text-xs text-slate-500 mb-2">ClinicalBERT NLP</div>
+                <div className="text-xs text-slate-500 mb-2">ClinicalBERT RAG</div>
                 <div className="flex flex-wrap justify-center gap-1">
                   <TechBadge label="ClinicalBERT" color="purple" />
-                  <TechBadge label="NER" color="purple" />
-                  <TechBadge label="NLP" color="purple" />
+                  <TechBadge label="FAISS" color="purple" />
+                  <TechBadge label="RAG" color="purple" />
                 </div>
               </div>
               <div className="rounded-xl bg-amber-500/5 border border-amber-500/15 p-4 text-center">

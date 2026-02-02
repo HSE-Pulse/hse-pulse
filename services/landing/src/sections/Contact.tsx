@@ -1,4 +1,4 @@
-import { Mail, MapPin, Github, Linkedin, Download } from 'lucide-react'
+import { Mail, MapPin, Phone, Github, Linkedin, Download } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
 
 const BASE = import.meta.env.BASE_URL
@@ -10,7 +10,7 @@ export default function Contact() {
         <SectionHeading
           tag="Contact"
           title="Availability &amp; Contact"
-          description="Open to senior AI and ML engineering roles. Available for applied research and platform teams."
+          description="Open to AI leadership and principal engineering roles in Ireland. Available for applied research and platform teams."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -25,6 +25,13 @@ export default function Contact() {
                 <Mail className="w-4 h-4 text-primary-400 flex-shrink-0" />
                 harishankar.info@gmail.com
               </a>
+              <a
+                href="tel:+353899775093"
+                className="flex items-center gap-3 text-sm text-slate-300 hover:text-white transition-colors"
+              >
+                <Phone className="w-4 h-4 text-primary-400 flex-shrink-0" />
+                +353 89 977 5093
+              </a>
               <div className="flex items-center gap-3 text-sm text-slate-300">
                 <MapPin className="w-4 h-4 text-primary-400 flex-shrink-0" />
                 Dublin, Ireland
@@ -37,13 +44,13 @@ export default function Contact() {
             <h3 className="text-sm font-semibold text-white mb-5">Professional Links</h3>
             <div className="space-y-4">
               <a
-                href="https://github.com/HSE-Pulse"
+                href="https://github.com/harishankarsomasundaram"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-sm text-slate-300 hover:text-white transition-colors"
               >
                 <Github className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                github.com/HSE-Pulse
+                github.com/harishankarsomasundaram
               </a>
               <a
                 href="https://www.linkedin.com/in/harishankar-somasundaram"
@@ -84,8 +91,8 @@ export default function Contact() {
               <div>
                 <span className="text-xs text-slate-500 uppercase tracking-wider">Seeking</span>
                 <p className="text-sm text-slate-400 mt-1">
-                  Senior ML engineering, applied AI research, and platform
-                  engineering positions.
+                  AI/ML leadership, Head of AI, and principal engineering
+                  positions in Ireland.
                 </p>
               </div>
             </div>

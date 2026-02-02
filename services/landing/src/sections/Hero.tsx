@@ -14,7 +14,7 @@ export default function Hero() {
         <div className="animate-fade-up">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium bg-white/5 text-slate-400 border border-white/10 mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            Open to senior AI &amp; ML engineering roles
+            Open to AI leadership roles in Ireland
           </span>
         </div>
 

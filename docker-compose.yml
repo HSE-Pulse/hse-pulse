@@ -206,7 +206,7 @@ services:
       dockerfile: Dockerfile
     container_name: landing-ui
     environment:
-      - MEDISYNC_URL=/medisync/
+      - DESMARL_URL=/medisync/
       - CAREPLANPLUS_URL=/careplanplus/
       - PULSENOTES_URL=/pulsenotes/
       - PULSEFLOW_URL=/pulseflow/

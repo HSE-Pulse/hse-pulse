@@ -27,27 +27,12 @@ const projects: Project[] = [
     problem:
       'Hospital emergency departments face chronic overcrowding with unpredictable patient arrivals and constrained resources. Static staffing policies cannot adapt to real-time demand fluctuations across 9 interconnected clinical departments.',
     approach:
-      'Novel DES-MARL framework integrating Discrete-Event Simulation (SimPy) with Multi-Agent Reinforcement Learning (MADDPG/MAPPO). 9 clinical departments modelled as autonomous agents with 17-dimensional state spaces. Trained on MIMIC-IV clinical data (786 patients, 7-day episodes) with 5-stage curriculum learning progressing from single-department to full-hospital coordination.',
+      'Novel DES-MARL framework integrating Discrete-Event Simulation (SimPy) with Multi-Agent Reinforcement Learning (MADDPG/MAPPO). 9 clinical departments modelled as autonomous agents with 12-dimensional state spaces. Trained on MIMIC-IV clinical data (7-day episodes) with 5-stage curriculum learning progressing from single-department to full-hospital coordination.',
     nonTrivial:
       'Achieved 92.9% wait time reduction (28.4h → 2h) and 137% throughput improvement (306 → 727 patients/episode). Multi-agent credit assignment across 9 departments with shared resources. Curriculum learning essential — agents fail to converge without staged complexity increases. Full reproducibility with MLflow experiment tracking.',
-    stack: ['PyTorch', 'MADDPG', 'MAPPO', 'SimPy', 'MIMIC-IV', 'MLflow', 'Python'],
-    github: 'https://github.com/HSE-Pulse',
-  },
-  {
-    name: 'MediSync',
-    tagline: 'Real-Time ICU Vital Signs Monitoring',
-    color: 'emerald',
-    iconLetter: 'M',
-    iconBg: 'bg-emerald-500/10',
-    problem:
-      'ICU patients generate continuous multivariate vital sign streams. Clinicians need early warning of physiological deterioration — not after-the-fact alerts from simple threshold rules.',
-    approach:
-      'Stacked LSTM (2-layer, 128 hidden units) trained on MIMIC-III ICU data. Processes 6 concurrent vital channels (HR, SpO\u2082, SBP, DBP, RR, Temperature) with sliding-window inference. The model serves predictions through a FastAPI backend with WebSocket streaming to a React dashboard.',
-    nonTrivial:
-      'Sub-50ms inference latency under continuous WebSocket streaming. Multi-channel time series requires careful per-channel normalisation and synchronised windowing. Prometheus integration captures inference latency histograms and prediction throughput in production.',
-    stack: ['PyTorch', 'FastAPI', 'WebSocket', 'React', 'Prometheus', 'Docker'],
-    github: 'https://github.com/HSE-Pulse/hse-pulse',
-    demo: config.MEDISYNC_URL,
+    stack: ['PyTorch', 'MADDPG', 'MAPPO', 'FastAPI', 'WebSocket', 'React', 'MIMIC-IV', 'Docker'],
+    github: 'https://github.com/HSE-Pulse/medi-sync',
+    demo: config.DESMARL_URL,
   },
   {
     name: 'CarePlanPlus',
@@ -56,13 +41,13 @@ const projects: Project[] = [
     iconLetter: 'C',
     iconBg: 'bg-blue-500/10',
     problem:
-      'Mapping clinical diagnoses to structured treatment pathways requires understanding of medical terminology and procedure coding systems. Manual pathway construction is slow, error-prone, and struggles with multi-step treatment sequences across 12 NIES intervention categories.',
+      'Mapping clinical diagnoses to structured treatment pathways requires understanding of medical terminology and procedure coding systems. Manual pathway construction is slow, error-prone, and struggles with multi-step treatment sequences across 15 NIES intervention categories.',
     approach:
-      'Dual methodology: similarity-based collaborative filtering (k-means with k=20 clusters on 76,388 patient records from NIES 2020 dataset) and BERT-base-uncased fine-tuned on 309 procedures mapped to 12 NIES categories. Multi-step treatment pathway generation with ICD code integration and contextual enrichment from joined patient-admissions data.',
+      'Dual methodology: similarity-based collaborative filtering (k-means with k=20 clusters on 4,776 patient records from NIES 2020 dataset) and BERT-base-uncased fine-tuned on 163 patient-admission records mapped to 309 procedures across 15 NIES categories. Multi-step treatment pathway generation with ICD code integration and contextual enrichment from joined patient-admissions data.',
     nonTrivial:
-      'Combining collaborative filtering with transformer-based classification provides complementary recommendations — population-level patterns from k-means clustering plus semantic understanding from BERT. 76,388 records across 309 procedures required careful category balancing. Each generated pathway links to ICD procedure and drug codes with confidence scores.',
+      'Combining collaborative filtering with transformer-based classification provides complementary recommendations — population-level patterns from k-means clustering plus semantic understanding from BERT. 309 procedures across 15 categories required careful category balancing. Each generated pathway links to ICD procedure and drug codes with confidence scores.',
     stack: ['HuggingFace Transformers', 'BERT', 'Scikit-learn', 'FastAPI', 'React', 'MongoDB', 'Docker'],
-    github: 'https://github.com/HSE-Pulse/hse-pulse',
+    github: 'https://github.com/HSE-Pulse/care-plan-plus',
     demo: config.CAREPLANPLUS_URL,
   },
   {
@@ -72,14 +57,30 @@ const projects: Project[] = [
     iconLetter: 'P',
     iconBg: 'bg-purple-500/10',
     problem:
-      'Clinical notes contain critical patient information locked in unstructured text across 15 standard note sections. Clinicians need targeted extraction — chief complaints, diagnoses, medications — without reading entire discharge summaries.',
+      'Clinical notes contain critical patient information locked in unstructured text across multiple note sections. Clinicians need targeted extraction — chief complaints, diagnoses, medications — without reading entire discharge summaries.',
     approach:
-      'MedLLaMA2 (7B) via Ollama for natural language query understanding, combined with Bio_ClinicalBERT for 768-dimensional semantic embeddings. RAG pipeline processing 22,184 chunks from 262 patients across MIMIC-IV discharge summaries. Section-aware extraction with regex-based NLU classifying query intent (segment extraction, patient lookup, semantic search).',
+      'Bio_ClinicalBERT for 768-dimensional semantic embeddings with FAISS vector indexing. RAG pipeline processing 22,184 chunks from 1,203 patients across MIMIC-IV discharge summaries. Section-aware extraction with regex-based NLU classifying query intent (segment extraction, patient lookup, semantic search). Ollama-backed MedLLaMA2 for response generation.',
     nonTrivial:
-      'Sub-200ms query latency across 22,184 document chunks with FAISS vector indexing. Section-aware extraction handles irregular clinical document structure where headers vary between institutions. Hybrid retrieval combining vector similarity search with deterministic section parsing across 15 standardised note sections. MongoDB-backed document store with pre-computed embeddings.',
+      'Sub-200ms query latency across 22,184 document chunks with FAISS vector indexing. Section-aware extraction handles irregular clinical document structure where headers vary between institutions. Hybrid retrieval combining vector similarity search with deterministic section parsing across 13 standardised note sections. MongoDB-backed document store with pre-computed embeddings.',
     stack: ['MedLLaMA2', 'Bio_ClinicalBERT', 'Ollama', 'FAISS', 'FastAPI', 'MongoDB', 'React', 'Docker'],
-    github: 'https://github.com/HSE-Pulse/hse-pulse',
+    github: 'https://github.com/HSE-Pulse/pulse-notes',
     demo: config.PULSENOTES_URL,
+  },
+  {
+    name: 'PulseFlow',
+    tagline: 'LSTM ED Trolley Forecasting',
+    color: 'rose',
+    iconLetter: 'P',
+    iconBg: 'bg-rose-500/10',
+    problem:
+      'Irish emergency departments track patients on trolleys awaiting admission — the HSE TrolleyGAR daily census. Hospital managers need accurate 7–14 day forecasts of trolley occupancy to pre-allocate beds and staff, but counts are noisy, seasonal, and influenced by flu waves, bank holidays, and regional surges.',
+    approach:
+      'LSTM regressor trained on historical HSE trolley data. Sliding-window input (7-day lookback) predicts 1- to 14-day trolley counts per hospital and nationally. FastAPI serves inference via REST, with predictions stored in MongoDB. React dashboard visualises historical vs. forecasted trends with confidence intervals.',
+    nonTrivial:
+      'Capturing weekly and seasonal periodicity in a single LSTM (2-layer, 64 hidden units) requires careful feature engineering and sequence length tuning. 5-feature input covering ED trolleys, ward trolleys, surge capacity, delayed transfers, and elderly patients. Model selection tracked via MLflow with automated hyperparameter sweeps. End-to-end pipeline from raw HSE open-data ingestion through training to live dashboard in a single Docker Compose deployment.',
+    stack: ['PyTorch', 'LSTM', 'FastAPI', 'MongoDB', 'React', 'MLflow', 'Docker'],
+    github: 'https://github.com/HSE-Pulse/pulse-flow',
+    demo: config.PULSEFLOW_URL,
   },
   {
     name: 'HSE-Pulse Platform',
@@ -88,9 +89,9 @@ const projects: Project[] = [
     iconLetter: 'H',
     iconBg: 'bg-cyan-500/10',
     problem:
-      'Running heterogeneous ML models (LSTM, BERT, ClinicalBERT, MedLLaMA2) with different inference patterns and latency requirements in a single observable platform with shared experiment tracking and monitoring.',
+      'Running heterogeneous ML models (MADDPG/MAPPO, LSTM, BERT, ClinicalBERT) with different inference patterns and latency requirements in a single observable platform with shared experiment tracking and monitoring.',
     approach:
-      'Microservice architecture with 15 containers orchestrated via Docker Compose behind an Nginx reverse proxy. Shared MLOps layer: MLflow for experiment tracking and model registry (MinIO S3 backend), Prometheus + Grafana for observability, with health checks and structured logging across all services.',
+      'Microservice architecture with 17 containers orchestrated via Docker Compose behind an Nginx reverse proxy. Shared MLOps layer: MLflow for experiment tracking and model registry (MinIO S3 backend), Prometheus + Grafana for observability, with health checks and structured logging across all services.',
     nonTrivial:
       'Heterogeneous model serving — each service has different framework dependencies, inference patterns, and latency budgets — unified behind a single entry point. Full experiment lineage from training through deployment. EU-aligned design with explainability considerations and GDPR-aware data handling.',
     stack: ['Docker Compose', 'Nginx', 'MLflow', 'Prometheus', 'Grafana', 'MinIO', 'GitHub Actions'],
@@ -100,9 +101,9 @@ const projects: Project[] = [
 
 const colorTextMap: Record<string, string> = {
   amber: 'text-amber-400',
-  emerald: 'text-emerald-400',
   blue: 'text-blue-400',
   purple: 'text-purple-400',
+  rose: 'text-rose-400',
   cyan: 'text-cyan-400',
 }
 
@@ -170,6 +171,8 @@ export default function Projects() {
                     {p.demo && (
                       <a
                         href={p.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 transition-colors"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />

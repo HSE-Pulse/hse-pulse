@@ -1,5 +1,5 @@
 interface LandingConfig {
-  MEDISYNC_URL: string
+  DESMARL_URL: string
   CAREPLANPLUS_URL: string
   PULSENOTES_URL: string
   PULSEFLOW_URL: string
@@ -15,7 +15,7 @@ declare global {
 }
 
 const defaults: LandingConfig = {
-  MEDISYNC_URL: '/medisync/',
+  DESMARL_URL: '/medisync/',
   CAREPLANPLUS_URL: '/careplanplus/',
   PULSENOTES_URL: '/pulsenotes/',
   PULSEFLOW_URL: '/pulseflow/',
