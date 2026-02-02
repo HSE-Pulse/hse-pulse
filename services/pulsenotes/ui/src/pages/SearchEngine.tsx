@@ -39,7 +39,7 @@ interface BackendStatus {
 
 const EXAMPLE_QUERIES = [
   'What are the diagnoses for patient 13297743?',
-  'Show discharge summary for patient 10046543',
+  'Show discharge summary for patient 12606543',
   'What medications were prescribed for patient 12547294?',
   'What surgical procedures were performed on patient 11818101?',
   'Show the history of present illness for patient 18371155',
@@ -69,7 +69,7 @@ export default function SearchEngine() {
           status: isReady ? 'ready' : 'error',
           stats: data.stats || {
             texts: data.index_size || 0,
-            patients: 0,
+            patients: data.patients_count || 0,
             memory: '',
           },
           error: !isReady ? 'System not initialized' : undefined,
@@ -501,7 +501,7 @@ export default function SearchEngine() {
                 onKeyDown={handleKeyDown}
                 placeholder={
                   backendStatus.status === 'ready'
-                    ? 'Ask about patient records... (e.g., "What diagnoses does patient 10046543 have?")'
+                    ? 'Ask about patient records... (e.g., "What diagnoses does patient 13297743 have?")'
                     : 'RAG backend is offline. Start Flask server to enable search.'
                 }
                 disabled={backendStatus.status !== 'ready'}

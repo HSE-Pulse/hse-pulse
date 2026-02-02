@@ -111,6 +111,10 @@ print("Inserted " + db.trolley_counts.countDocuments() + " trolley count records
 
 // =============================================================================
 // Collection: patients - Shared patient reference
+// NOTE: These 8 seed patients are kept for backward compatibility.
+// The PulseNotes backend auto-syncs all ~215 patients from clinical_notes
+// on startup, so any subject_id present in clinical_notes will be added
+// automatically with generated demographics if not already here.
 // =============================================================================
 print("Creating patients collection...");
 db.createCollection('patients');

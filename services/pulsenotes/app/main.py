@@ -6,6 +6,7 @@ Supports patient lookup and segment extraction from MIMIC-IV notes
 
 import os
 import re
+import random
 import logging
 import time
 from datetime import datetime
@@ -106,6 +107,120 @@ QUERY_PATTERNS = {
         r'(chief\s+complaint|hpi|history\s+of\s+present\s+illness|past\s+medical\s+history|medications?|allergies|physical\s+exam|assessment|plan|discharge\s+summary|discharge\s+diagnosis|discharge\s+instructions|discharge|diagnosis|diagnoses|vitals?|labs?)\s*[,\s]+(?:for|of|from|patient|admission)',
     ]
 }
+
+
+def extract_gender_from_notes(notes_col, subject_id):
+    """Extract gender from the first clinical note for a patient using Sex: M/F pattern."""
+    note = notes_col.find_one({'subject_id': subject_id}, {'text': 1})
+    if note and note.get('text'):
+        match = re.search(r'Sex:\s+([MF])', note['text'])
+        if match:
+            return match.group(1)
+    return None
+
+
+def generate_patient_demographics(subject_id, gender):
+    """Generate deterministic demographics for a patient using subject_id as RNG seed."""
+    rng = random.Random(subject_id)
+
+    # Gender: use extracted if available, otherwise random
+    if not gender:
+        gender = rng.choice(['M', 'F'])
+
+    # Age: weighted distribution (10% <30, 25% 30-49, 35% 50-69, 30% 70+)
+    age_roll = rng.random()
+    if age_roll < 0.10:
+        age = rng.randint(18, 29)
+    elif age_roll < 0.35:
+        age = rng.randint(30, 49)
+    elif age_roll < 0.70:
+        age = rng.randint(50, 69)
+    else:
+        age = rng.randint(70, 95)
+
+    # Blood type: real-world distribution
+    blood_roll = rng.random()
+    if blood_roll < 0.35:
+        blood_type = 'O+'
+    elif blood_roll < 0.65:
+        blood_type = 'A+'
+    elif blood_roll < 0.73:
+        blood_type = 'B+'
+    elif blood_roll < 0.80:
+        blood_type = 'AB+'
+    elif blood_roll < 0.87:
+        blood_type = 'O-'
+    elif blood_roll < 0.93:
+        blood_type = 'A-'
+    elif blood_roll < 0.97:
+        blood_type = 'B-'
+    else:
+        blood_type = 'AB-'
+
+    # Insurance
+    insurance = rng.choice(['Medical Card', 'Private', 'PHI', 'None'])
+
+    # MRN
+    mrn = f"MRN-2024-{subject_id % 1000:03d}"
+
+    return {
+        'subject_id': subject_id,
+        'mrn': mrn,
+        'gender': gender,
+        'age': age,
+        'blood_type': blood_type,
+        'insurance': insurance,
+    }
+
+
+def sync_patients_from_notes(database):
+    """Sync patients collection from distinct subject_ids in clinical_notes.
+
+    Inserts missing patients and removes any that don't appear in clinical_notes
+    so the patients collection matches exactly the set of subjects with notes.
+    """
+    try:
+        notes_col = database['clinical_notes']
+        patients_col = database['patients']
+
+        # Get all distinct subject_ids from clinical_notes
+        distinct_ids = notes_col.distinct('subject_id')
+        if not distinct_ids:
+            logger.info("No subject_ids found in clinical_notes")
+            return 0
+
+        distinct_set = set(distinct_ids)
+
+        # Get already-existing subject_ids
+        existing_ids = set(
+            doc['subject_id'] for doc in patients_col.find({}, {'subject_id': 1})
+        )
+
+        # Remove patients not in clinical_notes (e.g. seed-only patients)
+        orphan_ids = existing_ids - distinct_set
+        if orphan_ids:
+            patients_col.delete_many({'subject_id': {'$in': list(orphan_ids)}})
+            logger.info(f"Removed {len(orphan_ids)} patients with no clinical notes")
+
+        new_patients = []
+        for sid in distinct_ids:
+            if sid in existing_ids:
+                continue
+            gender = extract_gender_from_notes(notes_col, sid)
+            demographics = generate_patient_demographics(sid, gender)
+            new_patients.append(demographics)
+
+        if new_patients:
+            patients_col.insert_many(new_patients)
+            logger.info(f"Synced {len(new_patients)} new patients from clinical_notes (total distinct: {len(distinct_ids)})")
+        else:
+            logger.info(f"All {len(distinct_ids)} patients already synced")
+
+        return len(new_patients)
+
+    except Exception as e:
+        logger.error(f"Error syncing patients from notes: {e}")
+        return 0
 
 
 class NLPModelManager:
@@ -498,8 +613,11 @@ async def lifespan(app: FastAPI):
         db = mongo_client[os.getenv("MONGO_DB", "mimic")]
         logger.info("Connected to MongoDB")
 
-        # Try to build index from database if notes collection exists
-        if 'notes' in db.list_collection_names():
+        # Sync patients from clinical_notes on startup
+        sync_patients_from_notes(db)
+
+        # Try to build index from database if clinical_notes collection exists
+        if 'clinical_notes' in db.list_collection_names():
             nlp_manager.build_index_from_db(db['clinical_notes'])
 
     except Exception as e:
@@ -587,6 +705,7 @@ class HealthResponse(BaseModel):
     model_loaded: bool
     index_loaded: bool
     index_size: int
+    patients_count: int = 0
     database_connected: bool
     demo_mode: bool
     timestamp: str
@@ -614,11 +733,18 @@ async def metrics_middleware(request: Request, call_next):
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
+    patients_count = 0
+    if db is not None:
+        try:
+            patients_count = db['patients'].count_documents({})
+        except Exception:
+            pass
     return HealthResponse(
         status="healthy",
         model_loaded=nlp_manager.model is not None or nlp_manager.demo_mode,
         index_loaded=nlp_manager.index is not None or len(nlp_manager.documents) > 0,
         index_size=len(nlp_manager.documents),
+        patients_count=patients_count,
         database_connected=db is not None,
         demo_mode=nlp_manager.demo_mode,
         timestamp=datetime.utcnow().isoformat()
@@ -825,6 +951,34 @@ async def get_patient_notes(subject_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/patients")
+async def get_patients():
+    """Get all patient demographics with admission IDs."""
+    if db is not None:
+        try:
+            patients = list(db['patients'].find({}, {'_id': 0}))
+
+            # Aggregate hadm_ids per patient from clinical_notes
+            pipeline = [
+                {'$group': {
+                    '_id': '$subject_id',
+                    'hadm_ids': {'$addToSet': '$hadm_id'}
+                }}
+            ]
+            hadm_map = {}
+            for doc in db['clinical_notes'].aggregate(pipeline):
+                hadm_map[doc['_id']] = sorted([h for h in doc['hadm_ids'] if h is not None])
+
+            # Merge hadm_ids into each patient record
+            for p in patients:
+                p['hadm_ids'] = hadm_map.get(p.get('subject_id'), [])
+
+            return {"patients": patients, "count": len(patients)}
+        except Exception as e:
+            logger.warning(f"Failed to fetch patients: {e}")
+    return {"patients": [], "count": 0}
+
+
 @app.get("/sample-scenarios")
 async def get_sample_scenarios():
     """Get sample scenarios for demo."""
@@ -833,13 +987,13 @@ async def get_sample_scenarios():
             {
                 "name": "Patient Lookup",
                 "description": "Find chief complaint for a specific patient",
-                "query": "what was the chief complaint of patient 10188106",
+                "query": "what was the chief complaint of patient 13297743",
                 "expected": "Chief complaint extraction"
             },
             {
                 "name": "Medication Query",
                 "description": "Get medications for a patient",
-                "query": "show medications for patient 10245789",
+                "query": "show medications for patient 12547294",
                 "expected": "Medication list"
             },
             {
@@ -851,7 +1005,7 @@ async def get_sample_scenarios():
             {
                 "name": "History Query",
                 "description": "Get history of present illness",
-                "query": "what is the history of present illness for patient 10312456",
+                "query": "what is the history of present illness for patient 11818101",
                 "expected": "HPI section"
             }
         ]
@@ -990,3 +1144,13 @@ async def update_config(config: ServiceConfig):
             service_config[key] = value
     logger.info(f"Configuration updated: {service_config}")
     return {"status": "updated", "config": service_config}
+
+
+@app.post("/admin/sync-patients")
+async def admin_sync_patients():
+    """Manually trigger patient sync from clinical_notes."""
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not connected")
+    count = sync_patients_from_notes(db)
+    total = db['patients'].count_documents({})
+    return {"status": "ok", "new_patients_synced": count, "total_patients": total}

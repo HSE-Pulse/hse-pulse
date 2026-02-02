@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
@@ -7,10 +7,11 @@ import {
 } from 'recharts'
 import {
   FileText, Users, Building2, TrendingUp,
-  Clock, Stethoscope, ArrowRight,
+  Clock, Stethoscope, ArrowRight, Heart,
 } from 'lucide-react'
 import StatCard from '../components/StatCard'
 import NoteTypeTag from '../components/NoteTypeTag'
+import { API_BASE } from '../config'
 import type { ClinicalNote } from '../data/useNotesData'
 import type { NotesStats } from '../data/useNotesData'
 
@@ -48,6 +49,48 @@ export default function Dashboard({ notes, stats, loading, error }: DashboardPro
     })
     return Object.entries(buckets).map(([range, count]) => ({ range, count }))
   }, [stats.patientNoteCounts])
+
+  // Patient demographics
+  const [patients, setPatients] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch(`${API_BASE}/patients`)
+      .then(res => res.json())
+      .then(data => setPatients(data.patients || []))
+      .catch(() => {})
+  }, [])
+
+  const genderData = useMemo(() => {
+    const counts: Record<string, number> = {}
+    patients.forEach(p => {
+      const g = p.gender || 'Unknown'
+      counts[g] = (counts[g] || 0) + 1
+    })
+    return Object.entries(counts).map(([name, value]) => ({ name, value }))
+  }, [patients])
+
+  const ageData = useMemo(() => {
+    const buckets = { '<30': 0, '30-49': 0, '50-69': 0, '70+': 0 }
+    patients.forEach(p => {
+      const age = p.age ?? 0
+      if (age < 30) buckets['<30']++
+      else if (age < 50) buckets['30-49']++
+      else if (age < 70) buckets['50-69']++
+      else buckets['70+']++
+    })
+    return Object.entries(buckets).map(([range, count]) => ({ range, count }))
+  }, [patients])
+
+  const insuranceData = useMemo(() => {
+    const counts: Record<string, number> = {}
+    patients.forEach(p => {
+      const ins = p.insurance || 'Unknown'
+      counts[ins] = (counts[ins] || 0) + 1
+    })
+    return Object.entries(counts).map(([name, value]) => ({ name, value }))
+  }, [patients])
+
+  const DEMO_COLORS = ['#3b82f6', '#f472b6', '#34d399', '#fbbf24', '#a78bfa']
 
   if (error) {
     return (
@@ -214,6 +257,137 @@ export default function Dashboard({ notes, stats, loading, error }: DashboardPro
           )}
         </div>
       </div>
+
+      {/* Patient Demographics */}
+      {patients.length > 0 && (
+        <>
+          <div className="flex items-center gap-2 mt-2">
+            <Heart className="w-5 h-5 text-rose-500" />
+            <h2 className="text-lg font-semibold text-slate-900">Patient Demographics</h2>
+            <span className="text-sm text-slate-500">({patients.length} patients)</span>
+          </div>
+
+          {/* Demographics charts row */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Gender Distribution */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <h3 className="text-sm font-semibold text-slate-900 mb-4">Gender Distribution</h3>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={genderData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={2} dataKey="value">
+                      {genderData.map((_, i) => (
+                        <Cell key={i} fill={DEMO_COLORS[i % DEMO_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '13px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-2 space-y-1">
+                {genderData.map((item, i) => (
+                  <div key={item.name} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: DEMO_COLORS[i % DEMO_COLORS.length] }} />
+                      <span className="text-slate-600">{item.name}</span>
+                    </div>
+                    <span className="font-medium text-slate-900">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Age Distribution */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <h3 className="text-sm font-semibold text-slate-900 mb-4">Age Distribution</h3>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={ageData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="range" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} />
+                    <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} tickLine={false} axisLine={false} allowDecimals={false} />
+                    <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '13px' }} formatter={(value) => [Number(value), 'Patients']} />
+                    <Bar dataKey="count" fill="#f472b6" radius={[6, 6, 0, 0]} name="Patients" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Insurance Type */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <h3 className="text-sm font-semibold text-slate-900 mb-4">Insurance Type</h3>
+              <div className="h-56">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={insuranceData} cx="50%" cy="50%" innerRadius={45} outerRadius={75} paddingAngle={2} dataKey="value">
+                      {insuranceData.map((_, i) => (
+                        <Cell key={i} fill={DEMO_COLORS[(i + 2) % DEMO_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '13px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-2 space-y-1">
+                {insuranceData.map((item, i) => (
+                  <div key={item.name} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: DEMO_COLORS[(i + 2) % DEMO_COLORS.length] }} />
+                      <span className="text-slate-600">{item.name}</span>
+                    </div>
+                    <span className="font-medium text-slate-900">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Patient Table */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <h3 className="text-sm font-semibold text-slate-900 mb-4">All Patients</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left py-3 px-4 font-medium text-slate-500">Subject ID</th>
+                    <th className="text-left py-3 px-4 font-medium text-slate-500">MRN</th>
+                    <th className="text-left py-3 px-4 font-medium text-slate-500">Gender</th>
+                    <th className="text-left py-3 px-4 font-medium text-slate-500">Age</th>
+                    <th className="text-left py-3 px-4 font-medium text-slate-500">Blood Type</th>
+                    <th className="text-left py-3 px-4 font-medium text-slate-500">Insurance</th>
+                    <th className="text-left py-3 px-4 font-medium text-slate-500">Admissions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {patients.map((p) => {
+                    const ids: number[] = p.hadm_ids || []
+                    const admLabel = ids.length === 0
+                      ? '—'
+                      : ids.length <= 3
+                        ? ids.join(', ')
+                        : `${ids.slice(0, 2).join(', ')} +${ids.length - 2} more`
+                    return (
+                    <tr
+                      key={p.subject_id}
+                      onClick={() => navigate(`/patients/${p.subject_id}`)}
+                      className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors"
+                    >
+                      <td className="py-3 px-4 font-medium text-primary-600">{p.subject_id}</td>
+                      <td className="py-3 px-4 text-slate-700">{p.mrn || '—'}</td>
+                      <td className="py-3 px-4 text-slate-700">{p.gender || '—'}</td>
+                      <td className="py-3 px-4 text-slate-700">{p.age ?? '—'}</td>
+                      <td className="py-3 px-4 text-slate-700">{p.blood_type || '—'}</td>
+                      <td className="py-3 px-4 text-slate-700">{p.insurance || '—'}</td>
+                      <td className="py-3 px-4 text-slate-500 text-xs">{admLabel}</td>
+                    </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
