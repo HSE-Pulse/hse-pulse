@@ -3,8 +3,8 @@ import SectionHeading from '../components/SectionHeading'
 import TechBadge from '../components/TechBadge'
 
 const stats = [
-  { label: 'ML Services', value: '3' },
-  { label: 'Containers', value: '15' },
+  { label: 'ML Services', value: '4' },
+  { label: 'Containers', value: '17' },
   { label: 'Model Architectures', value: 'LSTM / BERT' },
   { label: 'Observability', value: 'Full Stack' },
 ]
@@ -13,7 +13,7 @@ const pillars = [
   {
     icon: Cpu,
     title: 'Deep Learning Inference',
-    description: 'Three domain-specific models — LSTM for time-series vitals, BERT for treatment pathways, ClinicalBERT for document analysis — each served via FastAPI with GPU-optional inference.',
+    description: 'Four domain-specific models — LSTM for time-series vitals, LSTM for ED trolley forecasting, BERT for treatment pathways, ClinicalBERT for document analysis — each served via FastAPI with GPU-optional inference.',
   },
   {
     icon: Layers,
@@ -49,7 +49,7 @@ export default function PlatformOverview() {
         <SectionHeading
           tag="Architecture"
           title="Platform Overview"
-          description="A containerised microservice platform integrating three specialised healthcare AI services with production-grade observability, experiment tracking, and infrastructure automation."
+          description="A containerised microservice platform integrating four specialised healthcare AI services with production-grade observability, experiment tracking, and infrastructure automation."
         />
 
         {/* Stats bar */}
@@ -85,7 +85,8 @@ export default function PlatformOverview() {
               </div>
             </div>
             <div className="flex justify-center">
-              <div className="flex items-end gap-16">
+              <div className="flex items-end gap-12">
+                <div className="w-px h-8 bg-slate-700" />
                 <div className="w-px h-8 bg-slate-700" />
                 <div className="w-px h-8 bg-slate-700" />
                 <div className="w-px h-8 bg-slate-700" />
@@ -93,7 +94,7 @@ export default function PlatformOverview() {
             </div>
 
             {/* Services */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/15 p-4 text-center">
                 <div className="text-sm font-semibold text-emerald-400 mb-1">MediSync</div>
                 <div className="text-xs text-slate-500 mb-2">LSTM Vitals Monitor</div>
@@ -121,10 +122,20 @@ export default function PlatformOverview() {
                   <TechBadge label="NLP" color="purple" />
                 </div>
               </div>
+              <div className="rounded-xl bg-amber-500/5 border border-amber-500/15 p-4 text-center">
+                <div className="text-sm font-semibold text-amber-400 mb-1">PulseFlow</div>
+                <div className="text-xs text-slate-500 mb-2">LSTM ED Forecasting</div>
+                <div className="flex flex-wrap justify-center gap-1">
+                  <TechBadge label="PyTorch" color="amber" />
+                  <TechBadge label="LSTM" color="amber" />
+                  <TechBadge label="MongoDB" color="amber" />
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-center">
-              <div className="flex items-start gap-16">
+              <div className="flex items-start gap-12">
+                <div className="w-px h-8 bg-slate-700" />
                 <div className="w-px h-8 bg-slate-700" />
                 <div className="w-px h-8 bg-slate-700" />
                 <div className="w-px h-8 bg-slate-700" />

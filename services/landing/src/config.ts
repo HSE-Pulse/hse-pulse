@@ -2,6 +2,7 @@ interface LandingConfig {
   MEDISYNC_URL: string
   CAREPLANPLUS_URL: string
   PULSENOTES_URL: string
+  PULSEFLOW_URL: string
   MLFLOW_URL: string
   GRAFANA_URL: string
   PROMETHEUS_URL: string
@@ -17,6 +18,7 @@ const defaults: LandingConfig = {
   MEDISYNC_URL: '/medisync/',
   CAREPLANPLUS_URL: '/careplanplus/',
   PULSENOTES_URL: '/pulsenotes/',
+  PULSEFLOW_URL: '/pulseflow/',
   MLFLOW_URL: '/mlflow/',
   GRAFANA_URL: '/grafana/',
   PROMETHEUS_URL: '/prometheus/',

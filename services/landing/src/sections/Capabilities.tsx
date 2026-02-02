@@ -1,7 +1,8 @@
 import {
   Heart, Brain, FileText, ExternalLink,
   Zap, TrendingUp, AlertTriangle, Stethoscope,
-  Network, GitBranch, Search, BookOpen
+  Network, GitBranch, Search, BookOpen,
+  Activity, Calendar, Building2, BarChart3
 } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
 import TechBadge from '../components/TechBadge'
@@ -182,6 +183,36 @@ const services: ServiceCardProps[] = [
       { label: 'Processing', value: 'Batch/Single' },
     ],
   },
+  {
+    color: 'amber',
+    colorClass: 'text-amber-400',
+    bgClass: 'bg-amber-500/5',
+    borderClass: 'border-amber-500/10',
+    title: 'PulseFlow',
+    subtitle: 'LSTM ED Trolley Forecasting',
+    description: 'Predicts emergency department trolley counts across Irish hospitals using a multi-layer LSTM network trained on HSE trolley data. Generates 1-14 day forecasts with confidence intervals to support capacity planning.',
+    model: 'LSTM Regressor (2-layer, 64 hidden units)',
+    features: [
+      { icon: Activity, label: '5-feature input: trolley count, admissions, discharges, >24hrs, elderly' },
+      { icon: Calendar, label: '1-14 day rolling forecast with confidence intervals' },
+      { icon: Building2, label: '8 Irish hospitals with real HSE area mapping' },
+      { icon: BarChart3, label: 'Historical data explorer with trend visualisation' },
+    ],
+    techStack: [
+      { label: 'PyTorch', color: 'amber' },
+      { label: 'LSTM', color: 'amber' },
+      { label: 'FastAPI', color: 'cyan' },
+      { label: 'MongoDB', color: 'green' },
+      { label: 'HSE Data', color: 'amber' },
+    ],
+    demoUrl: config.PULSEFLOW_URL,
+    metrics: [
+      { label: 'Input Features', value: '5' },
+      { label: 'Forecast Range', value: '1-14 days' },
+      { label: 'Hospitals', value: '8' },
+      { label: 'Model', value: 'LSTM' },
+    ],
+  },
 ]
 
 export default function Capabilities() {
@@ -191,10 +222,10 @@ export default function Capabilities() {
         <SectionHeading
           tag="Services"
           title="Platform Capabilities"
-          description="Three domain-specific deep learning services, each independently trained, containerised, and deployed with dedicated React dashboards."
+          description="Four domain-specific deep learning services, each independently trained, containerised, and deployed with dedicated React dashboards."
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
           {services.map((service) => (
             <ServiceCard key={service.title} {...service} />
           ))}

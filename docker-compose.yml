@@ -13,6 +13,7 @@ services:
     depends_on:
       - landing-ui
       - pulseflow
+      - pulseflow-ui
       - careplanplus
       - careplanplus-ui
       - pulsenotes
@@ -89,6 +90,20 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+
+  pulseflow-ui:
+    build:
+      context: ./services/pulseflow
+      dockerfile: Dockerfile.ui
+    container_name: pulseflow-ui
+    environment:
+      - PULSEFLOW_API_BASE=/pulseflow/api
+    networks:
+      - frontend_net
+    restart: unless-stopped
+    depends_on:
+      pulseflow:
+        condition: service_healthy
 
   careplanplus-ui:
     build:
@@ -194,6 +209,7 @@ services:
       - MEDISYNC_URL=/medisync/
       - CAREPLANPLUS_URL=/careplanplus/
       - PULSENOTES_URL=/pulsenotes/
+      - PULSEFLOW_URL=/pulseflow/
       - MLFLOW_URL=/mlflow/
       - GRAFANA_URL=/grafana/
       - PROMETHEUS_URL=/prometheus/
