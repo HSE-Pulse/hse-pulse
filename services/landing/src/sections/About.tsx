@@ -3,56 +3,82 @@ import SectionHeading from '../components/SectionHeading'
 
 const experience = [
   {
-    role: 'Data Scientist Lead & Head of AI',
-    company: 'Kaiburr',
-    location: 'Bengaluru, India',
-    period: 'May 2020 – Dec 2024',
+    role: 'Lead Data Scientist',
+    company: 'Kaiburr LLC',
+    client: 'Kaiburr LLC, MA, USA',
+    project: 'Cloudply - LLM Generic Autonomous Engine',
+    location: 'Remote',
+    period: 'Mar 2023 – Dec 2024',
     highlights: [
-      'Led a team of 8 engineers delivering 15+ production models with 95% SLA success rate across AWS, Azure, and GCP.',
       'Built LLM-powered Terraform Engine (GPT-4, LLaMA-2-70B, Falcon-180B) automating 75+ DevOps tools — 40% faster deployment cycles, 35% cloud cost reduction.',
       'Designed Generic Autonomous ML Engine using multi-agent LLM orchestration processing 5,000+ daily telemetry data points, reducing incident resolution from 30-60 minutes.',
+      'Collaborated with cross-functional teams to design and implement ML models for optimizing deployment pipelines and automating anomaly detection.',
+    ],
+  },
+  {
+    role: 'Lead Data Scientist',
+    company: 'Kaiburr LLC',
+    client: 'Kaiburr LLC, MA, USA',
+    project: 'Cloudply - AIOps Anomaly Detection',
+    location: 'Remote',
+    period: 'May 2020 – Feb 2023',
+    highlights: [
       'Deployed AIOps anomaly detection platform (LSTM, Autoencoders, Isolation Forest) processing 10M+ daily log events with SHAP/LIME explainability and 99.9% uptime.',
-      'Mentored 12+ data scientists and ML engineers across model development, deployment, and production monitoring.',
+      'Developed robust data pipelines for collecting telemetry data across frameworks with live ML model deployment.',
+      'Led architecture and system design for ML-driven anomaly detection with self-healing and automated ticket generation.',
     ],
   },
   {
     role: 'Lead Engineer',
     company: 'Sathyanarayana United Software',
+    client: 'United Software Group, OH, USA',
+    project: 'Smart Recruitment Agent',
     location: 'Chennai, India',
     period: 'Aug 2018 – Apr 2020',
     highlights: [
-      'Architected Smart Recruitment Agent — microservices platform serving 500+ HR recruiters with 99.9% uptime and 15+ services.',
+      'Architected Smart Recruitment Agent — microservices platform on Kubernetes with Istio service mesh, serving 500+ HR recruiters with 99.9% uptime across 15+ services.',
+      'Implemented ML-driven candidate matching and resume parsing using NLP techniques for intelligent skill extraction and job-candidate scoring.',
       'Implemented zero-downtime deployment with ELK stack monitoring and CI/CD pipeline reducing deployment from 4 hours to 15 minutes.',
+      'Managed technical team, working on platform infrastructure, API integrations, and mentoring engineers.',
     ],
   },
   {
     role: 'Software Engineer',
     company: 'Altisource Labs',
+    client: 'Ocwen Mortgage Services, FL, USA',
+    project: 'ESB Advance Metrics & Data Wrangling',
     location: 'Bengaluru, India',
     period: 'Jan 2016 – Jun 2018',
     highlights: [
       'Built ESB Advance Metrics platform processing 10M+ daily log entries with Spark MLlib time-series forecasting (ARIMA, Prophet) on Apache Camel/JBoss Fuse.',
       'Developed enterprise data wrangling pipeline handling 100+ GB daily from 50+ sources, including TensorFlow OCR achieving 92% accuracy on 5,000+ monthly documents.',
-      'Built NLP-driven search and mortgage prediction model achieving 88% accuracy.',
+      'Built NLP-driven search engine using NLTK and OpenNLP, and mortgage prediction model achieving 88% accuracy.',
     ],
   },
   {
     role: 'Software Engineer',
     company: 'Techaffinity',
+    client: 'IntelligIS Consultants, USA | Advanced Diagnostic Medical, USA | Afwaj Tours, Dubai',
+    project: 'SPoT Provisioning | Patient Tracking | Tour Operator Platform',
     location: 'Chennai, India',
     period: 'Jan 2015 – Dec 2015',
     highlights: [
-      'Developed HIPAA-compliant IDTF Patient Tracking system for 100+ suppliers with pulse oximetry Bluetooth integration and 10K+ monthly transactions.',
-      'Built tour operator platform managing 1K+ packages and $2M+ annual transactions on Azure cloud.',
+      'Developed SPoT Provisioning Tool with Spring Framework for automated system provisioning with role-based access and audit logging.',
+      'Built HIPAA-compliant Patient Tracking system for 100+ suppliers with pulse oximetry Bluetooth integration and 10K+ monthly transactions.',
+      'Created tour operator platform for Hajj/Umrah packages managing 1K+ packages and $2M+ annual transactions on Azure cloud.',
     ],
   },
   {
     role: 'Software Engineer',
     company: 'Changepond Technologies',
+    client: 'Carillion Telent, UK',
+    project: 'SOLO Order Management System',
     location: 'Chennai, India',
     period: 'May 2013 – Dec 2014',
     highlights: [
       'Built SOLO Order Management system with BizTalk integration processing 50K+ orders with 98% SLA compliance.',
+      'Integrated with Openreach work notification system via secure interface for electronic order and notice transmission.',
+      'Led support team and trained new employees on domain knowledge and technologies.',
     ],
   },
 ]
@@ -135,15 +161,21 @@ export default function About() {
             <div className="glass rounded-2xl p-6">
               <h3 className="text-sm font-semibold text-white mb-6">Professional Experience</h3>
               <div className="space-y-6">
-                {experience.map((exp) => (
-                  <div key={exp.company} className="relative pl-5 border-l border-slate-700">
+                {experience.map((exp, idx) => (
+                  <div key={`${exp.company}-${idx}`} className="relative pl-5 border-l border-slate-700">
                     <div className="absolute left-0 top-1 w-2 h-2 rounded-full bg-primary-500 -translate-x-[4.5px]" />
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
                       <h4 className="text-sm font-semibold text-white">{exp.role}</h4>
                       <span className="text-xs text-slate-500">{exp.period}</span>
                     </div>
-                    <div className="text-xs text-primary-400 mb-2">
+                    <div className="text-xs text-primary-400 mb-1">
                       {exp.company} — {exp.location}
+                    </div>
+                    <div className="text-xs text-slate-500 mb-1">
+                      <span className="text-slate-600">Client:</span> {exp.client}
+                    </div>
+                    <div className="text-xs text-slate-500 mb-2">
+                      <span className="text-slate-600">Project:</span> {exp.project}
                     </div>
                     <ul className="space-y-1.5">
                       {exp.highlights.map((h) => (

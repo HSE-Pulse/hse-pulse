@@ -114,6 +114,72 @@ const projects: Project[] = [
   },
 ]
 
+const professionalProjects = [
+  {
+    name: 'Cloudply - LLM Autonomous Engine',
+    client: 'Kaiburr LLC, MA, USA',
+    period: 'Mar 2023 – Dec 2024',
+    description: 'A platform providing autonomous solutions aimed at developing an advanced and versatile machine learning engine capable of autonomously adapting to diverse use cases across industries. Automates decision-making processes and optimizes business operations.',
+    stack: ['Falcon', 'GPT', 'LLaMA', 'Python', 'SciPy', 'Django', 'Kubernetes', 'Knative', 'Jenkins'],
+  },
+  {
+    name: 'Cloudply - AIOps Anomaly Detection',
+    client: 'Kaiburr LLC, MA, USA',
+    period: 'May 2020 – Feb 2023',
+    description: 'Machine learning and deep learning framework designed for anomaly detection in logs and telemetry, with Explainable AI to help users take preventive action, featuring self-healing integrations and automated support ticket generation.',
+    stack: ['Python', 'SciPy', 'Django', 'TensorFlow', 'Keras', 'Kubernetes', 'Knative', 'Jenkins'],
+  },
+  {
+    name: 'Smart Recruitment Agent',
+    client: 'United Software Group, OH, USA',
+    period: 'Aug 2018 – Apr 2020',
+    description: 'Spring microservices platform to assist HR recruiters in sourcing candidates with optimal skillsets. Features workflow management, performance measurement, analytics with reporting dashboard, and zero-downtime deployment.',
+    stack: ['Java', 'Spring', 'Eureka', 'REST', 'Microservices', 'Elasticsearch', 'Logstash', 'Kibana', 'Docker', 'Jenkins'],
+  },
+  {
+    name: 'ESB – Advance Metrics',
+    client: 'Ocwen Mortgage Services, FL, USA',
+    period: 'Jan 2016 – Jun 2018',
+    description: 'Data Analytics platform exposing a web application interface for server logs metric workflow. Loads, processes, transforms, and predicts future server metrics using machine learning algorithms with Apache Camel and JBoss Fuse integration.',
+    stack: ['Java', 'AngularJS', 'Logstash', 'JBoss Fuse', 'Scala MLlib', 'WebAPI'],
+  },
+  {
+    name: 'Enterprise Data Wrangling Platform',
+    client: 'Ocwen Mortgage Services, FL, USA',
+    period: 'Jan 2016 – Jun 2018',
+    description: 'Large-scale data organization platform handling data cleaning, integration, transformation, and reduction. Features Deep Learning OCR for handwritten recognition and NLP-driven search engine.',
+    stack: ['Python', 'Java', 'R', 'TensorFlow', 'Keras', 'MongoDB', 'Apache Camel', 'JBoss Fuse', 'NLTK', 'OpenNLP'],
+  },
+  {
+    name: 'SPoT – Provisioning Tool',
+    client: 'IntelligIS Consultants, USA',
+    period: 'Jan 2015 – Dec 2015',
+    description: 'Rich Internet Web Application automating administrative workflow tasks for system provisioning. Features role-based access control, audit logging, and unified interface for viewing subscriber/phone data.',
+    stack: ['Java', 'Spring Boot', 'REST', 'JavaScript', 'jQuery'],
+  },
+  {
+    name: 'Patient Tracking System',
+    client: 'Advanced Diagnostic Medical, USA',
+    period: 'Jan 2015 – Dec 2015',
+    description: 'HIPAA-compliant Medicare certified IDTF platform for home sleep apnea and overnight oximetry testing. Features scheduling, billing, report generation, and pulse oximetry device integration via Bluetooth.',
+    stack: ['C#', '.NET 4.0', 'ASP.NET', 'SSRS', 'SQL Server', 'Java Applets', 'Bluetooth SDK'],
+  },
+  {
+    name: 'Tour Operator Back Office',
+    client: 'Afwaj Tours and Travels, Dubai',
+    period: 'Jan 2015 – Dec 2015',
+    description: 'Tour operator platform for Hajj and Umrah packages in Dubai. Features one-step accommodation and transport creation, visa processing, payment handling, invoice generation, and reporting.',
+    stack: ['ASP.NET MVC', 'WebAPI', 'jQuery', 'C#', 'Azure Cloud Services'],
+  },
+  {
+    name: 'SOLO - Order Management System',
+    client: 'Carillion Telent, UK',
+    period: 'May 2013 – Dec 2014',
+    description: 'Carillion Telent work management system fully integrated with Openreach work notification system. Features secure electronic order/notice transmission and role-based access for third-party subcontractors.',
+    stack: ['ASP.NET', 'WebAPI', 'BizTalk', 'jQuery', 'C#', 'Azure Cloud'],
+  },
+]
+
 const colorTextMap: Record<string, string> = {
   amber: 'text-amber-400',
   blue: 'text-blue-400',
@@ -212,6 +278,46 @@ export default function Projects() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Professional Projects Section */}
+        <div className="mt-16">
+          <div className="text-center mb-10">
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-slate-400 border border-white/10 mb-4">
+              Professional Experience
+            </span>
+            <h3 className="text-2xl font-bold text-white mb-2">Commercial Projects</h3>
+            <p className="text-sm text-slate-500 max-w-2xl mx-auto">
+              Enterprise solutions delivered for clients across USA, UK, and Middle East spanning AI/ML, data engineering, and full-stack development.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {professionalProjects.map((p) => (
+              <div key={p.name} className="glass rounded-2xl p-5">
+                <div className="mb-3">
+                  <h4 className="text-sm font-semibold text-white mb-1">{p.name}</h4>
+                  <div className="text-xs text-primary-400">{p.client}</div>
+                  <div className="text-xs text-slate-500">{p.period}</div>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                  {p.description}
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {p.stack.slice(0, 6).map((tech) => (
+                    <span key={tech} className="px-2 py-0.5 rounded text-xs text-slate-500 bg-white/5 border border-white/5">
+                      {tech}
+                    </span>
+                  ))}
+                  {p.stack.length > 6 && (
+                    <span className="px-2 py-0.5 rounded text-xs text-slate-600 bg-white/5 border border-white/5">
+                      +{p.stack.length - 6} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
