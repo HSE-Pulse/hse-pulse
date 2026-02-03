@@ -116,18 +116,11 @@ const projects: Project[] = [
 
 const professionalProjects = [
   {
-    name: 'Cloudply - LLM Autonomous Engine',
-    client: 'Kaiburr LLC, MA, USA',
-    period: 'Mar 2023 – Dec 2024',
-    description: 'A platform providing autonomous solutions aimed at developing an advanced and versatile machine learning engine capable of autonomously adapting to diverse use cases across industries. Automates decision-making processes and optimizes business operations.',
-    stack: ['Falcon', 'GPT', 'LLaMA', 'Python', 'SciPy', 'Django', 'Kubernetes', 'Knative', 'Jenkins'],
-  },
-  {
     name: 'Cloudply - AIOps Platform',
     client: 'Kaiburr LLC, MA, USA',
-    period: 'May 2020 – Feb 2023',
-    description: 'Enterprise AIOps platform with 30+ microservices: Data collectors (memory, process, consumption, tags), ML pipelines (RCA, anomaly detection, pipeline recommendation), deduplication engines, Terraform/code generation, test case generation with LLM, vector store management, and GitHub/Selenium automation.',
-    stack: ['Python', 'TensorFlow', 'Keras', 'LLM', 'Vector DB', 'Kubernetes', 'Jenkins', 'Docker'],
+    period: 'May 2020 – Dec 2024',
+    description: 'Enterprise AIOps platform with 30+ microservices delivering 40% faster deployments and 35% cost reduction. LLM-powered Terraform Engine (GPT-4, LLaMA-2, Falcon-180B), data collectors, RCA engine, anomaly detection (LSTM, Autoencoders), ML pipelines processing 10M+ daily events, code remediation, LLM test generation, vector store management, and GitHub/Selenium automation at 99.9% uptime.',
+    stack: ['GPT-4', 'LLaMA-2', 'Falcon', 'TensorFlow', 'LSTM', 'Vector DB', 'Kubernetes', 'Jenkins'],
   },
   {
     name: 'Smart Recruitment Agent',
