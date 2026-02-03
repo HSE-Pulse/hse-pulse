@@ -8,7 +8,7 @@
 ## 1. HEADLINE
 
 ```
-Data Science Leader & AI/ML Engineer | 11+ Years | LLMs, Multi-Agent RL, Healthcare AI, MLOps | MSc AI (First Class Honours) | Dublin, Ireland
+Lead Data Scientist | 15+ Production Models | 92.9% Wait Time Reduction (DES-MARL) | LLMs, Multi-Agent RL, MLOps | MSc AI | Dublin
 ```
 
 ---
@@ -16,24 +16,29 @@ Data Science Leader & AI/ML Engineer | 11+ Years | LLMs, Multi-Agent RL, Healthc
 ## 2. ABOUT / SUMMARY
 
 ```
-I lead teams that take ML models from research prototypes to production systems — 15+ models shipped with a 95% SLA success rate across AWS, Azure, and GCP.
+Lead Data Scientist | 11 years from distributed systems to AI leadership | 15+ production models shipped with 95% SLA success
 
-Over 11 years I have progressed from backend engineering through distributed data systems to heading AI/ML teams. As Lead Data Scientist at Kaiburr, I led 8 engineers building LLM-powered infrastructure automation (GPT-4, LLaMA-2-70B, Falcon-180B) that cut deployment cycles by 40% and cloud costs by 35%, and deployed an AIOps anomaly detection platform (LSTM, Autoencoders, Isolation Forest) processing 10M+ daily log events at 99.9% uptime.
+KEY IMPACT:
+→ 92.9% wait time reduction (28.4h → 2h) — DES-MARL Multi-Agent RL for hospital optimisation
+→ 40% faster deployments, 35% cost reduction — LLM-powered infrastructure automation (GPT-4, LLaMA-2, Falcon-180B)
+→ 10M+ daily events processed — AIOps anomaly detection platform at 99.9% uptime
+→ 9 enterprise clients delivered — USA, UK, and Middle East
 
-I am currently completing an MSc in Artificial Intelligence at Dublin Business School (First Class Honours). My capstone project, HSE-Pulse, is a production-grade healthcare AI platform integrating four deep learning services into a single observable system:
+At Kaiburr, I led 8 engineers building production AI systems: LLM Terraform Engine automating 75+ DevOps tools, and AIOps platform using LSTM, Autoencoders, and Isolation Forest with SHAP/LIME explainability.
 
-  - DES-MARL — Multi-Agent RL for hospital resource optimisation (92.9% wait time reduction across 9 departments)
-  - CarePlanPlus — BERT-based nursing intervention recommendation (309 procedures, 15 NIES categories)
-  - PulseNotes — ClinicalBERT RAG for clinical document intelligence (22,184 chunks, 1,203 patients)
-  - PulseFlow — LSTM trolley forecasting for Irish hospitals (8 hospitals, 1-14 day forecasts)
+Earlier: Kubernetes/Istio microservices with ML-driven candidate matching (500+ recruiters), Spark MLlib forecasting pipelines, TensorFlow OCR (92% accuracy), NLP search engines.
 
-All four services run as independent microservices (17 Docker containers) with shared MLOps infrastructure: MLflow experiment tracking, Prometheus metrics, and Grafana dashboards.
+MSc AI capstone (First Class Honours) — HSE-Pulse healthcare platform:
+• DES-MARL: Multi-Agent RL achieving 137% throughput improvement using MADDPG/MAPPO on MIMIC-IV
+• CarePlanPlus: BERT recommendation across 309 procedures
+• PulseNotes: ClinicalBERT RAG processing 22,184 document chunks
+• PulseFlow: LSTM trolley forecasting for 8 Irish hospitals
 
-My approach: models are only as valuable as the systems they run in. I favour measured simplicity, reproducible experiments, honest evaluation, and clear documentation.
+All services run as 17 containerised microservices with MLflow, Prometheus, and Grafana observability.
 
-Work authorisation: Stamp 1G — eligible to work full-time in Ireland without employer sponsorship.
+Stamp 1G — eligible to work full-time in Ireland without sponsorship.
 
-Open to AI/ML leadership, Head of AI, and principal engineering positions in Ireland.
+Open to AI/ML leadership, Head of AI, and principal engineering roles in Ireland.
 ```
 
 ---

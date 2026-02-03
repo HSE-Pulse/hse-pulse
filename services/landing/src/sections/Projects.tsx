@@ -32,7 +32,7 @@ const projects: Project[] = [
     problem:
       'Hospital emergency departments face chronic overcrowding with unpredictable patient arrivals and constrained resources. Static staffing policies cannot adapt to real-time demand fluctuations across 9 interconnected clinical departments.',
     approach:
-      'Novel DES-MARL framework integrating Discrete-Event Simulation (SimPy) with Multi-Agent Reinforcement Learning (MADDPG/MAPPO). 9 clinical departments modelled as autonomous agents with 12-dimensional state spaces. Trained on MIMIC-IV clinical data (7-day episodes) with 5-stage curriculum learning progressing from single-department to full-hospital coordination.',
+      'Novel DES-MARL framework integrating Discrete-Event Simulation with Multi-Agent Reinforcement Learning (MADDPG/MAPPO). 9 clinical departments modelled as autonomous agents with 12-dimensional state spaces. Trained on MIMIC-IV clinical data (7-day episodes) with 5-stage curriculum learning progressing from single-department to full-hospital coordination.',
     nonTrivial:
       'Achieved 92.9% wait time reduction (28.4h → 2h) and 137% throughput improvement (306 → 727 patients/episode). Multi-agent credit assignment across 9 departments with shared resources. Curriculum learning essential — agents fail to converge without staged complexity increases. Full reproducibility with MLflow experiment tracking.',
     stack: ['PyTorch', 'MADDPG', 'MAPPO', 'FastAPI', 'WebSocket', 'React', 'MIMIC-IV', 'Docker'],

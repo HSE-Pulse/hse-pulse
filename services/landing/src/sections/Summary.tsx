@@ -4,23 +4,23 @@ import { TrendingUp, Layers, FlaskConical, Shield } from 'lucide-react'
 const pillars = [
   {
     icon: TrendingUp,
-    title: 'Research to Production',
-    text: 'End-to-end ML systems from research through deployment. 15+ production models delivered with 95% SLA success rate across AWS, Azure, and GCP.',
+    title: '92.9% Wait Time Reduction',
+    text: 'DES-MARL framework cut hospital wait times from 28.4h to 2h with 137% throughput improvement using Multi-Agent RL on MIMIC-IV clinical data.',
   },
   {
     icon: Layers,
-    title: 'Systems at Scale',
-    text: 'Processing 10M+ daily log events, 5,000+ daily telemetry data points. Kubernetes-native ML pipelines with auto-scaling, self-healing, and 99.9% uptime.',
+    title: '10M+ Events Daily',
+    text: 'AIOps platform processing 10M+ log events with 99.9% uptime. Kubernetes-native ML pipelines with auto-scaling and self-healing across AWS, Azure, GCP.',
   },
   {
     icon: FlaskConical,
-    title: 'Applied Research',
-    text: 'Multi-Agent Reinforcement Learning for healthcare optimisation. LLM-powered infrastructure automation. Clinical NLP and time-series forecasting.',
+    title: '40% Faster Deployments',
+    text: 'LLM-powered Terraform Engine (GPT-4, LLaMA-2, Falcon-180B) automating 75+ DevOps tools with 35% cloud cost reduction.',
   },
   {
     icon: Shield,
-    title: 'Explainable AI',
-    text: 'SHAP and LIME integration for model interpretability. 85% accuracy in anomaly root cause attribution. Audit trails and compliance-ready deployments.',
+    title: '15+ Production Models',
+    text: '95% SLA success rate. SHAP/LIME explainability with 85% root cause accuracy. From deep learning OCR (92%) to NLP search engines.',
   },
 ]
 
@@ -30,38 +30,34 @@ export default function Summary() {
       <div className="max-w-7xl mx-auto">
         <SectionHeading
           tag="Professional Summary"
-          title="Building AI Systems That Deliver"
-          description="From enterprise software through distributed data platforms to leading AI teams — a career built on measurable outcomes."
+          title="11 Years Building Production AI"
+          description="From backend engineering to leading AI teams — delivering measurable impact at scale."
         />
 
         <div className="max-w-4xl mx-auto mb-16">
           <div className="glass rounded-2xl p-8">
             <div className="space-y-4 text-sm text-slate-400 leading-relaxed">
               <p>
-                Over the past 11 years, I have progressed from backend engineering
-                through distributed data systems to leading AI/ML teams delivering
-                production models at scale. As Lead Data Scientist at Kaiburr, I led
-                a team of 8 engineers delivering 15+ production models, building
-                LLM-powered infrastructure automation (GPT-4, LLaMA-2, Falcon-180B)
-                that achieved 40% faster deployment cycles and 35% cloud cost reduction,
-                and deploying an AIOps anomaly detection platform processing 10M+ log
-                events daily with 99.9% uptime using LSTM, Autoencoders, and Isolation Forest.
+                <span className="text-white font-medium">Lead Data Scientist</span> with
+                11 years progressing from distributed systems to AI/ML leadership.
+                At Kaiburr, led 8 engineers shipping <span className="text-primary-400">15+ production models</span> with
+                95% SLA success. Built LLM infrastructure automation
+                (GPT-4, LLaMA-2, Falcon-180B) delivering <span className="text-primary-400">40% faster deployments</span> and
+                <span className="text-primary-400"> 35% cost reduction</span>. Deployed AIOps platform
+                processing <span className="text-primary-400">10M+ daily events</span> at 99.9% uptime.
               </p>
               <p>
-                Earlier roles included architecting a Kubernetes-native microservices
-                recruitment platform with Istio service mesh serving 500+ HR recruiters,
-                featuring ML-driven candidate matching and NLP-based resume parsing.
-                Built enterprise analytics processing 10M+ daily log entries with
-                Spark MLlib time-series forecasting (ARIMA, Prophet), and developed
-                deep learning OCR systems using TensorFlow achieving 92% accuracy on
-                5,000+ monthly documents alongside NLP-driven search engines using NLTK and OpenNLP.
+                Architected Kubernetes/Istio microservices platform with ML-driven
+                candidate matching serving 500+ recruiters. Built Spark MLlib forecasting
+                pipelines, TensorFlow OCR systems (<span className="text-primary-400">92% accuracy</span>), and NLP search
+                engines. Delivered across 9 enterprise clients in USA, UK, and Middle East.
               </p>
               <p>
-                My MSc capstone research at Dublin Business School developed a
-                novel DES-MARL framework integrating Discrete-Event Simulation
-                with Multi-Agent Reinforcement Learning for hospital resource
-                optimisation — achieving 92.9% wait time reduction and 137%
-                throughput improvement using MADDPG/MAPPO on MIMIC-IV clinical data.
+                MSc research developed <span className="text-white font-medium">DES-MARL</span> — a novel
+                Multi-Agent Reinforcement Learning framework for hospital optimisation
+                achieving <span className="text-primary-400">92.9% wait time reduction</span> (28.4h → 2h)
+                and <span className="text-primary-400">137% throughput improvement</span> using MADDPG/MAPPO
+                on MIMIC-IV clinical data.
               </p>
             </div>
           </div>
