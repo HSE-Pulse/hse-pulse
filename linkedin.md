@@ -1,0 +1,627 @@
+# LinkedIn Profile Update — AI Leadership Roles in Ireland
+
+> Copy each section below into the corresponding LinkedIn profile section.
+> Optimised for: Head of AI, AI/ML Director, Principal ML Engineer, Lead Data Scientist roles in Ireland.
+
+---
+
+## 1. HEADLINE
+
+```
+Data Science Leader & AI/ML Engineer | 11+ Years | LLMs, Multi-Agent RL, Healthcare AI, MLOps | MSc AI (First Class Honours) | Dublin, Ireland
+```
+
+---
+
+## 2. ABOUT / SUMMARY
+
+```
+I lead teams that take ML models from research prototypes to production systems — 15+ models shipped with a 95% SLA success rate across AWS, Azure, and GCP.
+
+Over 11 years I have progressed from backend engineering through distributed data systems to heading AI/ML teams. As Lead Data Scientist at Kaiburr, I led 8 engineers building LLM-powered infrastructure automation (GPT-4, LLaMA-2-70B, Falcon-180B) that cut deployment cycles by 40% and cloud costs by 35%, and deployed an AIOps anomaly detection platform (LSTM, Autoencoders, Isolation Forest) processing 10M+ daily log events at 99.9% uptime.
+
+I am currently completing an MSc in Artificial Intelligence at Dublin Business School (First Class Honours). My capstone project, HSE-Pulse, is a production-grade healthcare AI platform integrating four deep learning services into a single observable system:
+
+  - DES-MARL — Multi-Agent RL for hospital resource optimisation (92.9% wait time reduction across 9 departments)
+  - CarePlanPlus — BERT-based nursing intervention recommendation (309 procedures, 15 NIES categories)
+  - PulseNotes — ClinicalBERT RAG for clinical document intelligence (22,184 chunks, 1,203 patients)
+  - PulseFlow — LSTM trolley forecasting for Irish hospitals (8 hospitals, 1-14 day forecasts)
+
+All four services run as independent microservices (17 Docker containers) with shared MLOps infrastructure: MLflow experiment tracking, Prometheus metrics, and Grafana dashboards.
+
+My approach: models are only as valuable as the systems they run in. I favour measured simplicity, reproducible experiments, honest evaluation, and clear documentation.
+
+Work authorisation: Stamp 1G — eligible to work full-time in Ireland without employer sponsorship.
+
+Open to AI/ML leadership, Head of AI, and principal engineering positions in Ireland.
+```
+
+---
+
+## 3. FEATURED
+
+Add these as Featured items (links or media):
+
+| Type | Title | Link |
+|------|-------|------|
+| Link | HSE-Pulse — Healthcare AI Platform | https://github.com/HSE-Pulse/hse-pulse |
+| Link | DES-MARL — Multi-Agent RL for Hospital Optimisation | https://github.com/HSE-Pulse/medi-sync |
+| Link | CarePlanPlus — BERT Treatment Recommendation | https://github.com/HSE-Pulse/care-plan-plus |
+| Link | PulseNotes — ClinicalBERT RAG Document Intelligence | https://github.com/HSE-Pulse/pulse-notes |
+| Media | DES-MARL Applied Research Report (PDF) | Upload `desmarl-applied-research.pdf` |
+| Media | DES-MARL Research Paper (PDF) | Upload `desmarl-research-paper.pdf` |
+
+---
+
+## 4. EXPERIENCE
+
+### Role 1 — Lead Data Scientist
+
+```
+Title:       Lead Data Scientist
+Company:     Kaiburr
+Location:    Bengaluru, India
+Period:      May 2020 – Dec 2024
+Employment:  Full-time
+```
+
+**Description:**
+
+```
+As Lead Data Scientist, led an 8-member AI/ML engineering team delivering 15+ production models with a 95% SLA success rate across AWS, Azure, and GCP deployments.
+
+Key achievements:
+
+LLM-Powered Infrastructure Automation
+- Built a Terraform Engine using GPT-4, LLaMA-2-70B, and Falcon-180B that automated 75+ DevOps tools
+- Delivered 40% faster deployment cycles and 35% cloud cost reduction for enterprise clients
+
+Generic Autonomous ML Engine
+- Designed a multi-agent LLM orchestration system processing 5,000+ daily telemetry data points
+- Reduced mean incident resolution time from 30-60 minutes to near-real-time
+
+AIOps Anomaly Detection Platform
+- Deployed LSTM, Autoencoder, and Isolation Forest models processing 10M+ daily log events
+- Integrated SHAP and LIME explainability achieving 85% accuracy in root cause attribution
+- Maintained 99.9% platform uptime
+
+Team Leadership
+- Mentored 12+ data scientists and ML engineers
+- Established reproducible experiment practices, structured code review, and model governance processes
+- Managed stakeholder communication across engineering, product, and executive teams
+
+Technologies: PyTorch, TensorFlow, GPT-4, LLaMA-2, Falcon-180B, LSTM, Autoencoders, Isolation Forest, SHAP, LIME, AWS, Azure, GCP, Kubernetes, Docker, MLflow, Prometheus, Grafana
+```
+
+---
+
+### Role 2 — Lead Engineer
+
+```
+Title:       Lead Engineer
+Company:     Sathyanarayana United Software
+Location:    Chennai, India
+Period:      Aug 2018 – Apr 2020
+Employment:  Full-time
+```
+
+**Description:**
+
+```
+Architected and delivered a Smart Recruitment Agent — a Kubernetes-native microservices platform with Istio service mesh, serving 500+ HR recruiters with 99.9% uptime across 15+ independently deployed services.
+
+Key achievements:
+
+- Designed end-to-end microservice architecture on Kubernetes with Istio for service discovery, load balancing, and circuit breakers
+- Implemented ML-driven candidate matching and resume parsing using NLP techniques for intelligent skill extraction and job-candidate scoring
+- Implemented zero-downtime deployment pipeline reducing release time from 4 hours to 15 minutes
+- Set up ELK stack monitoring (Elasticsearch, Logstash, Kibana) for centralised logging and alerting
+- Established CI/CD practices and automated testing across all services
+
+Technologies: Java, Spring Boot, Microservices, Kubernetes, Istio, Docker, NLP, ELK Stack, CI/CD, PostgreSQL, Redis
+```
+
+---
+
+### Role 3 — Software Engineer
+
+```
+Title:       Software Engineer
+Company:     Altisource Labs
+Location:    Bengaluru, India
+Period:      Jan 2016 – Jun 2018
+Employment:  Full-time
+```
+
+**Description:**
+
+```
+Built data engineering and ML systems for mortgage technology, processing large-scale enterprise data with real-time analytics.
+
+Key achievements:
+
+ESB Advance Metrics Platform
+- Built an analytics platform processing 10M+ daily log entries from Apache Camel and JBoss Fuse ESB
+- Implemented Spark MLlib time-series forecasting (ARIMA, Prophet) for capacity planning
+
+Enterprise Data Wrangling Pipeline
+- Developed a pipeline handling 100+ GB daily from 50+ heterogeneous data sources
+- Built a TensorFlow OCR system achieving 92% accuracy on 5,000+ monthly documents
+
+NLP & Predictive Modelling
+- Built NLP-driven search system for unstructured mortgage documents
+- Developed a mortgage prediction model achieving 88% accuracy
+
+Technologies: Python, Java, Apache Spark, Spark MLlib, TensorFlow, NLP, Apache Camel, JBoss Fuse, Elasticsearch, SQL
+```
+
+---
+
+### Role 4 — Software Engineer
+
+```
+Title:       Software Engineer
+Company:     Techaffinity
+Location:    Chennai, India
+Period:      Jan 2015 – Dec 2015
+Employment:  Full-time
+```
+
+**Description:**
+
+```
+Developed healthcare and travel technology platforms with compliance requirements and payment integrations.
+
+- Built a HIPAA-compliant IDTF Patient Tracking system for 100+ medical device suppliers with pulse oximetry Bluetooth integration and 10K+ monthly transactions
+- Developed a tour operator platform managing 1K+ travel packages and $2M+ annual transactions on Azure
+
+Technologies: C#, ASP.NET MVC, Azure, SQL Server, Bluetooth Integration, HIPAA Compliance
+```
+
+---
+
+### Role 5 — Software Engineer
+
+```
+Title:       Software Engineer
+Company:     Changepond Technologies
+Location:    Chennai, India
+Period:      May 2013 – Dec 2014
+Employment:  Full-time
+```
+
+**Description:**
+
+```
+Built enterprise integration and order management systems for supply chain operations.
+
+- Developed the SOLO Order Management system with BizTalk integration processing 50K+ orders with 98% SLA compliance
+- Designed integration flows connecting ERP, CRM, and warehouse management systems
+
+Technologies: C#, BizTalk Server, SQL Server, ESB, SOAP/REST APIs
+```
+
+---
+
+## 5. EDUCATION
+
+### Degree 1
+
+```
+School:         Dublin Business School
+Degree:         Master of Science (MSc)
+Field of study: Artificial Intelligence
+Grade:          First Class Honours (1:1)
+Dates:          2025 – 2026
+```
+
+**Activities and societies:**
+
+```
+Capstone: HSE-Pulse — a production-grade healthcare AI platform integrating Multi-Agent RL, BERT, ClinicalBERT RAG, and LSTM across 17 containerised microservices with MLflow, Prometheus, and Grafana observability.
+```
+
+**Description:**
+
+```
+Research focus: integrating domain-specific deep learning architectures into a unified observable platform for clinical decision support.
+
+Four ML services developed and evaluated:
+- DES-MARL: Multi-Agent RL (MADDPG/MAPPO) for hospital resource optimisation — 9 departments, 92.9% wait time reduction
+- CarePlanPlus: BERT fine-tuned on 4,776 records for nursing intervention recommendation — 309 procedures across 15 NIES categories
+- PulseNotes: ClinicalBERT RAG pipeline — 22,184 document chunks from 1,203 patients via FAISS vector search
+- PulseFlow: LSTM trolley forecasting — 5-feature input across 8 Irish hospitals for 1-14 day predictions
+
+Clinical datasets: MIMIC-IV, HSE TrolleyGAR, NIES 2020
+
+Technical stack: PyTorch, HuggingFace, FastAPI, React, Docker Compose, Nginx, MLflow, MinIO, Prometheus, Grafana, MongoDB, FAISS, Ollama, MedLLaMA2
+```
+
+---
+
+### Degree 2
+
+```
+School:         Arunai Engineering College, Anna University
+Degree:         Bachelor of Engineering (BE)
+Field of study: Computer Science & Engineering
+Dates:          2008 – 2012
+```
+
+---
+
+## 6. SKILLS
+
+Add these skills in order of priority. LinkedIn allows up to 50 — list the most relevant first for AI leadership roles.
+
+### Top Skills (pin these)
+
+```
+1. Machine Learning
+2. Deep Learning
+3. Natural Language Processing (NLP)
+4. Large Language Models (LLMs)
+5. Reinforcement Learning
+```
+
+### AI & Machine Learning
+
+```
+PyTorch
+TensorFlow
+Keras
+Scikit-learn
+LSTM / RNN
+BERT / Transformers
+Bio_ClinicalBERT
+LLMs (GPT-4, LLaMA-2, Falcon-180B)
+MedLLaMA2
+MADDPG
+MAPPO
+Reinforcement Learning
+NLP
+Computer Vision / OCR
+Anomaly Detection
+Time Series Forecasting
+RAG Pipelines
+Ollama
+```
+
+### Cloud & MLOps
+
+```
+AWS
+Azure
+GCP
+Docker
+Docker Compose
+Kubernetes
+Helm
+Terraform
+MLflow
+Prometheus
+Grafana
+CI/CD (GitHub Actions, Jenkins, GitLab CI)
+```
+
+### Data Engineering
+
+```
+Apache Spark
+Apache Kafka
+MongoDB
+PostgreSQL
+Elasticsearch
+FAISS
+Redis
+Vector Databases
+ETL Pipelines
+```
+
+### Languages & Frameworks
+
+```
+Python
+TypeScript
+SQL
+FastAPI
+React
+HuggingFace Transformers
+LangChain
+```
+
+### Leadership
+
+```
+AI/ML Team Leadership
+Technical Strategy
+Stakeholder Management
+Mentoring
+System Architecture
+```
+
+---
+
+## 7. PROJECTS
+
+### Project 1 — HSE-Pulse: AI-Driven Healthcare Intelligence Platform
+
+```
+Project name:  HSE-Pulse
+Associated with: Dublin Business School
+Start date:    2025
+End date:      2026
+URL:           https://github.com/HSE-Pulse/hse-pulse
+```
+
+**Description:**
+
+```
+Production-grade healthcare AI platform integrating four domain-specific deep learning services into a single observable, containerised system. Built as MSc capstone project.
+
+Architecture: 17 Docker containers orchestrated via Docker Compose behind Nginx reverse proxy, with shared MLOps infrastructure (MLflow + MinIO for experiment tracking, Prometheus + Grafana for monitoring).
+
+Services:
+- DES-MARL: Multi-Agent RL (MADDPG/MAPPO) for dynamic hospital staff allocation across 9 departments — 92.9% wait time reduction, 137% throughput improvement
+- CarePlanPlus: BERT-based nursing intervention recommendation from 309 procedures across 15 NIES categories
+- PulseNotes: ClinicalBERT RAG pipeline processing 22,184 document chunks from 1,203 patients using FAISS
+- PulseFlow: LSTM forecasting ED trolley counts across 8 Irish hospitals for 1-14 day horizons
+
+Stack: PyTorch, BERT, ClinicalBERT, LSTM, MADDPG, MAPPO, FastAPI, React, Docker Compose, Nginx, MLflow, Prometheus, Grafana, MongoDB, FAISS, Ollama, MedLLaMA2, GitHub Actions
+```
+
+---
+
+### Project 2 — DES-MARL: Multi-Agent RL for Hospital Resource Optimisation
+
+```
+Project name:  DES-MARL
+Associated with: Dublin Business School
+Start date:    2025
+End date:      2026
+URL:           https://github.com/HSE-Pulse/medi-sync
+```
+
+**Description:**
+
+```
+Novel framework integrating Discrete-Event Simulation (SimPy) with Multi-Agent Reinforcement Learning for dynamic hospital staff allocation.
+
+9 clinical departments modelled as autonomous agents with 12-dimensional state spaces. MADDPG and MAPPO algorithms trained on MIMIC-IV clinical data (7-day episodes) using 5-stage curriculum learning — from single-department to full-hospital coordination.
+
+Results:
+- 92.9% wait time reduction (28.4 h → 2 h)
+- 137% throughput improvement (306 → 727 patients per episode)
+- Multi-agent credit assignment across 9 departments with shared resources
+- Curriculum learning proved essential — agents fail to converge without staged complexity increases
+
+Stack: PyTorch, MADDPG, MAPPO, SimPy, FastAPI, WebSocket, React, MIMIC-IV, MLflow, Docker
+```
+
+---
+
+### Project 3 — CarePlanPlus: BERT Treatment Pathway Recommendation
+
+```
+Project name:  CarePlanPlus
+Associated with: Dublin Business School
+Start date:    2025
+End date:      2026
+URL:           https://github.com/HSE-Pulse/care-plan-plus
+```
+
+**Description:**
+
+```
+Dual-methodology treatment pathway recommendation system combining collaborative filtering with BERT-based classification.
+
+- Similarity-based collaborative filtering using k-means clustering (k=20) on 4,776 patient records from the NIES 2020 dataset
+- BERT-base-uncased fine-tuned on 163 patient-admission records mapped to 309 procedures across 15 NIES categories
+- Multi-step treatment pathway generation with ICD code integration and confidence-scored recommendations
+
+Stack: HuggingFace Transformers, BERT, Scikit-learn, FastAPI, React, MongoDB, Docker
+```
+
+---
+
+### Project 4 — PulseNotes: ClinicalBERT Document Intelligence & RAG
+
+```
+Project name:  PulseNotes
+Associated with: Dublin Business School
+Start date:    2025
+End date:      2026
+URL:           https://github.com/HSE-Pulse/pulse-notes
+```
+
+**Description:**
+
+```
+Clinical document intelligence system using Bio_ClinicalBERT embeddings with FAISS vector indexing and RAG pipeline.
+
+- 768-dimensional semantic embeddings with FAISS vector search over 22,184 document chunks from 1,203 MIMIC-IV patients
+- Section-aware extraction across 13 clinical note sections with regex-based NLU for query intent classification
+- Ollama-backed MedLLaMA2 for response generation
+- Sub-200ms query latency with hybrid retrieval combining vector similarity and deterministic section parsing
+
+Stack: MedLLaMA2, Bio_ClinicalBERT, Ollama, FAISS, FastAPI, MongoDB, React, Docker
+```
+
+---
+
+### Project 5 — PulseFlow: LSTM ED Trolley Forecasting
+
+```
+Project name:  PulseFlow
+Associated with: Dublin Business School
+Start date:    2025
+End date:      2026
+```
+
+**Description:**
+
+```
+LSTM-based forecasting system predicting emergency department trolley counts across Irish hospitals using HSE TrolleyGAR data.
+
+- 2-layer LSTM (64 hidden units) with 7-day sliding window lookback
+- 5-feature input: ED trolleys, ward trolleys, surge capacity, delayed transfers, elderly patients
+- 1-14 day rolling forecasts with confidence intervals across 8 Irish hospitals
+- MLflow-tracked hyperparameter sweeps with automated model selection
+- End-to-end pipeline from HSE open-data ingestion through training to live React dashboard
+
+Stack: PyTorch, LSTM, FastAPI, MongoDB, React, MLflow, Docker
+```
+
+---
+
+### Project 6 — LLM-Powered Terraform Engine (Kaiburr)
+
+```
+Project name:  LLM-Powered Terraform Engine
+Associated with: Kaiburr
+Start date:    2022
+End date:      2024
+```
+
+**Description:**
+
+```
+Enterprise infrastructure automation system powered by large language models.
+
+- Multi-LLM architecture using GPT-4, LLaMA-2-70B, and Falcon-180B for infrastructure-as-code generation
+- Automated provisioning across 75+ DevOps tools
+- Delivered 40% faster deployment cycles and 35% cloud cost reduction
+- Deployed across AWS, Azure, and GCP environments
+
+Technologies: GPT-4, LLaMA-2-70B, Falcon-180B, Terraform, Python, AWS, Azure, GCP
+```
+
+---
+
+### Project 7 — AIOps Anomaly Detection Platform (Kaiburr)
+
+```
+Project name:  AIOps Anomaly Detection Platform
+Associated with: Kaiburr
+Start date:    2020
+End date:      2024
+```
+
+**Description:**
+
+```
+Real-time anomaly detection and root cause analysis platform for enterprise IT operations.
+
+- Ensemble of LSTM, Autoencoder, and Isolation Forest models processing 10M+ daily log events
+- SHAP and LIME explainability integration achieving 85% accuracy in root cause attribution
+- 99.9% platform uptime with automated alerting
+- Generic Autonomous ML Engine processing 5,000+ daily telemetry data points
+
+Technologies: PyTorch, TensorFlow, LSTM, Autoencoders, Isolation Forest, SHAP, LIME, Kubernetes, Prometheus, Grafana
+```
+
+---
+
+## 8. PUBLICATIONS / RESEARCH
+
+### Publication 1
+
+```
+Title:   DES-MARL: Multi-Agent Reinforcement Learning for Dynamic Hospital Staff Allocation
+Type:    Research Paper (MSc)
+Date:    2025
+```
+
+**Description:**
+
+```
+Formal research paper presenting the DES-MARL methodology: integrating Discrete-Event Simulation with Multi-Agent Reinforcement Learning (MADDPG/MAPPO) for dynamic hospital resource optimisation. Experimental evaluation on MIMIC-IV clinical data demonstrates 92.9% wait time reduction and 137% throughput improvement compared to static staffing policies and single-agent baselines.
+```
+
+### Publication 2
+
+```
+Title:   DES-MARL Applied Research Report
+Type:    Applied Research Report (MSc)
+Date:    2025
+```
+
+**Description:**
+
+```
+Detailed applied research report covering the DES-MARL framework design: 9 clinical departments modelled as autonomous agents with 12-dimensional state spaces, MADDPG/MAPPO algorithms with 5-stage curriculum learning, trained on MIMIC-IV clinical data. Includes full experimental methodology, results analysis, and production deployment considerations.
+```
+
+---
+
+## 9. LICENSES & CERTIFICATIONS
+
+> Add any cloud certifications, ML specialisations, or relevant credentials here.
+> Suggested additions based on portfolio tech stack (if held):
+>
+> - AWS Certified Machine Learning — Specialty
+> - Azure AI Engineer Associate
+> - Google Cloud Professional Machine Learning Engineer
+> - DeepLearning.AI Deep Learning Specialisation
+> - Stanford Machine Learning (Coursera)
+
+---
+
+## 10. RECOMMENDATIONS — TALKING POINTS
+
+> Request recommendations from former colleagues and managers that address these themes:
+
+**For Kaiburr colleagues (AI leadership):**
+- Ability to translate business problems into ML solutions
+- Team leadership and mentoring capability
+- End-to-end delivery from research to production
+- Cross-functional communication with engineering, product, and executive stakeholders
+
+**For academic supervisors (research depth):**
+- Research rigour and independent problem-solving
+- Technical depth across multiple ML paradigms (RL, NLP, time series)
+- Ability to scope, execute, and deliver complex multi-service systems
+
+---
+
+## 11. PROFILE SETTINGS
+
+### Open to Work
+
+```
+Job titles:     Head of AI, AI/ML Director, Principal ML Engineer, Lead Data Scientist, Staff ML Engineer, Senior AI Engineer
+Job types:      Full-time
+Location:       Ireland (on-site, hybrid, or remote)
+Start date:     Immediately available
+```
+
+### Profile URL
+
+```
+https://www.linkedin.com/in/harishankar-somasundaram
+```
+
+### Contact Info
+
+```
+Email:    harishankar.info@gmail.com
+Phone:    +353 89 977 5093
+GitHub:   https://github.com/HSE-Pulse
+Website:  (add portfolio URL when deployed publicly)
+```
+
+---
+
+## 12. KEYWORD OPTIMISATION
+
+These keywords should appear naturally across your profile for recruiter search visibility in the Irish market:
+
+```
+AI leadership Ireland, Head of AI, ML Engineering, Healthcare AI,
+Large Language Models, LLM, GPT-4, LLaMA, Reinforcement Learning,
+Multi-Agent RL, BERT, NLP, Clinical NLP, RAG, MLOps, PyTorch,
+TensorFlow, Docker, Kubernetes, Istio, AWS, Azure, GCP, FastAPI,
+production ML, team leadership, Dublin, Ireland, Stamp 1G,
+Lead Data Scientist, deep learning, LSTM, time series forecasting,
+anomaly detection, explainable AI, SHAP, microservices, service mesh
+```

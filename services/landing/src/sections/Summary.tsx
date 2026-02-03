@@ -40,26 +40,28 @@ export default function Summary() {
               <p>
                 Over the past 11 years, I have progressed from backend engineering
                 through distributed data systems to leading AI/ML teams delivering
-                production models at scale. As Data Scientist Lead and Head of AI
-                at Kaiburr, I led a team of 8 engineers delivering 15+ production
-                models, building LLM-powered infrastructure automation (GPT-4,
-                LLaMA-2, Falcon-180B) that achieved 40% faster deployment cycles
-                and 35% cloud cost reduction, and deploying an AIOps anomaly
-                detection platform processing 10M+ log events daily with 99.9% uptime.
+                production models at scale. As Lead Data Scientist at Kaiburr, I led
+                a team of 8 engineers delivering 15+ production models, building
+                LLM-powered infrastructure automation (GPT-4, LLaMA-2, Falcon-180B)
+                that achieved 40% faster deployment cycles and 35% cloud cost reduction,
+                and deploying an AIOps anomaly detection platform processing 10M+ log
+                events daily with 99.9% uptime using LSTM, Autoencoders, and Isolation Forest.
               </p>
               <p>
-                Earlier roles included architecting a microservices recruitment
-                platform serving 500+ HR recruiters with 99.9% uptime, building
-                enterprise analytics processing 10M+ daily log entries with
-                Spark MLlib time-series forecasting, and developing deep learning
-                OCR systems achieving 92% accuracy on 5,000+ monthly documents.
+                Earlier roles included architecting a Kubernetes-native microservices
+                recruitment platform with Istio service mesh serving 500+ HR recruiters,
+                featuring ML-driven candidate matching and NLP-based resume parsing.
+                Built enterprise analytics processing 10M+ daily log entries with
+                Spark MLlib time-series forecasting (ARIMA, Prophet), and developed
+                deep learning OCR systems using TensorFlow achieving 92% accuracy on
+                5,000+ monthly documents alongside NLP-driven search engines using NLTK and OpenNLP.
               </p>
               <p>
                 My MSc capstone research at Dublin Business School developed a
                 novel DES-MARL framework integrating Discrete-Event Simulation
                 with Multi-Agent Reinforcement Learning for hospital resource
                 optimisation — achieving 92.9% wait time reduction and 137%
-                throughput improvement using MADDPG on MIMIC-IV clinical data.
+                throughput improvement using MADDPG/MAPPO on MIMIC-IV clinical data.
               </p>
             </div>
           </div>
