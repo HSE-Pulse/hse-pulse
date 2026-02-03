@@ -1,6 +1,7 @@
 import { Github, ExternalLink, Download } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
 import { config } from '../config'
+import { DemoButton } from '../components/DemoButton'
 
 interface Report {
   label: string
@@ -19,6 +20,7 @@ interface Project {
   stack: string[]
   github: string
   demo?: string
+  serviceName?: string  // For on-demand demo spin-up
   reports?: Report[]
 }
 
@@ -38,6 +40,7 @@ const projects: Project[] = [
     stack: ['PyTorch', 'MADDPG', 'MAPPO', 'FastAPI', 'WebSocket', 'React', 'MIMIC-IV', 'Docker'],
     github: 'https://github.com/HSE-Pulse/medi-sync',
     demo: config.DESMARL_URL,
+    serviceName: 'medisync',
     reports: [
       { label: 'Applied Research Report', url: '/reports/desmarl-applied-research.pdf' },
       { label: 'Research Paper', url: '/reports/desmarl-research-paper.pdf' },
@@ -58,6 +61,7 @@ const projects: Project[] = [
     stack: ['HuggingFace Transformers', 'BERT', 'Scikit-learn', 'FastAPI', 'React', 'MongoDB', 'Docker'],
     github: 'https://github.com/HSE-Pulse/care-plan-plus',
     demo: config.CAREPLANPLUS_URL,
+    serviceName: 'careplanplus',
     reports: [
       { label: 'Report', url: '/reports/careplanplus-report.pdf' },
     ],
@@ -77,6 +81,7 @@ const projects: Project[] = [
     stack: ['MedLLaMA2', 'Bio_ClinicalBERT', 'Ollama', 'FAISS', 'FastAPI', 'MongoDB', 'React', 'Docker'],
     github: 'https://github.com/HSE-Pulse/pulse-notes',
     demo: config.PULSENOTES_URL,
+    serviceName: 'pulsenotes',
     reports: [
       { label: 'Report', url: '/reports/pulsenotes-report.pdf' },
     ],
@@ -96,6 +101,7 @@ const projects: Project[] = [
     stack: ['PyTorch', 'LSTM', 'FastAPI', 'MongoDB', 'React', 'MLflow', 'Docker'],
     github: 'https://github.com/HSE-Pulse/pulse-flow',
     demo: config.PULSEFLOW_URL,
+    serviceName: 'pulseflow',
   },
   {
     name: 'HSE-Pulse Platform',
@@ -232,7 +238,7 @@ export default function Projects() {
                   </div>
 
                   {/* Links */}
-                  <div className="flex flex-wrap gap-3 mt-5">
+                  <div className="flex flex-wrap items-center gap-3 mt-5">
                     <a
                       href={p.github}
                       target="_blank"
@@ -242,7 +248,9 @@ export default function Projects() {
                       <Github className="w-3.5 h-3.5" />
                       Source Code
                     </a>
-                    {p.demo && (
+                    {p.serviceName ? (
+                      <DemoButton serviceName={p.serviceName} label="Live Demo" />
+                    ) : p.demo ? (
                       <a
                         href={p.demo}
                         target="_blank"
@@ -252,7 +260,7 @@ export default function Projects() {
                         <ExternalLink className="w-3.5 h-3.5" />
                         Live Demo
                       </a>
-                    )}
+                    ) : null}
                     {p.reports?.map((r) => (
                       <a
                         key={r.label}
