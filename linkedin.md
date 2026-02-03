@@ -479,34 +479,10 @@ Stack: PyTorch, LSTM, FastAPI, MongoDB, React, MLflow, Docker
 
 ---
 
-### Project 6 — LLM-Powered Terraform Engine (Kaiburr)
+### Project 6 — Cloudply AIOps Platform (Kaiburr)
 
 ```
-Project name:  LLM-Powered Terraform Engine
-Associated with: Kaiburr
-Start date:    2022
-End date:      2024
-```
-
-**Description:**
-
-```
-Enterprise infrastructure automation system powered by large language models.
-
-- Multi-LLM architecture using GPT-4, LLaMA-2-70B, and Falcon-180B for infrastructure-as-code generation
-- Automated provisioning across 75+ DevOps tools
-- Delivered 40% faster deployment cycles and 35% cloud cost reduction
-- Deployed across AWS, Azure, and GCP environments
-
-Technologies: GPT-4, LLaMA-2-70B, Falcon-180B, Terraform, Python, AWS, Azure, GCP
-```
-
----
-
-### Project 7 — AIOps Platform (Kaiburr)
-
-```
-Project name:  AIOps Platform
+Project name:  Cloudply - AIOps Platform
 Associated with: Kaiburr
 Start date:    2020
 End date:      2024
@@ -515,18 +491,21 @@ End date:      2024
 **Description:**
 
 ```
-Enterprise AIOps platform with 30+ microservices for IT operations intelligence.
+Enterprise AIOps platform with 30+ microservices delivering 40% faster deployments and 35% cloud cost reduction.
+
+Key Metrics:
+- 15+ production models with 95% SLA success rate
+- 10M+ daily events processed at 99.9% uptime
+- 40% faster deployment cycles, 35% cloud cost reduction
 
 Core Components:
+- LLM Infrastructure: Terraform Engine (GPT-4, LLaMA-2-70B, Falcon-180B) automating 75+ DevOps tools
 - Data Collectors: memory, process, consumption unit, tag classifier, assessment rules, vulnerability tests
-- ML Pipelines: RCA engine, anomaly detection, pipeline recommendation, ML model training
+- ML Pipelines: RCA engine, anomaly detection (LSTM, Autoencoders, Isolation Forest), pipeline recommendation
 - Code Generation: Terraform automation, test case generation (LLM), code remediation, Semgrep rule generation
-- Automation: GitHub PR workflows, Selenium automation, canonical model generation
-- Infrastructure: vector store management, deduplication engines, policy document processing
+- Automation: GitHub PR workflows, Selenium automation, canonical model generation, vector store management, deduplication engines
 
-Scale: 10M+ daily events processed at 99.9% uptime
-
-Technologies: Python, TensorFlow, Keras, LLM, Vector DB, Kubernetes, Jenkins, Docker, Prometheus, Grafana
+Technologies: GPT-4, LLaMA-2, Falcon-180B, PyTorch, TensorFlow, LSTM, Vector DB, Kubernetes, Jenkins, Docker, Prometheus, Grafana
 ```
 
 ---

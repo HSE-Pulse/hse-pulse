@@ -23,24 +23,14 @@ LinkedIn: linkedin.com/in/harishankar-somasundaram | GitHub: github.com/HSE-Puls
 ## PROFESSIONAL EXPERIENCE
 
 ### Lead Data Scientist | Kaiburr LLC, MA, USA
-**Mar 2023 – Dec 2024** | Cloudply - LLM Generic Autonomous Engine
+**May 2020 – Dec 2024** | Cloudply - AIOps Platform
 
-- Built LLM-powered Terraform Engine (GPT-4, LLaMA-2-70B, Falcon-180B) automating 75+ DevOps tools — 40% faster deployment cycles, 35% cloud cost reduction
-- Designed Generic Autonomous ML Engine using multi-agent LLM orchestration processing 5,000+ daily telemetry data points, reducing incident resolution from 30-60 minutes
-- Collaborated with cross-functional teams to design and implement ML models for optimizing deployment pipelines and automating anomaly detection
+- Led 8 engineers delivering 15+ production models with 95% SLA success — **40% faster deployments, 35% cloud cost reduction** across AWS, Azure, GCP
+- Built LLM-powered Terraform Engine (GPT-4, LLaMA-2, Falcon-180B) automating 75+ DevOps tools and multi-agent orchestration processing 5,000+ daily telemetry data points
+- Architected AIOps platform with **30+ microservices**: data collectors, RCA engine, anomaly detection (LSTM, Autoencoders), ML pipelines processing **10M+ daily events at 99.9% uptime**
+- Developed code remediation, LLM test generation, Semgrep rules, vector store management, deduplication engines, and GitHub/Selenium automation
 
-**Technologies:** Falcon, GPT, LLaMA, Python, SciPy, Django, Kubernetes, Knative, Jenkins
-
----
-
-### Lead Data Scientist | Kaiburr LLC, MA, USA
-**May 2020 – Feb 2023** | Cloudply - AIOps Platform (30+ Microservices)
-
-- Built AIOps platform with 30+ microservices: data collectors (memory, process, tags, consumption), RCA engine, pipeline recommendation, and anomaly detection processing 10M+ daily events
-- Developed ML workloads for code remediation, test case generation (LLM), Terraform automation, rule generation (Semgrep), and vector store management
-- Architected deduplication engines, canonical model generators, and GitHub/Selenium automation pipelines with 99.9% uptime
-
-**Technologies:** Python, TensorFlow, Keras, LLM, Vector DB, Kubernetes, Jenkins, Docker
+**Technologies:** GPT-4, LLaMA-2, Falcon-180B, PyTorch, TensorFlow, LSTM, Autoencoders, Vector DB, Kubernetes, Jenkins, Docker, Prometheus, Grafana
 
 ---
 
@@ -137,12 +127,11 @@ Microservice Design, REST/WebSocket APIs, Nginx, Apache Tomcat, Microsoft BizTal
 
 ## PROFESSIONAL PROJECTS (COMMERCIAL)
 
-1. **Cloudply LLM Engine** — Autonomous ML engine with GPT-4, LLaMA-2, Falcon-180B (Kaiburr LLC)
-2. **AIOps Platform** — 30+ microservices for enterprise IT operations (Kaiburr LLC)
-3. **Smart Recruitment Agent** — Kubernetes/Istio microservices with ML matching (United Software Group)
-4. **ESB Advance Metrics** — Spark MLlib time-series forecasting (Ocwen Mortgage)
-5. **Data Wrangling Platform** — TensorFlow OCR, NLP search (Ocwen Mortgage)
-6. **SPoT Provisioning** — Enterprise system provisioning (IntelligIS)
-7. **Patient Tracking** — HIPAA-compliant medical platform (Advanced Diagnostic Medical)
-8. **Tour Operator Platform** — Azure cloud travel management (Afwaj Tours, Dubai)
-9. **SOLO Order Management** — BizTalk integration (Carillion Telent, UK)
+1. **Cloudply AIOps Platform** — 30+ microservices, LLM Terraform Engine, 40% faster deployments (Kaiburr LLC)
+2. **Smart Recruitment Agent** — Kubernetes/Istio microservices with ML matching (United Software Group)
+3. **ESB Advance Metrics** — Spark MLlib time-series forecasting (Ocwen Mortgage)
+4. **Data Wrangling Platform** — TensorFlow OCR, NLP search (Ocwen Mortgage)
+5. **SPoT Provisioning** — Enterprise system provisioning (IntelligIS)
+6. **Patient Tracking** — HIPAA-compliant medical platform (Advanced Diagnostic Medical)
+7. **Tour Operator Platform** — Azure cloud travel management (Afwaj Tours, Dubai)
+8. **SOLO Order Management** — BizTalk integration (Carillion Telent, UK)
