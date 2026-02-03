@@ -20,11 +20,11 @@ Lead Data Scientist | 11 years from distributed systems to AI leadership | 15+ p
 
 KEY IMPACT:
 → 92.9% wait time reduction (28.4h → 2h) — DES-MARL Multi-Agent RL for hospital optimisation
-→ 40% faster deployments, 35% cost reduction — LLM-powered infrastructure automation (GPT-4, LLaMA-2, Falcon-180B)
-→ 10M+ daily events processed — AIOps anomaly detection platform at 99.9% uptime
-→ 9 enterprise clients delivered — USA, UK, and Middle East
+→ 40% faster deployments, 35% cost reduction — LLM Terraform Engine (GPT-4, LLaMA-2, Falcon-180B)
+→ 30+ microservices, 10M+ daily events — Cloudply AIOps Platform at 99.9% uptime
+→ 8 enterprise clients delivered — USA, UK, and Middle East
 
-At Kaiburr, I led 8 engineers building production AI systems: LLM Terraform Engine automating 75+ DevOps tools, and AIOps platform using LSTM, Autoencoders, and Isolation Forest with SHAP/LIME explainability.
+At Kaiburr (May 2020 – Dec 2024), I led 8 engineers building Cloudply AIOps Platform: LLM Terraform Engine automating 75+ DevOps tools, 30+ microservices including data collectors, RCA engine, anomaly detection (LSTM, Autoencoders), code remediation, LLM test generation, and GitHub/Selenium automation.
 
 Earlier: Kubernetes/Istio microservices with ML-driven candidate matching (500+ recruiters), Spark MLlib forecasting pipelines, TensorFlow OCR (92% accuracy), NLP search engines.
 
@@ -73,29 +73,25 @@ Employment:  Full-time
 **Description:**
 
 ```
-As Lead Data Scientist, led an 8-member AI/ML engineering team delivering 15+ production models with a 95% SLA success rate across AWS, Azure, and GCP deployments.
+Led 8-member AI/ML team building Cloudply AIOps Platform — delivering 15+ production models with 95% SLA success, 40% faster deployments, and 35% cost reduction across AWS, Azure, GCP.
 
 Key achievements:
 
-LLM-Powered Infrastructure Automation
-- Built a Terraform Engine using GPT-4, LLaMA-2-70B, and Falcon-180B that automated 75+ DevOps tools
-- Delivered 40% faster deployment cycles and 35% cloud cost reduction for enterprise clients
+Cloudply AIOps Platform (30+ Microservices)
+- Architected enterprise platform: data collectors (memory, process, tags, consumption), RCA engine, anomaly detection (LSTM, Autoencoders, Isolation Forest), pipeline recommendation
+- Built ML workloads for code remediation, test case generation (LLM), Semgrep rule generation, vector store management
+- Developed deduplication engines, canonical model generators, GitHub/Selenium automation processing 10M+ daily events at 99.9% uptime
 
-Generic Autonomous ML Engine
-- Designed a multi-agent LLM orchestration system processing 5,000+ daily telemetry data points
-- Reduced mean incident resolution time from 30-60 minutes to near-real-time
-
-AIOps Platform (30+ Microservices)
-- Architected enterprise AIOps platform: data collectors (memory, process, tags, consumption), RCA engine, pipeline recommendation, anomaly detection
-- Built ML workloads for code remediation, test case generation (LLM), Terraform automation, Semgrep rule generation, vector store management
-- Developed deduplication engines, canonical model generators, GitHub/Selenium automation pipelines processing 10M+ daily events at 99.9% uptime
+LLM-Powered Terraform Engine
+- Built infrastructure automation using GPT-4, LLaMA-2-70B, and Falcon-180B automating 75+ DevOps tools
+- Multi-agent LLM orchestration processing 5,000+ daily telemetry data points, reducing incident resolution from 30-60 min to near-real-time
 
 Team Leadership
 - Mentored 12+ data scientists and ML engineers
 - Established reproducible experiment practices, structured code review, and model governance processes
 - Managed stakeholder communication across engineering, product, and executive teams
 
-Technologies: PyTorch, TensorFlow, GPT-4, LLaMA-2, Falcon-180B, LSTM, Autoencoders, Isolation Forest, SHAP, LIME, AWS, Azure, GCP, Kubernetes, Docker, MLflow, Prometheus, Grafana
+Technologies: GPT-4, LLaMA-2, Falcon-180B, PyTorch, TensorFlow, LSTM, Autoencoders, Isolation Forest, Vector DB, Kubernetes, Docker, Jenkins, Prometheus, Grafana
 ```
 
 ---
