@@ -123,11 +123,11 @@ const professionalProjects = [
     stack: ['Falcon', 'GPT', 'LLaMA', 'Python', 'SciPy', 'Django', 'Kubernetes', 'Knative', 'Jenkins'],
   },
   {
-    name: 'Cloudply - AIOps Anomaly Detection',
+    name: 'Cloudply - AIOps Platform',
     client: 'Kaiburr LLC, MA, USA',
     period: 'May 2020 – Feb 2023',
-    description: 'Machine learning and deep learning framework designed for anomaly detection in logs and telemetry, with Explainable AI to help users take preventive action, featuring self-healing integrations and automated support ticket generation.',
-    stack: ['Python', 'SciPy', 'Django', 'TensorFlow', 'Keras', 'Kubernetes', 'Knative', 'Jenkins'],
+    description: 'Enterprise AIOps platform with 30+ microservices: Data collectors (memory, process, consumption, tags), ML pipelines (RCA, anomaly detection, pipeline recommendation), deduplication engines, Terraform/code generation, test case generation with LLM, vector store management, and GitHub/Selenium automation.',
+    stack: ['Python', 'TensorFlow', 'Keras', 'LLM', 'Vector DB', 'Kubernetes', 'Jenkins', 'Docker'],
   },
   {
     name: 'Smart Recruitment Agent',

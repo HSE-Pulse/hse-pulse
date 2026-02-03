@@ -19,13 +19,13 @@ const experience = [
     role: 'Lead Data Scientist',
     company: 'Kaiburr LLC',
     client: 'Kaiburr LLC, MA, USA',
-    project: 'Cloudply - AIOps Anomaly Detection',
+    project: 'Cloudply - AIOps Platform',
     location: 'Remote',
     period: 'May 2020 – Feb 2023',
     highlights: [
-      'Deployed AIOps anomaly detection platform (LSTM, Autoencoders, Isolation Forest) processing 10M+ daily log events with SHAP/LIME explainability and 99.9% uptime.',
-      'Developed robust data pipelines for collecting telemetry data across frameworks with live ML model deployment.',
-      'Led architecture and system design for ML-driven anomaly detection with self-healing and automated ticket generation.',
+      'Built AIOps platform with 30+ microservices: data collectors (memory, process, tags, consumption), RCA engine, pipeline recommendation, and anomaly detection processing 10M+ daily events.',
+      'Developed ML workloads for code remediation, test case generation (LLM), Terraform automation, rule generation (Semgrep), and vector store management.',
+      'Architected deduplication engines, canonical model generators, and GitHub/Selenium automation pipelines with 99.9% uptime.',
     ],
   },
   {

@@ -85,10 +85,10 @@ Generic Autonomous ML Engine
 - Designed a multi-agent LLM orchestration system processing 5,000+ daily telemetry data points
 - Reduced mean incident resolution time from 30-60 minutes to near-real-time
 
-AIOps Anomaly Detection Platform
-- Deployed LSTM, Autoencoder, and Isolation Forest models processing 10M+ daily log events
-- Integrated SHAP and LIME explainability achieving 85% accuracy in root cause attribution
-- Maintained 99.9% platform uptime
+AIOps Platform (30+ Microservices)
+- Architected enterprise AIOps platform: data collectors (memory, process, tags, consumption), RCA engine, pipeline recommendation, anomaly detection
+- Built ML workloads for code remediation, test case generation (LLM), Terraform automation, Semgrep rule generation, vector store management
+- Developed deduplication engines, canonical model generators, GitHub/Selenium automation pipelines processing 10M+ daily events at 99.9% uptime
 
 Team Leadership
 - Mentored 12+ data scientists and ML engineers
@@ -503,10 +503,10 @@ Technologies: GPT-4, LLaMA-2-70B, Falcon-180B, Terraform, Python, AWS, Azure, GC
 
 ---
 
-### Project 7 — AIOps Anomaly Detection Platform (Kaiburr)
+### Project 7 — AIOps Platform (Kaiburr)
 
 ```
-Project name:  AIOps Anomaly Detection Platform
+Project name:  AIOps Platform
 Associated with: Kaiburr
 Start date:    2020
 End date:      2024
@@ -515,14 +515,18 @@ End date:      2024
 **Description:**
 
 ```
-Real-time anomaly detection and root cause analysis platform for enterprise IT operations.
+Enterprise AIOps platform with 30+ microservices for IT operations intelligence.
 
-- Ensemble of LSTM, Autoencoder, and Isolation Forest models processing 10M+ daily log events
-- SHAP and LIME explainability integration achieving 85% accuracy in root cause attribution
-- 99.9% platform uptime with automated alerting
-- Generic Autonomous ML Engine processing 5,000+ daily telemetry data points
+Core Components:
+- Data Collectors: memory, process, consumption unit, tag classifier, assessment rules, vulnerability tests
+- ML Pipelines: RCA engine, anomaly detection, pipeline recommendation, ML model training
+- Code Generation: Terraform automation, test case generation (LLM), code remediation, Semgrep rule generation
+- Automation: GitHub PR workflows, Selenium automation, canonical model generation
+- Infrastructure: vector store management, deduplication engines, policy document processing
 
-Technologies: PyTorch, TensorFlow, LSTM, Autoencoders, Isolation Forest, SHAP, LIME, Kubernetes, Prometheus, Grafana
+Scale: 10M+ daily events processed at 99.9% uptime
+
+Technologies: Python, TensorFlow, Keras, LLM, Vector DB, Kubernetes, Jenkins, Docker, Prometheus, Grafana
 ```
 
 ---

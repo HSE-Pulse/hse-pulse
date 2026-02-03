@@ -9,8 +9,8 @@ const pillars = [
   },
   {
     icon: Layers,
-    title: '10M+ Events Daily',
-    text: 'AIOps platform processing 10M+ log events with 99.9% uptime. Kubernetes-native ML pipelines with auto-scaling and self-healing across AWS, Azure, GCP.',
+    title: '30+ Microservices',
+    text: 'AIOps platform with data collectors, RCA engine, ML pipelines, code generation, and automation workloads processing 10M+ daily events at 99.9% uptime.',
   },
   {
     icon: FlaskConical,
@@ -43,8 +43,9 @@ export default function Summary() {
                 At Kaiburr, led 8 engineers shipping <span className="text-primary-400">15+ production models</span> with
                 95% SLA success. Built LLM infrastructure automation
                 (GPT-4, LLaMA-2, Falcon-180B) delivering <span className="text-primary-400">40% faster deployments</span> and
-                <span className="text-primary-400"> 35% cost reduction</span>. Deployed AIOps platform
-                processing <span className="text-primary-400">10M+ daily events</span> at 99.9% uptime.
+                <span className="text-primary-400"> 35% cost reduction</span>. Architected AIOps platform with
+                <span className="text-primary-400"> 30+ microservices</span> — data collectors, RCA, ML pipelines,
+                code/test generation, and automation workloads processing 10M+ daily events.
               </p>
               <p>
                 Architected Kubernetes/Istio microservices platform with ML-driven
