@@ -53,13 +53,22 @@ export default function Hero() {
             <ArrowRight className="w-4 h-4" />
           </a>
           <a
-            href={`${BASE}resume/HarishankarSomasundaram_Resume.pdf`}
+            href={`${BASE}resume/HarishankarSomasundaram_CV.pdf`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass glass-hover text-slate-300 font-medium text-sm transition-all"
           >
             <Download className="w-4 h-4" />
             Download CV
+          </a>
+          <a
+            href={`${BASE}resume/HarishankarSomasundaram_Resume.pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass glass-hover text-slate-300 font-medium text-sm transition-all"
+          >
+            <Download className="w-4 h-4" />
+            Resume
           </a>
           <a
             href="#academic"
