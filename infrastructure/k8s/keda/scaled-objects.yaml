@@ -1,0 +1,48 @@
+# Alternative KEDA ScaledObjects using CPU/Memory metrics
+# Simpler than HTTP add-on, works out of the box
+
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: medisync-scaler
+  namespace: hse-pulse
+spec:
+  scaleTargetRef:
+    name: medisync
+  minReplicaCount: 0
+  maxReplicaCount: 2
+  cooldownPeriod: 300  # 5 minutes before scaling to 0
+  pollingInterval: 30
+  triggers:
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "50"
+    - type: memory
+      metricType: Utilization
+      metadata:
+        value: "70"
+
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: pulseflow-scaler
+  namespace: hse-pulse
+spec:
+  scaleTargetRef:
+    name: pulseflow
+  minReplicaCount: 0
+  maxReplicaCount: 2
+  cooldownPeriod: 300
+  pollingInterval: 30
+  triggers:
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "50"
+    - type: memory
+      metricType: Utilization
+      metadata:
+        value: "70"

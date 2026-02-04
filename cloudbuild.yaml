@@ -1,0 +1,95 @@
+# Cloud Build CI/CD Pipeline for HSE-Pulse GKE Deployment
+# Triggers on push to main branch
+
+steps:
+  # Step 1: Build Landing Page
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/landing:$COMMIT_SHA', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/landing:latest', './services/landing']
+    id: 'build-landing'
+
+  # Step 2: Build MediSync
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/medisync:$COMMIT_SHA', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/medisync:latest', './services/medisync']
+    id: 'build-medisync'
+
+  # Step 3: Build PulseFlow
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/pulseflow:$COMMIT_SHA', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/pulseflow:latest', './services/pulseflow']
+    id: 'build-pulseflow'
+
+  # Step 4: Push all images
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '--all-tags', 'europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/landing']
+    id: 'push-landing'
+    waitFor: ['build-landing']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '--all-tags', 'europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/medisync']
+    id: 'push-medisync'
+    waitFor: ['build-medisync']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '--all-tags', 'europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/pulseflow']
+    id: 'push-pulseflow'
+    waitFor: ['build-pulseflow']
+
+  # Step 5: Deploy to GKE
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - run
+      - --filename=./infrastructure/k8s/landing/deployment.yaml
+      - --image=europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/landing:$COMMIT_SHA
+      - --location=europe-west1
+      - --cluster=hse-pulse-cluster
+    id: 'deploy-landing'
+    waitFor: ['push-landing']
+
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - run
+      - --filename=./infrastructure/k8s/medisync/deployment.yaml
+      - --image=europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/medisync:$COMMIT_SHA
+      - --location=europe-west1
+      - --cluster=hse-pulse-cluster
+    id: 'deploy-medisync'
+    waitFor: ['push-medisync']
+
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - run
+      - --filename=./infrastructure/k8s/pulseflow/deployment.yaml
+      - --image=europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/pulseflow:$COMMIT_SHA
+      - --location=europe-west1
+      - --cluster=hse-pulse-cluster
+    id: 'deploy-pulseflow'
+    waitFor: ['push-pulseflow']
+
+  # Step 6: Restart deployments to pick up new images
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['rollout', 'restart', 'deployment/landing', '-n', 'hse-pulse']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+    id: 'restart-landing'
+    waitFor: ['deploy-landing']
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['rollout', 'restart', 'deployment/medisync', '-n', 'hse-pulse']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+    id: 'restart-medisync'
+    waitFor: ['deploy-medisync']
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['rollout', 'restart', 'deployment/pulseflow', '-n', 'hse-pulse']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+    id: 'restart-pulseflow'
+    waitFor: ['deploy-pulseflow']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: '1800s'  # 30 minutes

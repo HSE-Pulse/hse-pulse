@@ -1,8 +1,13 @@
 // Runtime config from container entrypoint (injected via /config.js)
 const cfg = (typeof window !== 'undefined' && window.__MEDISYNC_CONFIG__) || {};
 
-export const API_BASE = cfg.API_BASE || 'http://localhost:8000';
-export const WS_URL = cfg.WS_URL || 'ws://localhost:8000/stream/metrics';
+// Use same origin for Cloud Run deployment (UI and API on same domain)
+const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8000';
+const wsProtocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+const wsHost = typeof window !== 'undefined' ? window.location.host : 'localhost:8000';
+
+export const API_BASE = cfg.API_BASE || origin;
+export const WS_URL = cfg.WS_URL || `${wsProtocol}//${wsHost}/stream/metrics`;
 
 export const DEPARTMENTS = [
   'Emergency Department',

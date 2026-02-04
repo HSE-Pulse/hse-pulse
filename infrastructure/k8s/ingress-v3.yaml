@@ -1,0 +1,123 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hse-pulse-ingress
+  namespace: hse-pulse
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "hse-pulse-ip"
+    networking.gke.io/managed-certificates: "hse-pulse-cert"
+    kubernetes.io/ingress.allow-http: "true"
+spec:
+  rules:
+    # Main landing page
+    - host: harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: landing
+                port:
+                  number: 80
+    - host: www.harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: landing
+                port:
+                  number: 80
+    # Demo services on dedicated subdomains
+    - host: medisync.harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: medisync
+                port:
+                  number: 80
+    - host: pulseflow.harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pulseflow
+                port:
+                  number: 80
+    - host: pulsenotes.harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pulsenotes
+                port:
+                  number: 80
+    - host: careplanplus.harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: careplanplus
+                port:
+                  number: 80
+    # Observability dashboards
+    - host: mlflow.harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mlflow
+                port:
+                  number: 80
+    - host: prometheus.harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus
+                port:
+                  number: 80
+    - host: grafana.harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 80
+---
+# Updated SSL certificate with all subdomains
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: hse-pulse-cert
+  namespace: hse-pulse
+spec:
+  domains:
+    - harishankar.info
+    - www.harishankar.info
+    - medisync.harishankar.info
+    - pulseflow.harishankar.info
+    - pulsenotes.harishankar.info
+    - careplanplus.harishankar.info
+    - mlflow.harishankar.info
+    - prometheus.harishankar.info
+    - grafana.harishankar.info
