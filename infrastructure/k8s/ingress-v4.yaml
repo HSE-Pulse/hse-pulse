@@ -109,17 +109,6 @@ spec:
                 name: grafana
                 port:
                   number: 80
-    # Demo activator for on-demand scaling
-    - host: demo.harishankar.info
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: demo-activator
-                port:
-                  number: 80
     # Kubernetes Dashboard
     - host: dashboard.harishankar.info
       http:
@@ -148,5 +137,4 @@ spec:
     - mlflow.harishankar.info
     - prometheus.harishankar.info
     - grafana.harishankar.info
-    - demo.harishankar.info
     - dashboard.harishankar.info

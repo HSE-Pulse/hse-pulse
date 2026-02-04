@@ -39,7 +39,6 @@ data:
       scrape_interval: 15s
       evaluation_interval: 15s
     scrape_configs:
-      # Always-on services with static config
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
@@ -47,38 +46,18 @@ data:
         static_configs:
           - targets: ['medisync:80']
         metrics_path: /metrics
-      # Scale-to-zero services using Kubernetes pod discovery
-      # Only appears when pods are running
-      - job_name: 'hse-pulse-demos'
-        kubernetes_sd_configs:
-          - role: pod
-            namespaces:
-              names:
-                - hse-pulse
-        relabel_configs:
-          # Only scrape pods with prometheus.io/scrape annotation
-          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-            action: keep
-            regex: true
-          # Use custom metrics path if specified
-          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-            action: replace
-            target_label: __metrics_path__
-            regex: (.+)
-          # Use custom port if specified
-          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-            action: replace
-            regex: ([^:]+)(?::\d+)?;(\d+)
-            replacement: $1:$2
-            target_label: __address__
-          # Add pod name as label
-          - source_labels: [__meta_kubernetes_pod_name]
-            action: replace
-            target_label: pod
-          # Add app label
-          - source_labels: [__meta_kubernetes_pod_label_app]
-            action: replace
-            target_label: app
+      - job_name: 'pulseflow'
+        static_configs:
+          - targets: ['pulseflow:80']
+        metrics_path: /pulseflow/api/metrics
+      - job_name: 'pulsenotes'
+        static_configs:
+          - targets: ['pulsenotes:80']
+        metrics_path: /rag/metrics
+      - job_name: 'careplanplus'
+        static_configs:
+          - targets: ['careplanplus:80']
+        metrics_path: /careplanplus/api/metrics
 ---
 apiVersion: apps/v1
 kind: Deployment
