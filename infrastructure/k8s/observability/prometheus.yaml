@@ -1,4 +1,34 @@
 apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: hse-pulse
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prometheus-role
+  namespace: hse-pulse
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prometheus-rolebinding
+  namespace: hse-pulse
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: hse-pulse
+roleRef:
+  kind: Role
+  name: prometheus-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-config
@@ -9,6 +39,7 @@ data:
       scrape_interval: 15s
       evaluation_interval: 15s
     scrape_configs:
+      # Always-on services with static config
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
@@ -16,18 +47,38 @@ data:
         static_configs:
           - targets: ['medisync:80']
         metrics_path: /metrics
-      - job_name: 'pulseflow'
-        static_configs:
-          - targets: ['pulseflow:80']
-        metrics_path: /metrics
-      - job_name: 'pulsenotes'
-        static_configs:
-          - targets: ['pulsenotes:80']
-        metrics_path: /metrics
-      - job_name: 'careplanplus'
-        static_configs:
-          - targets: ['careplanplus:80']
-        metrics_path: /metrics
+      # Scale-to-zero services using Kubernetes pod discovery
+      # Only appears when pods are running
+      - job_name: 'hse-pulse-demos'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - hse-pulse
+        relabel_configs:
+          # Only scrape pods with prometheus.io/scrape annotation
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          # Use custom metrics path if specified
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          # Use custom port if specified
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          # Add pod name as label
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+          # Add app label
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: replace
+            target_label: app
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,6 +97,7 @@ spec:
       labels:
         app: prometheus
     spec:
+      serviceAccountName: prometheus
       containers:
         - name: prometheus
           image: prom/prometheus:v2.49.0

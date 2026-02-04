@@ -6,7 +6,7 @@ metadata:
   labels:
     app: pulseflow
 spec:
-  replicas: 0  # Start at 0, KEDA will scale up
+  replicas: 1
   selector:
     matchLabels:
       app: pulseflow
@@ -14,22 +14,41 @@ spec:
     metadata:
       labels:
         app: pulseflow
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
-        - name: pulseflow
-          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulseflow:latest
+        - name: ui
+          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulseflow-ui:latest
+          ports:
+            - containerPort: 7000
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+        - name: api
+          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulseflow-api:latest
           ports:
             - containerPort: 8000
           resources:
             requests:
               memory: "512Mi"
-              cpu: "500m"
+              cpu: "250m"
             limits:
               memory: "1Gi"
-              cpu: "1000m"
+              cpu: "500m"
           env:
             - name: PYTHONUNBUFFERED
               value: "1"
+            - name: MONGO_URI
+              value: "mongodb://mongodb:27017/"
+            - name: MONGO_DB
+              value: "healthcare"
           livenessProbe:
             httpGet:
               path: /health
@@ -54,5 +73,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 8000
+      targetPort: 7000
   type: ClusterIP
