@@ -53,7 +53,7 @@ data:
       - job_name: 'pulsenotes'
         static_configs:
           - targets: ['pulsenotes:80']
-        metrics_path: /rag/metrics
+        metrics_path: /pulsenotes/api/metrics
       - job_name: 'careplanplus'
         static_configs:
           - targets: ['careplanplus:80']
