@@ -22,9 +22,12 @@ import logging
 import os
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from starlette.responses import Response
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 import mlflow
@@ -349,6 +352,24 @@ def create_app() -> FastAPI:
     async def metrics_history(request: Request, window: int = 12):
         mgr = _mgr(request)
         return mgr.get_metrics_history(window=window)
+
+    # --- Static UI serving ---
+    static_dir = Path("/app/static")
+    if static_dir.exists():
+        # Serve static assets
+        app.mount("/assets", StaticFiles(directory=static_dir / "assets"), name="assets")
+
+        @app.get("/", tags=["ui"])
+        async def serve_ui():
+            return FileResponse(static_dir / "index.html")
+
+        @app.get("/{path:path}", tags=["ui"])
+        async def serve_spa(path: str):
+            # Serve index.html for SPA routes (exclude API paths)
+            file_path = static_dir / path
+            if file_path.exists() and file_path.is_file():
+                return FileResponse(file_path)
+            return FileResponse(static_dir / "index.html")
 
     return app
 

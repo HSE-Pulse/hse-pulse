@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulseflow
+  namespace: hse-pulse
+  labels:
+    app: pulseflow
+spec:
+  replicas: 0  # Start at 0, KEDA will scale up
+  selector:
+    matchLabels:
+      app: pulseflow
+  template:
+    metadata:
+      labels:
+        app: pulseflow
+    spec:
+      containers:
+        - name: pulseflow
+          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulseflow:latest
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulseflow
+  namespace: hse-pulse
+spec:
+  selector:
+    app: pulseflow
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

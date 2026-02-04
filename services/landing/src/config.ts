@@ -15,13 +15,15 @@ declare global {
 }
 
 const defaults: LandingConfig = {
-  DESMARL_URL: '/medisync/',
-  CAREPLANPLUS_URL: '/careplanplus/',
-  PULSENOTES_URL: '/pulsenotes/',
-  PULSEFLOW_URL: '/pulseflow/',
-  MLFLOW_URL: '/mlflow/',
-  GRAFANA_URL: '/grafana/',
-  PROMETHEUS_URL: '/prometheus/',
+  // GKE deployed services on dedicated subdomains
+  DESMARL_URL: 'https://medisync.harishankar.info',
+  PULSEFLOW_URL: 'https://pulseflow.harishankar.info',
+  CAREPLANPLUS_URL: 'https://careplanplus.harishankar.info',
+  PULSENOTES_URL: 'https://pulsenotes.harishankar.info',
+  // Observability dashboards
+  MLFLOW_URL: 'https://mlflow.harishankar.info',
+  GRAFANA_URL: 'https://grafana.harishankar.info',
+  PROMETHEUS_URL: 'https://prometheus.harishankar.info',
 }
 
 export const config: LandingConfig = {

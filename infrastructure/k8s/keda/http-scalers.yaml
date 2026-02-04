@@ -1,0 +1,52 @@
+# KEDA HTTP Add-on ScaledObjects for demo services
+# These scale pods based on incoming HTTP requests
+
+---
+apiVersion: http.keda.sh/v1alpha1
+kind: HTTPScaledObject
+metadata:
+  name: medisync-http-scaler
+  namespace: hse-pulse
+spec:
+  hosts:
+    - demo.harishankar.info
+  pathPrefixes:
+    - /medisync
+  scaleTargetRef:
+    deployment: medisync
+    service: medisync
+    port: 80
+  replicas:
+    min: 0
+    max: 2
+  scalingMetric:
+    requestRate:
+      targetValue: 10  # Scale up when >10 requests per second
+    concurrency:
+      targetValue: 5   # Or when >5 concurrent connections
+  scaledownPeriod: 300  # 5 minutes cooldown before scaling to 0
+
+---
+apiVersion: http.keda.sh/v1alpha1
+kind: HTTPScaledObject
+metadata:
+  name: pulseflow-http-scaler
+  namespace: hse-pulse
+spec:
+  hosts:
+    - demo.harishankar.info
+  pathPrefixes:
+    - /pulseflow
+  scaleTargetRef:
+    deployment: pulseflow
+    service: pulseflow
+    port: 80
+  replicas:
+    min: 0
+    max: 2
+  scalingMetric:
+    requestRate:
+      targetValue: 10
+    concurrency:
+      targetValue: 5
+  scaledownPeriod: 300

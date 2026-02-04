@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pulsenotes
+  namespace: hse-pulse
+  labels:
+    app: pulsenotes
+spec:
+  replicas: 0  # Start at 0 - on demand
+  selector:
+    matchLabels:
+      app: pulsenotes
+  template:
+    metadata:
+      labels:
+        app: pulsenotes
+    spec:
+      containers:
+        - name: pulsenotes
+          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulsenotes:latest
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: MONGODB_URI
+              value: "mongodb://mongodb:27017"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulsenotes
+  namespace: hse-pulse
+spec:
+  selector:
+    app: pulsenotes
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hse-pulse-ingress
+  namespace: hse-pulse
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "hse-pulse-ip"
+    networking.gke.io/managed-certificates: "hse-pulse-cert"
+    kubernetes.io/ingress.allow-http: "false"  # Force HTTPS
+spec:
+  rules:
+    # Main landing page
+    - host: harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: landing
+                port:
+                  number: 80
+    - host: www.harishankar.info
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: landing
+                port:
+                  number: 80
+    # Demo services
+    - host: demo.harishankar.info
+      http:
+        paths:
+          - path: /medisync
+            pathType: Prefix
+            backend:
+              service:
+                name: medisync
+                port:
+                  number: 80
+          - path: /pulseflow
+            pathType: Prefix
+            backend:
+              service:
+                name: pulseflow
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: landing
+                port:
+                  number: 80
+---
+# Google-managed SSL certificate
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: hse-pulse-cert
+  namespace: hse-pulse
+spec:
+  domains:
+    - harishankar.info
+    - www.harishankar.info
+    - demo.harishankar.info
