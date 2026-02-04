@@ -15,12 +15,11 @@ declare global {
 }
 
 const defaults: LandingConfig = {
-  // MediSync always on
+  // All demo services always on
   DESMARL_URL: 'https://medisync.harishankar.info',
-  // On-demand demos via activator (scale-to-zero)
-  PULSEFLOW_URL: 'https://demo.harishankar.info/activate/pulseflow',
-  CAREPLANPLUS_URL: 'https://demo.harishankar.info/activate/careplanplus',
-  PULSENOTES_URL: 'https://demo.harishankar.info/activate/pulsenotes',
+  PULSEFLOW_URL: 'https://pulseflow.harishankar.info',
+  CAREPLANPLUS_URL: 'https://careplanplus.harishankar.info',
+  PULSENOTES_URL: 'https://pulsenotes.harishankar.info',
   // Observability dashboards
   MLFLOW_URL: 'https://mlflow.harishankar.info',
   GRAFANA_URL: 'https://grafana.harishankar.info',
