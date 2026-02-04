@@ -1,0 +1,22 @@
+steps:
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['delete', 'job', 'seed-hse-data', '-n', 'hse-pulse', '--ignore-not-found']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'infrastructure/k8s/seed-data-job.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['wait', '--for=condition=complete', 'job/seed-hse-data', '-n', 'hse-pulse', '--timeout=300s']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['logs', 'job/seed-hse-data', '-n', 'hse-pulse']
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+timeout: '600s'
