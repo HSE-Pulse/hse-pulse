@@ -6,7 +6,7 @@ metadata:
   labels:
     app: pulsenotes
 spec:
-  replicas: 0  # Start at 0 - on demand
+  replicas: 1
   selector:
     matchLabels:
       app: pulsenotes
@@ -14,10 +14,25 @@ spec:
     metadata:
       labels:
         app: pulsenotes
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
-        - name: pulsenotes
-          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulsenotes:latest
+        - name: ui
+          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulsenotes-ui:latest
+          ports:
+            - containerPort: 4000
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+        - name: api
+          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulsenotes-api:latest
           ports:
             - containerPort: 8000
           resources:
@@ -30,8 +45,10 @@ spec:
           env:
             - name: PYTHONUNBUFFERED
               value: "1"
-            - name: MONGODB_URI
-              value: "mongodb://mongodb:27017"
+            - name: MONGO_URI
+              value: "mongodb://mongodb:27017/"
+            - name: MONGO_DB
+              value: "healthcare"
           livenessProbe:
             httpGet:
               path: /health
@@ -56,5 +73,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 8000
+      targetPort: 4000
   type: ClusterIP
