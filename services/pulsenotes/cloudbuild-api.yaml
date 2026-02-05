@@ -1,0 +1,5 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulsenotes-api:latest', '.']
+images:
+  - 'europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulsenotes-api:latest'

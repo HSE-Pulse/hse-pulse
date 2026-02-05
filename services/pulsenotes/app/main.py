@@ -634,9 +634,14 @@ async def lifespan(app: FastAPI):
         # Sync patients from clinical_notes on startup
         sync_patients_from_notes(db)
 
-        # Try to build index from database if clinical_notes collection exists
-        if 'clinical_notes' in db.list_collection_names():
-            nlp_manager.build_index_from_db(db['clinical_notes'])
+        # Build FAISS index from database only if explicitly enabled (slow on CPU)
+        # Patient queries work directly with MongoDB; FAISS is for semantic search
+        if os.getenv("BUILD_INDEX_ON_STARTUP", "false").lower() == "true":
+            if 'clinical_notes' in db.list_collection_names():
+                logger.info("Building FAISS index from database (this may take a while)...")
+                nlp_manager.build_index_from_db(db['clinical_notes'])
+        else:
+            logger.info("Skipping FAISS index build (use /train endpoint or set BUILD_INDEX_ON_STARTUP=true)")
 
     except Exception as e:
         logger.warning(f"MongoDB connection failed: {e}")
