@@ -1,8 +1,9 @@
 window.__LANDING_CONFIG__ = {
-  MEDISYNC_URL: '/medisync/',
-  CAREPLANPLUS_URL: '/careplanplus/',
-  PULSENOTES_URL: '/pulsenotes/',
-  MLFLOW_URL: '/mlflow/',
-  GRAFANA_URL: '/grafana/',
-  PROMETHEUS_URL: '/prometheus/',
+  DESMARL_URL: 'https://medisync.harishankar.info',
+  CAREPLANPLUS_URL: 'https://careplanplus.harishankar.info',
+  PULSENOTES_URL: 'https://pulsenotes.harishankar.info',
+  PULSEFLOW_URL: 'https://pulseflow.harishankar.info',
+  MLFLOW_URL: 'https://mlflow.harishankar.info',
+  GRAFANA_URL: 'https://grafana.harishankar.info',
+  PROMETHEUS_URL: 'https://prometheus.harishankar.info',
 };

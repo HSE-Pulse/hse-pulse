@@ -6,23 +6,22 @@ LSTM-based ED trolley forecasting for Irish hospitals
 import os
 import logging
 import time
+import json
 from datetime import datetime, timedelta
 from contextlib import asynccontextmanager
 from typing import Optional, List
 
-import torch
-import torch.nn as nn
 import numpy as np
 import pandas as pd
 import joblib
+import torch
+import torch.nn as nn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from starlette.responses import Response
-import mlflow
-import mlflow.pytorch
 
 # Configure logging
 logging.basicConfig(
@@ -55,7 +54,7 @@ class LSTMRegressor(nn.Module):
 
     def __init__(self, input_size: int, hidden_size: int = 64, num_layers: int = 2):
         super().__init__()
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True, dropout=0.2)
         self.fc = nn.Linear(hidden_size, 1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -70,16 +69,22 @@ class ModelManager:
     def __init__(self):
         self.model: Optional[LSTMRegressor] = None
         self.scaler = None
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.metadata = None
+        self.model_type = None
+        self.sequence_length = 7
+        self.device = torch.device('cpu')
+        self.scaler_min = 0
+        self.scaler_max = 100
         self.features = [
             'trolley_count', 'admissions', 'discharges',
             'trolleys_gt_24hrs', 'elderly_waiting'
         ]
 
-    def load_model(self, model_path: str, scaler_path: Optional[str] = None):
-        """Load LSTM model and scaler from disk."""
+    def load_model(self, model_path: str, scaler_path: Optional[str] = None, metadata_path: Optional[str] = None):
+        """Load LSTM model and scaler from disk. Falls back to GB model if LSTM not available."""
         try:
-            if os.path.exists(model_path):
+            # Try LSTM first
+            if os.path.exists(model_path) and model_path.endswith('.pth'):
                 checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
                 self.model = LSTMRegressor(
                     input_size=checkpoint.get('input_size', 5),
@@ -88,31 +93,63 @@ class ModelManager:
                 ).to(self.device)
                 self.model.load_state_dict(checkpoint['model_state_dict'])
                 self.model.eval()
-                logger.info(f"Model loaded from {model_path}")
+                self.model_type = "LSTM"
+                self.scaler_min = checkpoint.get('scaler_min', 0)
+                self.scaler_max = checkpoint.get('scaler_max', 100)
+                self.sequence_length = checkpoint.get('sequence_length', 7)
+                logger.info(f"LSTM model loaded from {model_path}")
+                logger.info(f"Scaler range: {self.scaler_min} - {self.scaler_max}")
                 MODEL_LOADED.set(1)
             else:
-                logger.warning(f"Model file not found at {model_path}, using demo mode")
-                self._create_demo_model()
+                # Try GB model as fallback
+                gb_path = model_path.replace('lstm_model.pth', 'gb_model.pkl')
+                if os.path.exists(gb_path):
+                    self.model = joblib.load(gb_path)
+                    self.model_type = "GradientBoosting"
+                    logger.info(f"GB model loaded from {gb_path} (fallback)")
+                    MODEL_LOADED.set(1)
+                else:
+                    logger.warning(f"No model found at {model_path} or {gb_path}, using demo mode")
+                    self._create_demo_model()
 
             if scaler_path and os.path.exists(scaler_path):
                 self.scaler = joblib.load(scaler_path)
+                # Get scaler range for inverse transform
+                if hasattr(self.scaler, 'data_min_') and hasattr(self.scaler, 'data_max_'):
+                    self.scaler_min = self.scaler.data_min_[0]
+                    self.scaler_max = self.scaler.data_max_[0]
                 logger.info(f"Scaler loaded from {scaler_path}")
+                logger.info(f"Scaler range: {self.scaler_min} - {self.scaler_max}")
             else:
                 logger.warning("Scaler not found, predictions may be unscaled")
 
+            if metadata_path and os.path.exists(metadata_path):
+                with open(metadata_path, 'r') as f:
+                    self.metadata = json.load(f)
+                self.sequence_length = self.metadata.get('sequence_length', 7)
+                if 'scaler_range' in self.metadata:
+                    self.scaler_min = self.metadata['scaler_range'].get('min', self.scaler_min)
+                    self.scaler_max = self.metadata['scaler_range'].get('max', self.scaler_max)
+                logger.info(f"Metadata loaded: {self.metadata}")
+
         except Exception as e:
             logger.error(f"Error loading model: {e}")
+            import traceback
+            traceback.print_exc()
             self._create_demo_model()
 
     def _create_demo_model(self):
-        """Create a demo model for testing without real weights."""
+        """Create a demo LSTM model for testing without real weights."""
         self.model = LSTMRegressor(input_size=5, hidden_size=64, num_layers=2).to(self.device)
         self.model.eval()
+        self.model_type = "LSTM-Demo"
+        self.scaler_min = 20
+        self.scaler_max = 80
         MODEL_LOADED.set(0.5)  # Indicate demo mode
-        logger.info("Demo model created")
+        logger.info("Demo LSTM model created")
 
     def predict(self, sequence: np.ndarray, forecast_days: int = 7) -> List[float]:
-        """Generate patient flow predictions."""
+        """Generate patient flow predictions using LSTM or GB model."""
         if self.model is None:
             raise ValueError("Model not loaded")
 
@@ -120,24 +157,43 @@ class ModelManager:
             predictions = []
             last_seq = sequence.copy()
 
-            with torch.no_grad():
-                for _ in range(forecast_days):
-                    input_tensor = torch.tensor(
-                        last_seq, dtype=torch.float32
-                    ).unsqueeze(0).to(self.device)
-                    pred = self.model(input_tensor).item()
-                    predictions.append(max(0, pred))  # Ensure non-negative
-                    next_input = np.append(
-                        last_seq[1:],
-                        [[pred] * last_seq.shape[1]],
-                        axis=0
-                    )
-                    last_seq = next_input
+            if self.model_type == "LSTM" or self.model_type == "LSTM-Demo":
+                # Scale the input sequence for LSTM using min/max from checkpoint
+                # Don't use external scaler - it was trained for GB model with different shape
+                last_seq = (last_seq - self.scaler_min) / (self.scaler_max - self.scaler_min + 1e-8)
 
-            # Inverse-scale predictions from normalized to real trolley counts
-            if self.scaler is not None:
-                scale = self.scaler.data_max_[0] - self.scaler.data_min_[0]
-                predictions = [max(0, round(p * scale + self.scaler.data_min_[0], 1)) for p in predictions]
+                with torch.no_grad():
+                    for _ in range(forecast_days):
+                        input_tensor = torch.tensor(
+                            last_seq, dtype=torch.float32
+                        ).unsqueeze(0).to(self.device)
+
+                        pred_scaled = self.model(input_tensor).item()
+
+                        # Inverse scale the prediction
+                        pred = pred_scaled * (self.scaler_max - self.scaler_min) + self.scaler_min
+                        predictions.append(max(0, round(pred, 1)))
+
+                        # Update sequence for next prediction
+                        next_row = last_seq[-1].copy()
+                        next_row[0] = pred_scaled  # Keep in scaled space
+                        last_seq = np.vstack([last_seq[1:], next_row])
+            else:
+                # GradientBoosting model - expects flattened, scaled sequence
+                for _ in range(forecast_days):
+                    # Flatten sequence first, then scale entire vector
+                    input_features = last_seq.flatten().reshape(1, -1)  # Shape: (1, 35)
+                    if self.scaler is not None:
+                        input_features = self.scaler.transform(input_features)
+
+                    # Predict (GB outputs raw values, not scaled)
+                    pred = self.model.predict(input_features)[0]
+                    predictions.append(max(0, round(pred, 1)))
+
+                    # Update sequence for next prediction with raw (unscaled) value
+                    next_row = last_seq[-1].copy()
+                    next_row[0] = pred
+                    last_seq = np.vstack([last_seq[1:], next_row])
 
             PREDICTIONS_TOTAL.inc()
             return predictions
@@ -224,10 +280,11 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting PulseFlow service...")
 
-    # Load model
-    model_path = os.getenv("MODEL_PATH", "/app/models/lstm_model.pth")
-    scaler_path = os.getenv("SCALER_PATH", "/app/models/scaler.pkl")
-    model_manager.load_model(model_path, scaler_path)
+    # Load LSTM model
+    model_path = os.getenv("MODEL_PATH", "/models/lstm_model.pth")
+    scaler_path = os.getenv("SCALER_PATH", "/models/scaler.pkl")
+    metadata_path = os.getenv("METADATA_PATH", "/models/model_metadata.json")
+    model_manager.load_model(model_path, scaler_path, metadata_path)
 
     # Connect to MongoDB
     mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
@@ -355,7 +412,7 @@ async def predict_patient_flow(request: PredictionRequest):
     """
     Predict patient flow (ED trolleys) for the next N days.
 
-    Uses LSTM model trained on HSE trolley data to forecast
+    Uses ML model trained on HSE trolley data to forecast
     emergency department strain levels.
     """
     start_time = time.time()
@@ -376,17 +433,25 @@ async def predict_patient_flow(request: PredictionRequest):
                     df = df.sort_values('date')
                     features_available = [f for f in model_manager.features if f in df.columns]
                     if len(features_available) == len(model_manager.features):
-                        if model_manager.scaler:
-                            df[features_available] = model_manager.scaler.transform(df[features_available])
-                        sequence = df[features_available].values[-7:]
+                        # Get raw values (unscaled) - model expects raw values
+                        sequence = df[features_available].values[-7:].astype(float)
+                        logger.info(f"Loaded sequence for {trolley_code}: shape={sequence.shape}, last_trolley_count={sequence[-1][0]}")
             except Exception as e:
                 logger.warning(f"Error fetching from database: {e}")
 
         # Use demo data if no database data available
         if sequence is None:
             logger.info("Using synthetic demo data for prediction")
-            np.random.seed(42)
-            sequence = np.random.randn(7, 5) * 0.5  # Normalized synthetic data
+            # Use realistic trolley counts for demo
+            sequence = np.array([
+                [25, 40, 35, 5, 8],
+                [28, 42, 38, 6, 9],
+                [30, 45, 40, 7, 10],
+                [27, 38, 36, 5, 7],
+                [32, 50, 42, 8, 12],
+                [35, 55, 45, 10, 14],
+                [29, 43, 40, 6, 9]
+            ], dtype=float)
 
         # Generate predictions
         predictions = model_manager.predict(sequence, request.forecast_days)
@@ -524,8 +589,8 @@ class ServiceConfig(BaseModel):
 
 # Global config store
 service_config = {
-    "model_path": os.getenv("MODEL_PATH", "/app/models/lstm_model.pth"),
-    "scaler_path": os.getenv("SCALER_PATH", "/app/models/scaler.pkl"),
+    "model_path": os.getenv("MODEL_PATH", "/models/lstm_model.pth"),
+    "scaler_path": os.getenv("SCALER_PATH", "/models/scaler.pkl"),
     "forecast_window": 7,
     "confidence_interval": 95,
     "max_batch_size": 32,
