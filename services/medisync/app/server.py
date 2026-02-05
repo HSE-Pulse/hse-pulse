@@ -365,7 +365,11 @@ def create_app() -> FastAPI:
 
         @app.get("/{path:path}", tags=["ui"])
         async def serve_spa(path: str):
-            # Serve index.html for SPA routes (exclude API paths)
+            # Exclude API paths from SPA routing
+            api_paths = ['metrics', 'health', 'state', 'start', 'pause', 'reset', 'config', 'policy', 'stream']
+            if path.split('/')[0] in api_paths:
+                raise HTTPException(status_code=404, detail="Not found")
+            # Serve index.html for SPA routes
             file_path = static_dir / path
             if file_path.exists() and file_path.is_file():
                 return FileResponse(file_path)
