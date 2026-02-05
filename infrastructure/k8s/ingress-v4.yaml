@@ -137,4 +137,4 @@ spec:
     - mlflow.harishankar.info
     - prometheus.harishankar.info
     - grafana.harishankar.info
-    - dashboard.harishankar.info
+    # - dashboard.harishankar.info  # Temporarily removed - DNS not resolving

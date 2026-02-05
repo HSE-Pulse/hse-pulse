@@ -52,6 +52,8 @@ data/
 !**/provisioning/**/*.yml
 !package.json
 !package-lock.json
+!tsconfig.json
+!tsconfig.*.json
 
 # MLflow
 mlruns/

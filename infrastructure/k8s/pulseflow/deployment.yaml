@@ -49,6 +49,16 @@ spec:
               value: "mongodb://mongodb:27017/"
             - name: MONGO_DB
               value: "healthcare"
+            - name: MODEL_PATH
+              value: "/models/lstm_model.pth"
+            - name: SCALER_PATH
+              value: "/models/scaler.pkl"
+            - name: METADATA_PATH
+              value: "/models/model_metadata.json"
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
           livenessProbe:
             httpGet:
               path: /health
@@ -61,6 +71,10 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: pulseflow-models
 ---
 apiVersion: v1
 kind: Service
