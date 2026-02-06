@@ -23,6 +23,12 @@ lock = threading.Lock()
 
 # Service configurations
 SERVICES = {
+    "medisync": {
+        "deployment": "medisync",
+        "url": "https://medisync.harishankar.info",
+        "name": "MediSync DES-MARL",
+        "description": "Multi-Agent RL for Hospital Resource Optimisation"
+    },
     "pulseflow": {
         "deployment": "pulseflow",
         "url": "https://pulseflow.harishankar.info",

@@ -20,13 +20,30 @@ spec:
           image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/landing:latest
           ports:
             - containerPort: 6000
+          env:
+            - name: DESMARL_URL
+              value: "https://harishankar.info/activate/medisync"
+            - name: CAREPLANPLUS_URL
+              value: "https://harishankar.info/activate/careplanplus"
+            - name: PULSENOTES_URL
+              value: "https://harishankar.info/activate/pulsenotes"
+            - name: PULSEFLOW_URL
+              value: "https://harishankar.info/activate/pulseflow"
+            - name: MLFLOW_URL
+              value: "https://mlflow.harishankar.info"
+            - name: GRAFANA_URL
+              value: "https://grafana.harishankar.info"
+            - name: PROMETHEUS_URL
+              value: "https://prometheus.harishankar.info"
+            - name: DASHBOARD_URL
+              value: "https://dashboard.harishankar.info"
           resources:
             requests:
+              memory: "128Mi"
+              cpu: "10m"
+            limits:
               memory: "256Mi"
               cpu: "250m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
           livenessProbe:
             httpGet:
               path: /

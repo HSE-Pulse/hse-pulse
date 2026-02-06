@@ -99,8 +99,8 @@ spec:
             - --namespace=hse-pulse
           resources:
             requests:
-              cpu: 100m
-              memory: 200Mi
+              cpu: 5m
+              memory: 64Mi
             limits:
               cpu: 250m
               memory: 400Mi
@@ -148,8 +148,8 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
+              cpu: 5m
+              memory: 32Mi
             limits:
               cpu: 100m
               memory: 128Mi

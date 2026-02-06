@@ -6,7 +6,7 @@ metadata:
   labels:
     app: medisync
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: medisync
@@ -15,6 +15,12 @@ spec:
       labels:
         app: medisync
     spec:
+      tolerations:
+        - key: workload
+          value: ml
+          effect: NoSchedule
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ml-pool
       containers:
         - name: medisync
           image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/medisync:latest

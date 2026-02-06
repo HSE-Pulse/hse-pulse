@@ -46,7 +46,7 @@ const tools = [
       { label: 'Kubernetes', color: 'blue' as const },
       { label: 'Helm', color: 'blue' as const },
     ],
-    link: null,
+    link: { label: 'K8s Dashboard', url: config.DASHBOARD_URL },
   },
   {
     icon: GitBranch,

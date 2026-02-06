@@ -6,7 +6,7 @@ metadata:
   labels:
     app: pulseflow
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: pulseflow
@@ -19,6 +19,12 @@ spec:
         prometheus.io/port: "8000"
         prometheus.io/path: "/metrics"
     spec:
+      tolerations:
+        - key: workload
+          value: ml
+          effect: NoSchedule
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ml-pool
       containers:
         - name: ui
           image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulseflow-ui:latest
