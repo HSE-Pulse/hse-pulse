@@ -6,6 +6,7 @@ interface LandingConfig {
   MLFLOW_URL: string
   GRAFANA_URL: string
   PROMETHEUS_URL: string
+  DASHBOARD_URL: string
 }
 
 declare global {
@@ -15,15 +16,16 @@ declare global {
 }
 
 const defaults: LandingConfig = {
-  // All demo services always on
-  DESMARL_URL: 'https://medisync.harishankar.info',
-  PULSEFLOW_URL: 'https://pulseflow.harishankar.info',
-  CAREPLANPLUS_URL: 'https://careplanplus.harishankar.info',
-  PULSENOTES_URL: 'https://pulsenotes.harishankar.info',
+  // Demo services via activator (scales 0→1 on demand)
+  DESMARL_URL: 'https://harishankar.info/activate/medisync',
+  PULSEFLOW_URL: 'https://harishankar.info/activate/pulseflow',
+  CAREPLANPLUS_URL: 'https://harishankar.info/activate/careplanplus',
+  PULSENOTES_URL: 'https://harishankar.info/activate/pulsenotes',
   // Observability dashboards
   MLFLOW_URL: 'https://mlflow.harishankar.info',
   GRAFANA_URL: 'https://grafana.harishankar.info',
   PROMETHEUS_URL: 'https://prometheus.harishankar.info',
+  DASHBOARD_URL: 'https://dashboard.harishankar.info',
 }
 
 export const config: LandingConfig = {

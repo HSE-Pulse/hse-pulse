@@ -20,6 +20,13 @@ spec:
     - host: harishankar.info
       http:
         paths:
+          - path: /activate
+            pathType: Prefix
+            backend:
+              service:
+                name: demo-activator
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
@@ -137,4 +144,4 @@ spec:
     - mlflow.harishankar.info
     - prometheus.harishankar.info
     - grafana.harishankar.info
-    # - dashboard.harishankar.info  # Temporarily removed - DNS not resolving
+    - dashboard.harishankar.info
