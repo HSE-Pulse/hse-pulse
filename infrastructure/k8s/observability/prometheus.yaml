@@ -42,22 +42,31 @@ data:
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
-      - job_name: 'medisync'
-        static_configs:
-          - targets: ['medisync:80']
-        metrics_path: /metrics
-      - job_name: 'pulseflow'
-        static_configs:
-          - targets: ['pulseflow:80']
-        metrics_path: /pulseflow/api/metrics
-      - job_name: 'pulsenotes'
-        static_configs:
-          - targets: ['pulsenotes:80']
-        metrics_path: /pulsenotes/api/metrics
-      - job_name: 'careplanplus'
-        static_configs:
-          - targets: ['careplanplus:80']
-        metrics_path: /careplanplus/api/metrics
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - hse-pulse
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: replace
+            target_label: job
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -85,7 +94,7 @@ spec:
           resources:
             requests:
               memory: "128Mi"
-              cpu: "10m"
+              cpu: "5m"
             limits:
               memory: "512Mi"
               cpu: "250m"

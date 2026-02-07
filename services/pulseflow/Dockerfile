@@ -17,8 +17,8 @@ RUN pip install --no-cache-dir --timeout 300 -r requirements.txt
 # Copy application code
 COPY app/ ./app/
 
-# Create models directory
-RUN mkdir -p /app/models
+# Copy trained models
+COPY models/ /models/
 
 # Set environment variables
 ENV PYTHONPATH=/app

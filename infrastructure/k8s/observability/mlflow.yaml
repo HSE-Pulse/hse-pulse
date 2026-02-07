@@ -24,7 +24,7 @@ spec:
           resources:
             requests:
               memory: "128Mi"
-              cpu: "10m"
+              cpu: "5m"
             limits:
               memory: "512Mi"
               cpu: "250m"
@@ -44,7 +44,12 @@ spec:
   selector:
     app: mlflow
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
+      targetPort: 5000
+    - name: mlflow
+      protocol: TCP
+      port: 5000
       targetPort: 5000
   type: ClusterIP

@@ -108,9 +108,10 @@ QUERY_PATTERNS = {
     ],
     'segment': [
         r'(?:what\s+(?:is|was|were|are)\s+(?:the\s+)?)(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?|surgical\s+procedures?|procedures?)',
-        r'(?:what\s+)(surgical\s+procedures?|medications?|procedures?|labs?|vitals?|allergies|diagnos[ei]s)(?:\s+(?:were|was|are|is)\s+)',
-        r'(?:show|get|find|extract|list)\s+(?:the\s+)?(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?|discharge\s+summary|surgical\s+procedures?|procedures?)',
+        r'(?:what\s+)(surgical\s+procedures?|medications?|procedures?|labs?|vitals?|allergies|diagnos[ei]s)(?:\s+(?:were|was|are|is|does|do|did|has|have)\b)',
+        r'(?:show|get|find|extract|list|summarize|summarise)\s+(?:the\s+)?(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?|discharge\s+summary|physical\s+exam|surgical\s+procedures?|procedures?)',
         r'(chief\s+complaint|hpi|history\s+of\s+present\s+illness|past\s+medical\s+history|medications?|allergies|physical\s+exam|assessment|plan|discharge\s+summary|discharge\s+diagnosis|discharge\s+instructions|discharge|diagnosis|diagnoses|vitals?|labs?|surgical\s+procedures?|procedures?)\s*[,\s]+(?:for|of|from|patient|admission)',
+        r'(?:what\s+(?:are|were|is|was)\s+(?:the\s+)?(?:patient(?:\'?s)?\s+)?)(chief\s+complaint|hpi|history|medications?|allergies|assessment|plan|diagnosis|diagnoses|discharge\s+diagnosis|vitals?|labs?|discharge\s+instructions?|surgical\s+procedures?|procedures?)',
     ]
 }
 
@@ -494,8 +495,20 @@ Plan: Urinalysis, Urine culture, IV fluids, Empiric antibiotics (Ciprofloxacin)"
         r'\n\s*\n\s*(?=[A-Z][A-Za-z /\-]+(?:\s+[A-Za-z /\-]+)*:\s*\n)',
     )
 
+    @staticmethod
+    def normalize_text(text: str) -> str:
+        """Normalize clinical note text: convert literal \\n to real newlines."""
+        # MIMIC-IV CSV import stores newlines as literal backslash+n (two chars)
+        if '\n' not in text and '\\n' in text:
+            text = text.replace('\\n', '\n')
+        # Also handle mixed: if very few real newlines but many literal ones
+        elif text.count('\\n') > text.count('\n') * 2:
+            text = text.replace('\\n', '\n')
+        return text
+
     def extract_section(self, text: str, section: str) -> Optional[str]:
         """Extract a specific section from clinical note text."""
+        text = self.normalize_text(text)
         section_key = section.lower().replace(' ', '_')
 
         # Map common aliases
@@ -843,12 +856,14 @@ async def rag_query(request: RAGQueryRequest):
                     if query_filter:
                         db_notes = list(db['clinical_notes'].find(query_filter).sort('charttime', -1))
                         for note in db_notes:
+                            raw_text = note.get('text', '')
+                            normalized_text = nlp_manager.normalize_text(raw_text)
                             notes.append({
                                 'id': str(note.get('_id')),
                                 'note_id': note.get('note_id'),
                                 'subject_id': note.get('subject_id'),
                                 'hadm_id': note.get('hadm_id'),
-                                'text': note.get('text', ''),
+                                'text': normalized_text,
                                 'charttime': str(note.get('charttime', '') or note.get('chartdate', '') or ''),
                                 'category': note.get('category', 'General'),
                                 'note_type': note.get('note_type', 'Clinical Note')
@@ -884,19 +899,59 @@ async def rag_query(request: RAGQueryRequest):
 
                 # Extract requested segment if specified
                 if parsed['segment']:
-                    extracted_parts = []
-                    for note in notes:
-                        extracted = nlp_manager.extract_section(note.get('text', ''), parsed['segment'])
-                        if extracted:
-                            hadm_label = f"[Admission {note.get('hadm_id')}]" if note.get('hadm_id') else ""
-                            extracted_parts.append(f"{hadm_label}\n{extracted}" if hadm_label else extracted)
-                            if len(extracted_parts) >= 5:
-                                break
-
-                    if extracted_parts:
-                        result["answer"] = "\n\n".join(extracted_parts)
+                    seg_key = parsed['segment'].lower().replace(' ', '_')
+                    # "discharge summary" means return full DS notes, not extract a sub-section
+                    if seg_key in ('discharge_summary', 'discharge'):
+                        ds_notes = [n for n in notes if n.get('note_type') == 'DS'] or notes
+                        result["source_notes"] = [
+                            {
+                                'id': n.get('id') or n.get('note_id'),
+                                'subject_id': n.get('subject_id'),
+                                'hadm_id': n.get('hadm_id'),
+                                'note_type': n.get('note_type'),
+                                'category': n.get('category'),
+                                'charttime': n.get('charttime', ''),
+                                'text_preview': (n.get('text', '') or '')[:500],
+                                'text': n.get('text', ''),
+                            }
+                            for n in ds_notes[:10]
+                        ]
+                        result["total_notes"] = len(ds_notes)
+                        result["answer"] = f"Found {len(ds_notes)} discharge summary note(s) for patient {parsed.get('subject_id') or parsed.get('hadm_id')}."
                     else:
-                        result["answer"] = f"Could not find '{parsed['segment']}' section in the patient's {len(notes)} note(s). The full notes are shown below."
+                        extracted_parts = []
+                        for note in notes:
+                            extracted = nlp_manager.extract_section(note.get('text', ''), parsed['segment'])
+                            if extracted:
+                                hadm_label = f"[Admission {note.get('hadm_id')}]" if note.get('hadm_id') else ""
+                                extracted_parts.append(f"{hadm_label}\n{extracted}" if hadm_label else extracted)
+                                if len(extracted_parts) >= 5:
+                                    break
+
+                        if extracted_parts:
+                            result["answer"] = "\n\n".join(extracted_parts)
+                        else:
+                            # Fallback: keyword-based paragraph search
+                            keywords = parsed['segment'].lower().split('_')
+                            matching_paragraphs = []
+                            for note in notes[:10]:
+                                text = note.get('text', '')
+                                paragraphs = re.split(r'\n\s*\n', text)
+                                for para in paragraphs:
+                                    para_lower = para.lower()
+                                    if any(kw in para_lower for kw in keywords if len(kw) > 2):
+                                        clean = para.strip()
+                                        if len(clean) > 20:
+                                            hadm_label = f"[Admission {note.get('hadm_id')}] " if note.get('hadm_id') else ""
+                                            matching_paragraphs.append(f"{hadm_label}{clean}")
+                                            if len(matching_paragraphs) >= 5:
+                                                break
+                                if len(matching_paragraphs) >= 5:
+                                    break
+                            if matching_paragraphs:
+                                result["answer"] = "\n\n".join(matching_paragraphs)
+                            else:
+                                result["answer"] = f"Found {len(notes)} note(s) but could not extract '{parsed['segment']}' section. The full notes are shown below."
                 else:
                     note_types = sorted(set(n.get('note_type', 'Unknown') for n in notes))
                     hadm_ids = sorted(set(n.get('hadm_id') for n in notes if n.get('hadm_id')))

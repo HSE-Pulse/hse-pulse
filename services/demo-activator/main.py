@@ -143,13 +143,12 @@ async def activate(service_id: str, request: Request):
     if current == 0:
         scale_deployment(deployment, 1)
 
-    # Return loading page
+    # Return loading page with JS polling
     html = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <title>Starting {service["name"]}...</title>
-        <meta http-equiv="refresh" content="3">
         <style>
             body {{
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -161,38 +160,74 @@ async def activate(service_id: str, request: Request):
                 background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
                 color: white;
             }}
-            .container {{
-                text-align: center;
-                padding: 40px;
-            }}
+            .container {{ text-align: center; padding: 40px; max-width: 480px; }}
             .spinner {{
-                width: 50px;
-                height: 50px;
+                width: 50px; height: 50px;
                 border: 4px solid rgba(255,255,255,0.2);
                 border-top-color: #3b82f6;
                 border-radius: 50%;
                 animation: spin 1s linear infinite;
                 margin: 20px auto;
             }}
-            @keyframes spin {{
-                to {{ transform: rotate(360deg); }}
-            }}
-            h1 {{ font-size: 2rem; margin-bottom: 10px; }}
-            p {{ color: #94a3b8; font-size: 1.1rem; }}
-            .note {{ font-size: 0.9rem; margin-top: 30px; color: #64748b; }}
+            @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+            h1 {{ font-size: 1.8rem; margin-bottom: 10px; }}
+            .desc {{ color: #94a3b8; font-size: 1rem; }}
+            .status {{ color: #60a5fa; font-size: 0.95rem; margin-top: 20px; }}
+            .timer {{ color: #475569; font-size: 0.85rem; margin-top: 8px; }}
+            .note {{ font-size: 0.85rem; margin-top: 24px; color: #64748b; line-height: 1.6; }}
         </style>
     </head>
     <body>
         <div class="container">
             <h1>Starting {service["name"]}</h1>
-            <div class="spinner"></div>
-            <p>{service["description"]}</p>
-            <p class="note">This demo runs on-demand to save resources.<br>It will be ready in ~30-60 seconds.</p>
+            <div class="spinner" id="spinner"></div>
+            <p class="desc">{service["description"]}</p>
+            <p class="status" id="status">Provisioning infrastructure...</p>
+            <p class="timer" id="timer"></p>
+            <p class="note">This demo runs on-demand to save cloud costs.<br>
+            First launch provisions a VM and loads ML models (~2-4 min).</p>
         </div>
+        <script>
+            const sid = '{service_id}';
+            const start = Date.now();
+            let stopped = false;
+
+            setInterval(() => {{
+                if (stopped) return;
+                const s = Math.floor((Date.now() - start) / 1000);
+                document.getElementById('timer').textContent = 'Elapsed: ' + s + 's';
+            }}, 1000);
+
+            async function poll() {{
+                if (stopped) return;
+                try {{
+                    const r = await fetch('/status/' + sid);
+                    const d = await r.json();
+                    if (d.ready && d.url) {{
+                        stopped = true;
+                        document.getElementById('status').textContent = 'Ready! Redirecting...';
+                        window.location.href = d.url;
+                        return;
+                    }}
+                    if (d.replicas > 0) {{
+                        document.getElementById('status').textContent = 'Container starting, loading ML models...';
+                    }}
+                }} catch(e) {{}}
+
+                if (Date.now() - start > 300000) {{
+                    stopped = true;
+                    document.getElementById('status').textContent = 'Taking longer than expected. Please refresh to retry.';
+                    document.getElementById('spinner').style.display = 'none';
+                    return;
+                }}
+                setTimeout(poll, 5000);
+            }}
+            setTimeout(poll, 3000);
+        </script>
     </body>
     </html>
     """
-    return HTMLResponse(content=html)
+    return HTMLResponse(content=html, headers={"Cache-Control": "no-cache, no-store"})
 
 @app.get("/status/{service_id}")
 def status(service_id: str):

@@ -27,6 +27,13 @@ spec:
                 name: demo-activator
                 port:
                   number: 80
+          - path: /status
+            pathType: Prefix
+            backend:
+              service:
+                name: demo-activator
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:

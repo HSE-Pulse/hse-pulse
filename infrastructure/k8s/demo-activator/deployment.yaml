@@ -36,7 +36,7 @@ metadata:
   labels:
     app: demo-activator
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: demo-activator
