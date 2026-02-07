@@ -20,6 +20,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.utils.class_weight import compute_class_weight
 from tqdm import tqdm
 from pymongo import MongoClient
 import joblib
@@ -222,14 +223,18 @@ def prepare_data(df: pd.DataFrame, procedure_encoder: LabelEncoder, min_samples:
     return df['sequence_text'].tolist(), targets
 
 
-def train_model(train_loader, val_loader, model, device, epochs, learning_rate):
+def train_model(train_loader, val_loader, model, device, epochs, learning_rate, class_weights=None):
     """Train the BERT recommender model."""
     optimizer = AdamW(model.parameters(), lr=learning_rate, weight_decay=0.01, eps=1e-8)
     total_steps = len(train_loader) * epochs
     scheduler = get_linear_schedule_with_warmup(
         optimizer, num_warmup_steps=max(1, total_steps // 10), num_training_steps=total_steps
     )
-    criterion = nn.CrossEntropyLoss()
+    if class_weights is not None:
+        criterion = nn.CrossEntropyLoss(weight=class_weights.to(device))
+        logger.info("Using class-weighted CrossEntropyLoss")
+    else:
+        criterion = nn.CrossEntropyLoss()
 
     best_accuracy = 0.0
     patience = 5
@@ -416,6 +421,16 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=args.batch_size, collate_fn=collate_fn)
     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, collate_fn=collate_fn)
 
+    # Compute class weights for imbalanced data (must cover all n_procedures classes)
+    all_classes = np.arange(n_procedures)
+    train_unique = np.unique(y_train)
+    weights_partial = compute_class_weight('balanced', classes=train_unique, y=y_train)
+    weight_map = dict(zip(train_unique, weights_partial))
+    max_weight = weights_partial.max()
+    weights = np.array([weight_map.get(c, max_weight) for c in all_classes])
+    class_weights = torch.tensor(weights, dtype=torch.float32)
+    logger.info(f"Class weights computed: min={weights.min():.2f}, max={weights.max():.2f}, mean={weights.mean():.2f}")
+
     # Initialize model
     device = torch.device(args.device)
     model = EfficientBERTRecommender(n_procedures, freeze_layers=args.freeze_layers).to(device)
@@ -435,7 +450,8 @@ def main():
 
     # Train
     model, best_accuracy = train_model(
-        train_loader, val_loader, model, device, args.epochs, args.lr
+        train_loader, val_loader, model, device, args.epochs, args.lr,
+        class_weights=class_weights
     )
 
     # Evaluate

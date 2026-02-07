@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: careplanplus-train
+  namespace: hse-pulse
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      tolerations:
+        - key: workload
+          value: ml
+          effect: NoSchedule
+      nodeSelector:
+        cloud.google.com/gke-nodepool: ml-pool
+      restartPolicy: Never
+      containers:
+        - name: train
+          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/careplanplus-api:latest
+          command: ["python", "/app/train.py",
+            "--data-file", "/app/data/recommender_system.patient_admissions_procedues_diagnoses.json",
+            "--output-dir", "/app/models",
+            "--epochs", "12",
+            "--batch-size", "4",
+            "--lr", "3e-5"]
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "1500m"
+            limits:
+              memory: "6Gi"
+              cpu: "2000m"

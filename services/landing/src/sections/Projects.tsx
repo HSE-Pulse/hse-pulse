@@ -45,17 +45,17 @@ const projects: Project[] = [
   },
   {
     name: 'CarePlanPlus',
-    tagline: 'Dual-Methodology Treatment Pathway Recommendation',
+    tagline: 'BERT Treatment Pathway Recommendation',
     color: 'blue',
     iconLetter: 'C',
     iconBg: 'bg-blue-500/10',
     problem:
       'Mapping clinical diagnoses to structured treatment pathways requires understanding of medical terminology and procedure coding systems. Manual pathway construction is slow, error-prone, and struggles with multi-step treatment sequences across 15 NIES intervention categories.',
     approach:
-      'Dual methodology: similarity-based collaborative filtering (k-means with k=20 clusters on 4,776 patient records from NIES 2020 dataset) and BERT-base-uncased fine-tuned on 163 patient-admission records mapped to 309 procedures across 15 NIES categories. Multi-step treatment pathway generation with ICD code integration and contextual enrichment from joined patient-admissions data.',
+      'BERT-base-uncased sequence classifier fine-tuned on 163 patient-admission records from MIMIC-IV, predicting from 96 procedure classes. Diagnosis sequences encoded as ICD code + title pairs with procedure history context (256-token max). Multi-step pathway generation (up to 5 procedures) with confidence-scored recommendations. FastAPI serves inference backed by MongoDB with 195K+ ICD lookup codes. React 19 TypeScript dashboard with 6 pages — predictions, treatment pathways, data explorer, NIES satisfaction analytics, in-app training with MLflow tracking, and service configuration.',
     nonTrivial:
-      'Combining collaborative filtering with transformer-based classification provides complementary recommendations — population-level patterns from k-means clustering plus semantic understanding from BERT. 309 procedures across 15 categories required careful category balancing. Each generated pathway links to ICD procedure and drug codes with confidence scores.',
-    stack: ['HuggingFace Transformers', 'BERT', 'Scikit-learn', 'FastAPI', 'React', 'MongoDB', 'Docker'],
+      'Parameter-efficient fine-tuning: first 6 of 12 BERT encoder layers frozen, with 256-unit intermediate classifier and batch normalisation. Sequence truncation strategy (10 diagnosis + 5 procedure parts) handles variable-length clinical inputs within 256-token budget. NIES 2020 patient satisfaction data (4,776 records across 17+ condition categories) integrated as contextual analytics. In-app training with early stopping (patience 5), gradient clipping, and MLflow experiment logging. ~125-200ms inference latency. Deployed on GKE with Prometheus metrics and self-healing probes.',
+    stack: ['PyTorch', 'BERT', 'HuggingFace', 'Scikit-learn', 'FastAPI', 'MongoDB', 'React', 'TypeScript', 'Tailwind CSS', 'Recharts', 'MLflow', 'Prometheus', 'Docker', 'GKE'],
     github: 'https://github.com/HSE-Pulse/care-plan-plus',
     demo: config.CAREPLANPLUS_URL,
     reports: [
@@ -90,10 +90,10 @@ const projects: Project[] = [
     problem:
       'Irish emergency departments track patients on trolleys awaiting admission — the HSE TrolleyGAR daily census. Hospital managers need accurate 7–14 day forecasts of trolley occupancy to pre-allocate beds and staff, but counts are noisy, seasonal, and influenced by flu waves, bank holidays, and regional surges.',
     approach:
-      'LSTM regressor trained on historical HSE trolley data. Sliding-window input (7-day lookback) predicts 1- to 14-day trolley counts per hospital and nationally. FastAPI serves inference via REST, with predictions stored in MongoDB. React dashboard visualises historical vs. forecasted trends with confidence intervals.',
+      '2-layer LSTM regressor (64 hidden units) trained on 2,172 HSE trolley records across 12 Irish hospitals. 5-feature sliding-window input (trolley count, admissions, discharges, >24hr waiting, elderly waiting) with 7-day lookback predicts 1–14 day trolley counts per hospital. FastAPI serves autoregressive inference via REST with confidence intervals, backed by MongoDB. React 19 TypeScript dashboard with 5 pages — live forecasts, data explorer, in-app training with MLflow tracking, and hospital-level drill-down.',
     nonTrivial:
-      'Capturing weekly and seasonal periodicity in a single LSTM (2-layer, 64 hidden units) requires careful feature engineering and sequence length tuning. 5-feature input covering ED trolleys, ward trolleys, surge capacity, delayed transfers, and elderly patients. Model selection tracked via MLflow with automated hyperparameter sweeps. End-to-end pipeline from raw HSE open-data ingestion through training to live dashboard in a single Docker Compose deployment.',
-    stack: ['PyTorch', 'LSTM', 'FastAPI', 'MongoDB', 'React', 'MLflow', 'Docker'],
+      'Capturing weekly and seasonal periodicity (Monday +30% surge, winter +20%) in a single LSTM requires careful feature engineering and sequence length tuning. Autoregressive multi-step forecasting where each prediction feeds the next input window. MinMaxScaler normalisation with inverse transform for interpretable outputs. MAE ~6.9 trolleys with ~10ms inference latency. Full MLOps pipeline: Prometheus metrics, Grafana dashboards, MLflow experiment tracking, and automated training from the UI. Deployed on GKE with spot VM tolerance and self-healing probes.',
+    stack: ['PyTorch', 'LSTM', 'FastAPI', 'MongoDB', 'React', 'TypeScript', 'Tailwind CSS', 'Recharts', 'MLflow', 'Prometheus', 'Docker', 'GKE'],
     github: 'https://github.com/HSE-Pulse/pulse-flow',
     demo: config.PULSEFLOW_URL,
   },
