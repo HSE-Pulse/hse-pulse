@@ -19,7 +19,7 @@ const documents = [
     subtitle: 'BERT-Based Nursing Intervention Recommendation System',
     context: 'MSc AI — Project Report, 2025',
     description:
-      'Covers the CarePlanPlus service: BERT fine-tuned on 4,776 clinical records to recommend from 309 nursing procedures across 15 NIES categories. Includes preprocessing, training pipeline, and evaluation metrics.',
+      'Covers the CarePlanPlus service: BERT-base-uncased classifier fine-tuned on 163 patient-admission records predicting from 96 procedure classes. Includes NIES 2020 satisfaction analytics, preprocessing, training pipeline, and evaluation metrics.',
     href: `${BASE}reports/careplanplus-report.pdf`,
   },
   {
@@ -69,17 +69,17 @@ export default function Academic() {
                   Four specialised ML services developed and evaluated against clinical benchmarks:{' '}
                   <strong className="text-slate-300">DES-MARL</strong> — 9 departments, 12-dim state,
                   MADDPG/MAPPO with curriculum learning;{' '}
-                  <strong className="text-slate-300">CarePlanPlus</strong> — BERT fine-tuned on 4,776
-                  records, 309 procedures across 15 NIES categories;{' '}
+                  <strong className="text-slate-300">CarePlanPlus</strong> — BERT classifier on 163
+                  patient-admissions, 96 procedure classes with NIES analytics;{' '}
                   <strong className="text-slate-300">PulseNotes</strong> — ClinicalBERT RAG over
                   22,184 chunks from 1,203 patients via FAISS;{' '}
                   <strong className="text-slate-300">PulseFlow</strong> — LSTM with 5-feature input
-                  across 8 hospitals for 1–14 day forecasts.
+                  across 12 hospitals for 1–14 day forecasts.
                 </p>
                 <p>
                   <span className="text-slate-500 font-medium">Key results: </span>
-                  92.9% wait time reduction (28.4 h → 2 h), sub-200 ms inference latency, 309
-                  nursing procedures across 15 NIES categories, 8 hospitals forecasted, 17 Docker
+                  92.9% wait time reduction (28.4 h → 2 h), sub-200 ms inference latency, 96
+                  procedure classes with NIES satisfaction analytics, 12 hospitals forecasted, 17 Docker
                   containers orchestrated via microservice architecture with MLflow tracking
                   and Prometheus/Grafana observability.
                 </p>

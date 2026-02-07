@@ -12,7 +12,7 @@ const researchAreas = [
   {
     icon: Target,
     title: 'Methodology',
-    content: 'Design-science research approach: four specialised ML services — DES-MARL (9 clinical departments, MADDPG/MAPPO), CarePlanPlus (BERT, 309 nursing procedures), PulseNotes (ClinicalBERT RAG, 22,184 chunks), and PulseFlow (LSTM, 8 hospitals) — each evaluated against clinical benchmarks (MIMIC-IV, HSE TrolleyGAR, NIES 2020), integrated through microservice architecture, and assessed for production viability.',
+    content: 'Design-science research approach: four specialised ML services — DES-MARL (9 clinical departments, MADDPG/MAPPO), CarePlanPlus (BERT, 96 procedure classes), PulseNotes (ClinicalBERT RAG, 22,184 chunks), and PulseFlow (LSTM, 12 hospitals) — each evaluated against clinical benchmarks (MIMIC-IV, HSE TrolleyGAR, NIES 2020), integrated through microservice architecture, and assessed for production viability.',
   },
   {
     icon: Lightbulb,

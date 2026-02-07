@@ -19,14 +19,15 @@ RUN python -c "from transformers import BertTokenizer, BertModel; \
     BertTokenizer.from_pretrained('bert-base-uncased'); \
     BertModel.from_pretrained('bert-base-uncased')" || true
 
-# Copy application code
+# Copy application code and training script
 COPY app/ ./app/
+COPY train.py ./train.py
 
 # Copy data files
 COPY data/ ./data/
 
-# Create models directory (models can be downloaded on first run)
-RUN mkdir -p /app/models
+# Copy pre-trained model
+COPY models/ ./models/
 
 # Set environment variables
 ENV PYTHONPATH=/app

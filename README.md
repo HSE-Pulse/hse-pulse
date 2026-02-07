@@ -6,8 +6,8 @@ Integrated healthcare machine learning portfolio featuring four AI/ML projects f
 
 | Service | Description | Model | Demo Type |
 |---------|-------------|-------|-----------|
-| **PulseFlow** | Patient flow prediction for ED trolley forecasting | LSTM | Interactive |
-| **CarePlanPlus** | Personalized treatment pathway recommender | BERT | Interactive |
+| **PulseFlow** | LSTM ED trolley forecasting across 12 Irish hospitals | LSTM, FastAPI, React, MLflow | Interactive |
+| **CarePlanPlus** | BERT treatment pathway recommendation — 96 procedure classes | BERT, FastAPI, React, MLflow | Interactive |
 | **PulseNotes** | Clinical NLP with RAG for note analysis | Bio_ClinicalBERT + FAISS | Samples |
 | **MediSync** | Multi-agent RL for hospital resource allocation | MADDPG + MAPPO | Samples |
 

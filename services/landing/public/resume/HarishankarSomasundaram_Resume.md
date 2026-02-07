@@ -88,9 +88,9 @@ LinkedIn: linkedin.com/in/harishankar-somasundaram | GitHub: github.com/HSE-Puls
 **Capstone:** HSE-Pulse — Production-grade healthcare AI platform with 4 ML services across 17 containerised microservices
 
 - **DES-MARL:** Multi-Agent RL (MADDPG/MAPPO) for hospital resource optimisation — 92.9% wait time reduction, 137% throughput improvement
-- **CarePlanPlus:** BERT-based nursing intervention recommendation — 309 procedures across 15 NIES categories
+- **CarePlanPlus:** BERT treatment pathway recommendation — 96 procedure classes, 6-page React dashboard with NIES analytics
 - **PulseNotes:** ClinicalBERT RAG pipeline — 22,184 document chunks from 1,203 patients
-- **PulseFlow:** LSTM trolley forecasting — 8 Irish hospitals, 1-14 day predictions
+- **PulseFlow:** LSTM trolley forecasting — 12 Irish hospitals, MAE ~6.9, 5-page React dashboard with MLflow
 
 ### BE Computer Science & Engineering | Anna University, India
 **2008 – 2012** | Arunai Engineering College

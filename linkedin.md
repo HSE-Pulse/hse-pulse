@@ -30,9 +30,9 @@ Earlier: Kubernetes/Istio microservices with ML-driven candidate matching (500+ 
 
 MSc AI capstone (First Class Honours) — HSE-Pulse healthcare platform:
 • DES-MARL: Multi-Agent RL achieving 137% throughput improvement using MADDPG/MAPPO on MIMIC-IV
-• CarePlanPlus: BERT recommendation across 309 procedures
+• CarePlanPlus: BERT treatment pathway recommendation — 96 procedure classes, 6-page React dashboard with NIES analytics
 • PulseNotes: ClinicalBERT RAG processing 22,184 document chunks
-• PulseFlow: LSTM trolley forecasting for 8 Irish hospitals
+• PulseFlow: LSTM trolley forecasting across 12 Irish hospitals with 5-page React dashboard and MLflow tracking
 
 All services run as 17 containerised microservices with MLflow, Prometheus, and Grafana observability.
 
@@ -229,9 +229,9 @@ Research focus: integrating domain-specific deep learning architectures into a u
 
 Four ML services developed and evaluated:
 - DES-MARL: Multi-Agent RL (MADDPG/MAPPO) for hospital resource optimisation — 9 departments, 92.9% wait time reduction
-- CarePlanPlus: BERT fine-tuned on 4,776 records for nursing intervention recommendation — 309 procedures across 15 NIES categories
+- CarePlanPlus: BERT treatment pathway recommendation — 96 procedure classes, 6-page React dashboard with NIES satisfaction analytics
 - PulseNotes: ClinicalBERT RAG pipeline — 22,184 document chunks from 1,203 patients via FAISS vector search
-- PulseFlow: LSTM trolley forecasting — 5-feature input across 8 Irish hospitals for 1-14 day predictions
+- PulseFlow: LSTM trolley forecasting across 12 Irish hospitals with 5-page React dashboard and MLflow tracking
 
 Clinical datasets: MIMIC-IV, HSE TrolleyGAR, NIES 2020
 
@@ -364,9 +364,9 @@ Architecture: 17 Docker containers orchestrated via Docker Compose behind Nginx 
 
 Services:
 - DES-MARL: Multi-Agent RL (MADDPG/MAPPO) for dynamic hospital staff allocation across 9 departments — 92.9% wait time reduction, 137% throughput improvement
-- CarePlanPlus: BERT-based nursing intervention recommendation from 309 procedures across 15 NIES categories
+- CarePlanPlus: BERT treatment pathway recommendation — 96 procedure classes, 6-page React dashboard with NIES satisfaction analytics
 - PulseNotes: ClinicalBERT RAG pipeline processing 22,184 document chunks from 1,203 patients using FAISS
-- PulseFlow: LSTM forecasting ED trolley counts across 8 Irish hospitals for 1-14 day horizons
+- PulseFlow: LSTM forecasting ED trolley counts across 12 Irish hospitals — MAE ~6.9, 5-page React 19 dashboard with MLflow tracking
 
 Stack: PyTorch, BERT, ClinicalBERT, LSTM, MADDPG, MAPPO, FastAPI, React, Docker Compose, Nginx, MLflow, Prometheus, Grafana, MongoDB, FAISS, Ollama, MedLLaMA2, GitHub Actions
 ```
@@ -414,13 +414,16 @@ URL:           https://github.com/HSE-Pulse/care-plan-plus
 **Description:**
 
 ```
-Dual-methodology treatment pathway recommendation system combining collaborative filtering with BERT-based classification.
+BERT-based treatment pathway recommendation system predicting procedures from patient diagnosis profiles using MIMIC-IV clinical data.
 
-- Similarity-based collaborative filtering using k-means clustering (k=20) on 4,776 patient records from the NIES 2020 dataset
-- BERT-base-uncased fine-tuned on 163 patient-admission records mapped to 309 procedures across 15 NIES categories
-- Multi-step treatment pathway generation with ICD code integration and confidence-scored recommendations
+- BERT-base-uncased fine-tuned classifier with frozen first 6 encoder layers (parameter-efficient)
+- 163 patient-admission records, 96 procedure classes, 195K+ ICD lookup codes
+- Multi-step pathway generation (up to 5 procedures) with confidence scores — ~125-200ms inference
+- React 19 TypeScript dashboard: predictions, pathways, data explorer, NIES analytics, in-app training
+- NIES 2020 satisfaction data (4,776 records, 17+ condition categories) for contextual analytics
+- MLflow experiment tracking, Prometheus metrics, deployed on GKE
 
-Stack: HuggingFace Transformers, BERT, Scikit-learn, FastAPI, React, MongoDB, Docker
+Stack: PyTorch, BERT, HuggingFace, Scikit-learn, FastAPI, MongoDB, React, TypeScript, Tailwind CSS, Recharts, MLflow, Prometheus, Docker, GKE
 ```
 
 ---
@@ -462,15 +465,15 @@ End date:      2026
 **Description:**
 
 ```
-LSTM-based forecasting system predicting emergency department trolley counts across Irish hospitals using HSE TrolleyGAR data.
+LSTM-based forecasting system predicting emergency department trolley counts across 12 Irish hospitals using HSE TrolleyGAR data.
 
-- 2-layer LSTM (64 hidden units) with 7-day sliding window lookback
-- 5-feature input: ED trolleys, ward trolleys, surge capacity, delayed transfers, elderly patients
-- 1-14 day rolling forecasts with confidence intervals across 8 Irish hospitals
-- MLflow-tracked hyperparameter sweeps with automated model selection
-- End-to-end pipeline from HSE open-data ingestion through training to live React dashboard
+- 2-layer LSTM (64 hidden units) trained on 2,172 records with 7-day sliding window lookback
+- 5-feature input: trolley count, admissions, discharges, >24hr waiting, elderly waiting
+- 1-14 day autoregressive forecasts with confidence intervals — MAE ~6.9 trolleys, ~10ms inference
+- React 19 TypeScript dashboard: live forecasts, data explorer, in-app training, hospital drill-down
+- MLflow experiment tracking, Prometheus/Grafana observability, deployed on GKE
 
-Stack: PyTorch, LSTM, FastAPI, MongoDB, React, MLflow, Docker
+Stack: PyTorch, LSTM, FastAPI, MongoDB, React, TypeScript, Tailwind CSS, Recharts, Scikit-learn, MLflow, Prometheus, Docker, GKE
 ```
 
 ---
