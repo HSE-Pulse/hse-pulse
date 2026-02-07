@@ -22,13 +22,13 @@ spec:
             - containerPort: 6000
           env:
             - name: DESMARL_URL
-              value: "https://harishankar.info/activate/medisync"
+              value: "https://medisync.harishankar.info"
             - name: CAREPLANPLUS_URL
-              value: "https://harishankar.info/activate/careplanplus"
+              value: "https://careplanplus.harishankar.info"
             - name: PULSENOTES_URL
-              value: "https://harishankar.info/activate/pulsenotes"
+              value: "https://pulsenotes.harishankar.info"
             - name: PULSEFLOW_URL
-              value: "https://harishankar.info/activate/pulseflow"
+              value: "https://pulseflow.harishankar.info"
             - name: MLFLOW_URL
               value: "https://mlflow.harishankar.info"
             - name: GRAFANA_URL
@@ -40,7 +40,7 @@ spec:
           resources:
             requests:
               memory: "128Mi"
-              cpu: "10m"
+              cpu: "5m"
             limits:
               memory: "256Mi"
               cpu: "250m"

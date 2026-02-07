@@ -41,7 +41,398 @@ metadata:
   namespace: hse-pulse
 data:
   healthcare-ml-overview.json: |
-    {"annotations":{"list":[]},"editable":true,"fiscalYearStartMonth":0,"graphTooltip":0,"id":null,"links":[],"liveNow":false,"panels":[{"collapsed":false,"gridPos":{"h":1,"w":24,"x":0,"y":0},"id":1,"panels":[],"title":"Service Health","type":"row"},{"datasource":{"type":"prometheus","uid":"prometheus"},"fieldConfig":{"defaults":{"color":{"mode":"thresholds"},"mappings":[{"options":{"0":{"color":"red","index":1,"text":"DOWN"}},"type":"value"},{"options":{"1":{"color":"green","index":0,"text":"UP"}},"type":"value"}],"thresholds":{"mode":"absolute","steps":[{"color":"red","value":null},{"color":"green","value":1}]}},"overrides":[]},"gridPos":{"h":4,"w":6,"x":0,"y":1},"id":2,"options":{"colorMode":"background","graphMode":"none","justifyMode":"auto","orientation":"auto","reduceOptions":{"calcs":["lastNotNull"],"fields":"","values":false},"textMode":"auto"},"targets":[{"datasource":{"type":"prometheus","uid":"prometheus"},"expr":"up{job=\"pulseflow\"}","refId":"A"}],"title":"PulseFlow","type":"stat"},{"datasource":{"type":"prometheus","uid":"prometheus"},"fieldConfig":{"defaults":{"color":{"mode":"thresholds"},"mappings":[{"options":{"0":{"color":"red","index":1,"text":"DOWN"}},"type":"value"},{"options":{"1":{"color":"green","index":0,"text":"UP"}},"type":"value"}],"thresholds":{"mode":"absolute","steps":[{"color":"red","value":null},{"color":"green","value":1}]}},"overrides":[]},"gridPos":{"h":4,"w":6,"x":6,"y":1},"id":3,"options":{"colorMode":"background","graphMode":"none","justifyMode":"auto","orientation":"auto","reduceOptions":{"calcs":["lastNotNull"],"fields":"","values":false},"textMode":"auto"},"targets":[{"datasource":{"type":"prometheus","uid":"prometheus"},"expr":"up{job=\"careplanplus\"}","refId":"A"}],"title":"CarePlanPlus","type":"stat"},{"datasource":{"type":"prometheus","uid":"prometheus"},"fieldConfig":{"defaults":{"color":{"mode":"thresholds"},"mappings":[{"options":{"0":{"color":"red","index":1,"text":"DOWN"}},"type":"value"},{"options":{"1":{"color":"green","index":0,"text":"UP"}},"type":"value"}],"thresholds":{"mode":"absolute","steps":[{"color":"red","value":null},{"color":"green","value":1}]}},"overrides":[]},"gridPos":{"h":4,"w":6,"x":12,"y":1},"id":4,"options":{"colorMode":"background","graphMode":"none","justifyMode":"auto","orientation":"auto","reduceOptions":{"calcs":["lastNotNull"],"fields":"","values":false},"textMode":"auto"},"targets":[{"datasource":{"type":"prometheus","uid":"prometheus"},"expr":"up{job=\"pulsenotes\"}","refId":"A"}],"title":"PulseNotes","type":"stat"},{"datasource":{"type":"prometheus","uid":"prometheus"},"fieldConfig":{"defaults":{"color":{"mode":"thresholds"},"mappings":[{"options":{"0":{"color":"red","index":1,"text":"DOWN"}},"type":"value"},{"options":{"1":{"color":"green","index":0,"text":"UP"}},"type":"value"}],"thresholds":{"mode":"absolute","steps":[{"color":"red","value":null},{"color":"green","value":1}]}},"overrides":[]},"gridPos":{"h":4,"w":6,"x":18,"y":1},"id":5,"options":{"colorMode":"background","graphMode":"none","justifyMode":"auto","orientation":"auto","reduceOptions":{"calcs":["lastNotNull"],"fields":"","values":false},"textMode":"auto"},"targets":[{"datasource":{"type":"prometheus","uid":"prometheus"},"expr":"up{job=\"medisync\"}","refId":"A"}],"title":"MediSync","type":"stat"},{"collapsed":false,"gridPos":{"h":1,"w":24,"x":0,"y":5},"id":6,"panels":[],"title":"Request Metrics","type":"row"},{"datasource":{"type":"prometheus","uid":"prometheus"},"fieldConfig":{"defaults":{"color":{"mode":"palette-classic"},"custom":{"axisCenteredZero":false,"axisColorMode":"text","axisLabel":"","axisPlacement":"auto","barAlignment":0,"drawStyle":"line","fillOpacity":10,"gradientMode":"none","hideFrom":{"legend":false,"tooltip":false,"viz":false},"lineInterpolation":"linear","lineWidth":1,"pointSize":5,"scaleDistribution":{"type":"linear"},"showPoints":"never","spanNulls":false,"stacking":{"group":"A","mode":"none"},"thresholdsStyle":{"mode":"off"}},"mappings":[],"thresholds":{"mode":"absolute","steps":[{"color":"green","value":null}]},"unit":"reqps"},"overrides":[]},"gridPos":{"h":8,"w":12,"x":0,"y":6},"id":7,"options":{"legend":{"calcs":[],"displayMode":"list","placement":"bottom","showLegend":true},"tooltip":{"mode":"multi","sort":"none"}},"targets":[{"expr":"rate(http_requests_total{job=\"pulseflow\"}[5m])","legendFormat":"PulseFlow","refId":"A"},{"expr":"rate(http_requests_total{job=\"careplanplus\"}[5m])","legendFormat":"CarePlanPlus","refId":"B"},{"expr":"rate(http_requests_total{job=\"pulsenotes\"}[5m])","legendFormat":"PulseNotes","refId":"C"},{"expr":"rate(http_requests_total{job=\"medisync\"}[5m])","legendFormat":"MediSync","refId":"D"}],"title":"Request Rate","type":"timeseries"},{"datasource":{"type":"prometheus","uid":"prometheus"},"fieldConfig":{"defaults":{"color":{"mode":"palette-classic"},"custom":{"axisCenteredZero":false,"axisColorMode":"text","axisLabel":"","axisPlacement":"auto","barAlignment":0,"drawStyle":"line","fillOpacity":10,"gradientMode":"none","hideFrom":{"legend":false,"tooltip":false,"viz":false},"lineInterpolation":"linear","lineWidth":1,"pointSize":5,"scaleDistribution":{"type":"linear"},"showPoints":"never","spanNulls":false,"stacking":{"group":"A","mode":"none"},"thresholdsStyle":{"mode":"off"}},"mappings":[],"thresholds":{"mode":"absolute","steps":[{"color":"green","value":null}]},"unit":"s"},"overrides":[]},"gridPos":{"h":8,"w":12,"x":12,"y":6},"id":8,"options":{"legend":{"calcs":[],"displayMode":"list","placement":"bottom","showLegend":true},"tooltip":{"mode":"multi","sort":"none"}},"targets":[{"expr":"histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"pulseflow\"}[5m]))","legendFormat":"PulseFlow p95","refId":"A"},{"expr":"histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"careplanplus\"}[5m]))","legendFormat":"CarePlanPlus p95","refId":"B"},{"expr":"histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"pulsenotes\"}[5m]))","legendFormat":"PulseNotes p95","refId":"C"},{"expr":"histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"medisync\"}[5m]))","legendFormat":"MediSync p95","refId":"D"}],"title":"Response Time (p95)","type":"timeseries"}],"refresh":"30s","schemaVersion":38,"style":"dark","tags":["healthcare","ml","portfolio"],"templating":{"list":[]},"time":{"from":"now-1h","to":"now"},"timepicker":{},"timezone":"","title":"Healthcare ML Portfolio Overview","uid":"healthcare-ml-overview","version":1,"weekStart":""}
+    {
+      "annotations": {"list": []},
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "collapsed": false,
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+          "id": 1,
+          "panels": [],
+          "title": "Service Health",
+          "type": "row"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [
+                {"options": {"0": {"color": "red", "index": 1, "text": "DOWN"}}, "type": "value"},
+                {"options": {"1": {"color": "green", "index": 0, "text": "UP"}}, "type": "value"}
+              ],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 0, "y": 1},
+          "id": 2,
+          "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "up{job=\"pulseflow\"}", "refId": "A"}],
+          "title": "PulseFlow",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [
+                {"options": {"0": {"color": "red", "index": 1, "text": "DOWN"}}, "type": "value"},
+                {"options": {"1": {"color": "green", "index": 0, "text": "UP"}}, "type": "value"}
+              ],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 6, "y": 1},
+          "id": 3,
+          "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "up{job=\"careplanplus\"}", "refId": "A"}],
+          "title": "CarePlanPlus",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [
+                {"options": {"0": {"color": "red", "index": 1, "text": "DOWN"}}, "type": "value"},
+                {"options": {"1": {"color": "green", "index": 0, "text": "UP"}}, "type": "value"}
+              ],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 12, "y": 1},
+          "id": 4,
+          "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "up{job=\"pulsenotes\"}", "refId": "A"}],
+          "title": "PulseNotes",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [
+                {"options": {"0": {"color": "red", "index": 1, "text": "DOWN"}}, "type": "value"},
+                {"options": {"1": {"color": "green", "index": 0, "text": "UP"}}, "type": "value"}
+              ],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 18, "y": 1},
+          "id": 5,
+          "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "up{job=\"medisync\"}", "refId": "A"}],
+          "title": "MediSync",
+          "type": "stat"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 5},
+          "id": 20,
+          "panels": [],
+          "title": "Model Status",
+          "type": "row"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [
+                {"options": {"0": {"color": "red", "index": 0, "text": "Not Loaded"}}, "type": "value"},
+                {"options": {"0.5": {"color": "yellow", "index": 1, "text": "Partial"}}, "type": "value"},
+                {"options": {"1": {"color": "green", "index": 2, "text": "Loaded"}}, "type": "value"}
+              ],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 0.5}, {"color": "green", "value": 1}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 3, "w": 6, "x": 0, "y": 6},
+          "id": 21,
+          "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "model_loaded{job=\"pulseflow\"}", "refId": "A"}],
+          "title": "PulseFlow Model",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [
+                {"options": {"0": {"color": "red", "index": 0, "text": "Not Loaded"}}, "type": "value"},
+                {"options": {"0.5": {"color": "yellow", "index": 1, "text": "Partial"}}, "type": "value"},
+                {"options": {"1": {"color": "green", "index": 2, "text": "Loaded"}}, "type": "value"}
+              ],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 0.5}, {"color": "green", "value": 1}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 3, "w": 6, "x": 6, "y": 6},
+          "id": 22,
+          "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "model_loaded{job=\"careplanplus\"}", "refId": "A"}],
+          "title": "CarePlanPlus Model",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [
+                {"options": {"0": {"color": "red", "index": 0, "text": "Not Loaded"}}, "type": "value"},
+                {"options": {"1": {"color": "green", "index": 2, "text": "Loaded"}}, "type": "value"}
+              ],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 3, "w": 6, "x": 12, "y": 6},
+          "id": 23,
+          "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "model_loaded{job=\"medisync\"}", "refId": "A"}],
+          "title": "MediSync Model",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {"axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false}, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": {"type": "linear"}, "showPoints": "never", "spanNulls": false, "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 6, "w": 6, "x": 18, "y": 6},
+          "id": 24,
+          "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+          "targets": [
+            {"expr": "histogram_quantile(0.95, rate(model_inference_duration_seconds_bucket{job=\"pulseflow\"}[5m]))", "legendFormat": "PulseFlow", "refId": "A"},
+            {"expr": "histogram_quantile(0.95, rate(model_inference_duration_seconds_bucket{job=\"careplanplus\"}[5m]))", "legendFormat": "CarePlanPlus", "refId": "B"},
+            {"expr": "histogram_quantile(0.95, rate(model_inference_duration_seconds_bucket{job=\"medisync\"}[5m]))", "legendFormat": "MediSync", "refId": "C"}
+          ],
+          "title": "Model Inference p95",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 12},
+          "id": 6,
+          "panels": [],
+          "title": "Request Metrics",
+          "type": "row"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {"axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false}, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": {"type": "linear"}, "showPoints": "never", "spanNulls": false, "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "unit": "reqps"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 13},
+          "id": 7,
+          "options": {"legend": {"calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+          "targets": [
+            {"expr": "sum(rate(http_requests_total{job=\"pulseflow\",endpoint!~\"/health|/metrics\"}[5m]))", "legendFormat": "PulseFlow", "refId": "A"},
+            {"expr": "sum(rate(http_requests_total{job=\"careplanplus\",endpoint!~\"/health|/metrics\"}[5m]))", "legendFormat": "CarePlanPlus", "refId": "B"},
+            {"expr": "sum(rate(http_requests_total{job=\"pulsenotes\",endpoint!~\"/health|/metrics\"}[5m]))", "legendFormat": "PulseNotes", "refId": "C"},
+            {"expr": "sum(rate(http_requests_total{job=\"medisync\",endpoint!~\"/health|/metrics\"}[5m]))", "legendFormat": "MediSync", "refId": "D"}
+          ],
+          "title": "Request Rate (excl. health checks)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {"axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false}, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": {"type": "linear"}, "showPoints": "never", "spanNulls": false, "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 13},
+          "id": 8,
+          "options": {"legend": {"calcs": ["mean", "lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+          "targets": [
+            {"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"pulseflow\",endpoint!~\"/health|/metrics\"}[5m])) by (le))", "legendFormat": "PulseFlow p95", "refId": "A"},
+            {"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"careplanplus\",endpoint!~\"/health|/metrics\"}[5m])) by (le))", "legendFormat": "CarePlanPlus p95", "refId": "B"},
+            {"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"pulsenotes\",endpoint!~\"/health|/metrics\"}[5m])) by (le))", "legendFormat": "PulseNotes p95", "refId": "C"},
+            {"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"medisync\",endpoint!~\"/health|/metrics\"}[5m])) by (le))", "legendFormat": "MediSync p95", "refId": "D"}
+          ],
+          "title": "Response Time p95 (excl. health checks)",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 21},
+          "id": 30,
+          "panels": [],
+          "title": "ML Operations",
+          "type": "row"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 0, "y": 22},
+          "id": 31,
+          "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "predictions_total{job=\"pulseflow\"}", "refId": "A"}],
+          "title": "PulseFlow Predictions",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "purple", "value": null}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 6, "y": 22},
+          "id": 32,
+          "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "recommendations_total{job=\"careplanplus\"}", "refId": "A"}],
+          "title": "CarePlanPlus Recommendations",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "orange", "value": null}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 12, "y": 22},
+          "id": 33,
+          "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "allocations_total{job=\"medisync\"}", "refId": "A"}],
+          "title": "MediSync Allocations",
+          "type": "stat"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 4, "w": 6, "x": 18, "y": 22},
+          "id": 34,
+          "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+          "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "expr": "simulation_steps_total{job=\"medisync\"}", "refId": "A"}],
+          "title": "MediSync Simulation Steps",
+          "type": "stat"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 26},
+          "id": 40,
+          "panels": [],
+          "title": "Resource Usage",
+          "type": "row"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {"axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 20, "gradientMode": "scheme", "hideFrom": {"legend": false, "tooltip": false, "viz": false}, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": {"type": "linear"}, "showPoints": "never", "spanNulls": false, "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 27},
+          "id": 41,
+          "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+          "targets": [
+            {"expr": "process_resident_memory_bytes{job=\"pulseflow\"}", "legendFormat": "PulseFlow", "refId": "A"},
+            {"expr": "process_resident_memory_bytes{job=\"careplanplus\"}", "legendFormat": "CarePlanPlus", "refId": "B"},
+            {"expr": "process_resident_memory_bytes{job=\"pulsenotes\"}", "legendFormat": "PulseNotes", "refId": "C"},
+            {"expr": "process_resident_memory_bytes{job=\"medisync\"}", "legendFormat": "MediSync", "refId": "D"}
+          ],
+          "title": "Process Memory (RSS)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {"axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 20, "gradientMode": "scheme", "hideFrom": {"legend": false, "tooltip": false, "viz": false}, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": {"type": "linear"}, "showPoints": "never", "spanNulls": false, "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 27},
+          "id": 42,
+          "options": {"legend": {"calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi", "sort": "desc"}},
+          "targets": [
+            {"expr": "rate(process_cpu_seconds_total{job=\"pulseflow\"}[5m])", "legendFormat": "PulseFlow", "refId": "A"},
+            {"expr": "rate(process_cpu_seconds_total{job=\"careplanplus\"}[5m])", "legendFormat": "CarePlanPlus", "refId": "B"},
+            {"expr": "rate(process_cpu_seconds_total{job=\"pulsenotes\"}[5m])", "legendFormat": "PulseNotes", "refId": "C"},
+            {"expr": "rate(process_cpu_seconds_total{job=\"medisync\"}[5m])", "legendFormat": "MediSync", "refId": "D"}
+          ],
+          "title": "CPU Usage (cores)",
+          "type": "timeseries"
+        }
+      ],
+      "refresh": "30s",
+      "schemaVersion": 38,
+      "style": "dark",
+      "tags": ["healthcare", "ml", "portfolio"],
+      "templating": {"list": []},
+      "time": {"from": "now-1h", "to": "now"},
+      "timepicker": {},
+      "timezone": "",
+      "title": "Healthcare ML Portfolio Overview",
+      "uid": "healthcare-ml-overview",
+      "version": 2,
+      "weekStart": ""
+    }
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -68,7 +459,7 @@ spec:
           resources:
             requests:
               memory: "128Mi"
-              cpu: "10m"
+              cpu: "5m"
             limits:
               memory: "512Mi"
               cpu: "250m"
