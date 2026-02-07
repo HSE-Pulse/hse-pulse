@@ -6,7 +6,7 @@ metadata:
   labels:
     app: pulseflow
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: pulseflow
@@ -32,21 +32,21 @@ spec:
             - containerPort: 7000
           resources:
             requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
               memory: "128Mi"
               cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "250m"
         - name: api
           image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/pulseflow-api:latest
           ports:
             - containerPort: 8000
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "256Mi"
+              cpu: "150m"
             limits:
-              memory: "1Gi"
+              memory: "512Mi"
               cpu: "500m"
           env:
             - name: PYTHONUNBUFFERED
@@ -56,15 +56,11 @@ spec:
             - name: MONGO_DB
               value: "healthcare"
             - name: MODEL_PATH
-              value: "/models/lstm_model.pth"
+              value: "/app/models/lstm_model.pth"
             - name: SCALER_PATH
-              value: "/models/scaler.pkl"
+              value: "/app/models/scaler.pkl"
             - name: METADATA_PATH
               value: "/models/model_metadata.json"
-          volumeMounts:
-            - name: models
-              mountPath: /models
-              readOnly: true
           livenessProbe:
             httpGet:
               path: /health
@@ -77,10 +73,6 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
-      volumes:
-        - name: models
-          persistentVolumeClaim:
-            claimName: pulseflow-models
 ---
 apiVersion: v1
 kind: Service

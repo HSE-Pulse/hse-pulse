@@ -56,7 +56,7 @@ const projects: Project[] = [
     nonTrivial:
       'Combining collaborative filtering with transformer-based classification provides complementary recommendations — population-level patterns from k-means clustering plus semantic understanding from BERT. 309 procedures across 15 categories required careful category balancing. Each generated pathway links to ICD procedure and drug codes with confidence scores.',
     stack: ['HuggingFace Transformers', 'BERT', 'Scikit-learn', 'FastAPI', 'React', 'MongoDB', 'Docker'],
-    github: 'https://github.com/HSE-Pulse/care-plan-plus',
+    github: 'https://github.com/HSE-Pulse/hse-pulse',
     demo: config.CAREPLANPLUS_URL,
     reports: [
       { label: 'Report', url: '/reports/careplanplus-report.pdf' },
