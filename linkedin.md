@@ -51,7 +51,7 @@ Add these as Featured items (links or media):
 |------|-------|------|
 | Link | HSE-Pulse — Healthcare AI Platform | https://github.com/HSE-Pulse/hse-pulse |
 | Link | DES-MARL — Multi-Agent RL for Hospital Optimisation | https://github.com/HSE-Pulse/medi-sync |
-| Link | CarePlanPlus — BERT Treatment Recommendation | https://github.com/HSE-Pulse/care-plan-plus |
+| Link | CarePlanPlus — BERT Treatment Recommendation | https://github.com/HSE-Pulse/hse-pulse |
 | Link | PulseNotes — ClinicalBERT RAG Document Intelligence | https://github.com/HSE-Pulse/pulse-notes |
 | Media | DES-MARL Applied Research Report (PDF) | Upload `desmarl-applied-research.pdf` |
 | Media | DES-MARL Research Paper (PDF) | Upload `desmarl-research-paper.pdf` |
@@ -408,7 +408,7 @@ Project name:  CarePlanPlus
 Associated with: Dublin Business School
 Start date:    2025
 End date:      2026
-URL:           https://github.com/HSE-Pulse/care-plan-plus
+URL:           https://github.com/HSE-Pulse/hse-pulse
 ```
 
 **Description:**
