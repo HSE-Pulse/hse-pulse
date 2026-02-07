@@ -76,6 +76,14 @@ spec:
   timeoutSec: 86400
   connectionDraining:
     drainingTimeoutSec: 60
+  healthCheck:
+    checkIntervalSec: 15
+    timeoutSec: 10
+    healthyThreshold: 1
+    unhealthyThreshold: 3
+    type: HTTP
+    requestPath: /health
+    port: 8000
 ---
 apiVersion: v1
 kind: Service
