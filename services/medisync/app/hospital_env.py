@@ -69,6 +69,8 @@ class HospitalEnv:
         self.discharge_hist = {d: deque(maxlen=12) for d in DEPARTMENTS}
         self.momentum = {d: {s: 0. for s in ['doctors', 'nurses', 'hcws', 'admins']} for d in DEPARTMENTS}
         self.accum = {d: {s: 0. for s in ['doctors', 'nurses', 'hcws', 'admins']} for d in DEPARTMENTS}
+        self.arrivals = []
+        self.arrival_idx = 0
 
     def reset(self, seed=None):
         if seed:

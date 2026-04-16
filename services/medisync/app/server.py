@@ -173,20 +173,21 @@ def create_app() -> FastAPI:
         # Auto-detect latest checkpoint directory
         checkpoint_dir = body.checkpoint_dir
         if checkpoint_dir is None:
-            # In container: checkpoints are at /app/checkpoints/
-            container_ckpt = "/app/checkpoints"
-            if os.path.isdir(container_ckpt):
-                # Look for run subdirectories
-                runs = sorted(
-                    [d for d in os.listdir(container_ckpt)
-                     if os.path.isdir(os.path.join(container_ckpt, d))],
-                    reverse=True,
-                )
-                if runs:
-                    checkpoint_dir = os.path.join(container_ckpt, runs[0])
-                elif glob.glob(os.path.join(container_ckpt, "*_best.pt")):
-                    # Checkpoints directly in the directory
-                    checkpoint_dir = container_ckpt
+            # Search candidate dirs: container path + local dev path
+            for candidate in ["/app/checkpoints", "./checkpoints"]:
+                if os.path.isdir(candidate):
+                    # Look for run subdirectories
+                    runs = sorted(
+                        [d for d in os.listdir(candidate)
+                         if os.path.isdir(os.path.join(candidate, d))],
+                        reverse=True,
+                    )
+                    if runs:
+                        checkpoint_dir = os.path.join(candidate, runs[0])
+                        break
+                    elif glob.glob(os.path.join(candidate, "*_best.pt")):
+                        checkpoint_dir = candidate
+                        break
 
         if checkpoint_dir and os.path.isdir(checkpoint_dir):
             loaded = mgr.load_checkpoints(checkpoint_dir)
@@ -203,34 +204,38 @@ def create_app() -> FastAPI:
 
         ALLOCATIONS_TOTAL.inc()
 
-        # Log simulation run to MLflow
-        mlflow_uri = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000")
-        experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME", "medisync")
-        try:
-            mlflow.set_tracking_uri(mlflow_uri)
-            mlflow.set_experiment(experiment_name)
-            with mlflow.start_run(run_name=f"sim-{int(time.time())}"):
-                mlflow.log_params({
-                    "episode_hours": body.episode_hours,
-                    "seed": body.seed,
-                    "algo": body.algo.value,
-                    "deterministic": body.deterministic,
-                    "speed": body.speed,
-                    "max_patients": body.max_patients,
-                    "use_synthetic": body.use_synthetic,
-                })
-                mlflow.log_metrics({
-                    "patients_loaded": count,
-                    "status": 1,
-                })
-                mlflow.set_tags({
-                    "service": "medisync",
-                    "policy": body.algo.value,
-                    "status": "started",
-                })
-            logger.info("MLflow run logged for simulation start")
-        except Exception as e:
-            logger.warning("MLflow logging failed: %s", e)
+        # Log simulation run to MLflow (non-blocking)
+        def _log_mlflow():
+            mlflow_uri = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000")
+            experiment_name = os.getenv("MLFLOW_EXPERIMENT_NAME", "medisync")
+            try:
+                mlflow.set_tracking_uri(mlflow_uri)
+                mlflow.set_experiment(experiment_name)
+                with mlflow.start_run(run_name=f"sim-{int(time.time())}"):
+                    mlflow.log_params({
+                        "episode_hours": body.episode_hours,
+                        "seed": body.seed,
+                        "algo": body.algo.value,
+                        "deterministic": body.deterministic,
+                        "speed": body.speed,
+                        "max_patients": body.max_patients,
+                        "use_synthetic": body.use_synthetic,
+                    })
+                    mlflow.log_metrics({
+                        "patients_loaded": count,
+                        "status": 1,
+                    })
+                    mlflow.set_tags({
+                        "service": "medisync",
+                        "policy": body.algo.value,
+                        "status": "started",
+                    })
+                logger.info("MLflow run logged for simulation start")
+            except Exception as e:
+                logger.warning("MLflow logging failed: %s", e)
+
+        import threading
+        threading.Thread(target=_log_mlflow, daemon=True).start()
 
         return SimStatus(**mgr.get_status())
 

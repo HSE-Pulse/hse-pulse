@@ -72,7 +72,7 @@ const tools = [
 
 export default function MLOps() {
   return (
-    <section id="mlops" className="section-padding relative bg-slate-925/50">
+    <section id="mlops" className="section-padding relative bg-gray-50/80">
       <div className="max-w-7xl mx-auto">
         <SectionHeading
           tag="Infrastructure"
@@ -82,7 +82,7 @@ export default function MLOps() {
 
         {/* Data flow */}
         <div className="glass rounded-2xl p-8 mb-12">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-6">ML Lifecycle</h3>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">ML Lifecycle</h3>
           <div className="flex flex-wrap items-center justify-center gap-3">
             {[
               { step: 'Data Prep', sub: 'MIMIC-IV / HSE' },
@@ -95,12 +95,12 @@ export default function MLOps() {
             ].map((item, i) => (
               <div key={item.step} className="flex items-center gap-3">
                 <div className="text-center">
-                  <div className="px-4 py-2 rounded-lg bg-primary-500/10 border border-primary-500/20 text-sm text-primary-400 font-medium">
+                  <div className="px-4 py-2 rounded-lg bg-primary-500/10 border border-primary-500/20 text-sm text-primary-600 font-medium">
                     {item.step}
                   </div>
-                  <div className="text-xs text-slate-600 mt-1">{item.sub}</div>
+                  <div className="text-xs text-gray-400 mt-1">{item.sub}</div>
                 </div>
-                {i < 6 && <span className="text-slate-700 hidden sm:block">&rarr;</span>}
+                {i < 6 && <span className="text-gray-300 hidden sm:block">&rarr;</span>}
               </div>
             ))}
           </div>
@@ -110,9 +110,9 @@ export default function MLOps() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {tools.map((tool) => (
             <div key={tool.title} className="glass glass-hover rounded-2xl p-6 transition-all">
-              <tool.icon className="w-5 h-5 text-primary-400 mb-4" />
-              <h3 className="text-sm font-semibold text-white mb-2">{tool.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed mb-4">{tool.description}</p>
+              <tool.icon className="w-5 h-5 text-primary-600 mb-4" />
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">{tool.title}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed mb-4">{tool.description}</p>
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {tool.badges.map((b) => (
                   <TechBadge key={b.label} label={b.label} color={b.color} />
@@ -123,7 +123,7 @@ export default function MLOps() {
                   href={tool.link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-700 transition-colors"
                 >
                   {tool.link.label} <ExternalLink className="w-3 h-3" />
                 </a>

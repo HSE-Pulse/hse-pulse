@@ -3,17 +3,17 @@ import SectionHeading from '../components/SectionHeading'
 import TechBadge from '../components/TechBadge'
 
 const stats = [
-  { label: 'ML Services', value: '4' },
-  { label: 'Containers', value: '17' },
-  { label: 'Model Architectures', value: 'MARL / LSTM / BERT' },
+  { label: 'AI Services', value: '6' },
+  { label: 'Containers', value: '19' },
+  { label: 'Architectures', value: 'Agentic / MARL / LSTM / BERT' },
   { label: 'Observability', value: 'Full Stack' },
 ]
 
 const pillars = [
   {
     icon: Cpu,
-    title: 'Deep Learning Inference',
-    description: 'Four domain-specific models — MADDPG/MAPPO for hospital resource optimisation, LSTM for ED trolley forecasting, BERT for treatment pathways, ClinicalBERT for document analysis — each served via FastAPI with GPU-optional inference.',
+    title: 'Deep Learning & Agentic Inference',
+    description: 'Six AI services — LangGraph agentic orchestrator with GPT-4o, PulseDiagAgent differential diagnosis, MADDPG/MAPPO hospital optimisation, LSTM ED trolley forecasting, BERT treatment pathways, ClinicalBERT document RAG — each served via FastAPI.',
   },
   {
     icon: Layers,
@@ -49,7 +49,7 @@ export default function PlatformOverview() {
         <SectionHeading
           tag="Architecture"
           title="Platform Overview"
-          description="A containerised microservice platform integrating four specialised healthcare AI services with production-grade observability, experiment tracking, and infrastructure automation."
+          description="A containerised microservice platform integrating six specialised healthcare AI services — including an agentic orchestrator — with production-grade observability, experiment tracking, and infrastructure automation."
         />
 
         {/* Stats bar */}
@@ -57,8 +57,8 @@ export default function PlatformOverview() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-xs text-slate-500 uppercase tracking-wider">{stat.label}</div>
+                <div className="text-xl font-bold text-gray-900 mb-1">{stat.value}</div>
+                <div className="text-xs text-gray-400 uppercase tracking-wider">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -66,11 +66,11 @@ export default function PlatformOverview() {
 
         {/* Architecture diagram */}
         <div className="glass rounded-2xl p-8 mb-16">
-          <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-6">System Architecture</h3>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">System Architecture</h3>
           <div className="space-y-4">
             {/* Client layer */}
             <div className="flex justify-center">
-              <div className="px-6 py-3 rounded-xl bg-primary-500/10 border border-primary-500/20 text-sm text-primary-400 font-medium">
+              <div className="px-6 py-3 rounded-xl bg-primary-500/10 border border-primary-500/20 text-sm text-primary-600 font-medium">
                 Client / Browser
               </div>
             </div>
@@ -80,7 +80,7 @@ export default function PlatformOverview() {
 
             {/* Nginx proxy */}
             <div className="flex justify-center">
-              <div className="px-8 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-sm text-cyan-400 font-medium">
+              <div className="px-8 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-sm text-cyan-600 font-medium">
                 Nginx Reverse Proxy — :8090
               </div>
             </div>
@@ -93,42 +93,68 @@ export default function PlatformOverview() {
               </div>
             </div>
 
+            {/* Agentic orchestrator */}
+            <div className="flex justify-center">
+              <div className="rounded-xl bg-cyan-500/5 border border-cyan-500/15 p-4 text-center max-w-md w-full">
+                <div className="text-sm font-semibold text-cyan-600 mb-1">HSE Pulse Agent</div>
+                <div className="text-xs text-gray-400 mb-2">Agentic AI Orchestrator</div>
+                <div className="flex flex-wrap justify-center gap-1">
+                  <TechBadge label="LangGraph" color="cyan" />
+                  <TechBadge label="GPT-4o" color="cyan" />
+                  <TechBadge label="Tool Chaining" color="cyan" />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="flex items-end gap-8">
+                <div className="w-px h-6 bg-slate-700" />
+                <div className="w-px h-6 bg-slate-700" />
+                <div className="w-px h-6 bg-slate-700" />
+                <div className="w-px h-6 bg-slate-700" />
+                <div className="w-px h-6 bg-slate-700" />
+              </div>
+            </div>
+
             {/* Services */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div className="rounded-xl bg-teal-500/5 border border-teal-500/15 p-4 text-center">
+                <div className="text-sm font-semibold text-teal-600 mb-1">PulseDiagAgent</div>
+                <div className="text-xs text-gray-400 mb-2">Differential Diagnosis</div>
+                <div className="flex flex-wrap justify-center gap-1">
+                  <TechBadge label="GPT-4o" color="green" />
+                  <TechBadge label="CoT" color="green" />
+                </div>
+              </div>
               <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/15 p-4 text-center">
-                <div className="text-sm font-semibold text-emerald-400 mb-1">DES-MARL</div>
-                <div className="text-xs text-slate-500 mb-2">Multi-Agent RL</div>
+                <div className="text-sm font-semibold text-emerald-600 mb-1">DES-MARL</div>
+                <div className="text-xs text-gray-400 mb-2">Multi-Agent RL</div>
                 <div className="flex flex-wrap justify-center gap-1">
                   <TechBadge label="PyTorch" color="green" />
                   <TechBadge label="MADDPG" color="green" />
-                  <TechBadge label="WebSocket" color="green" />
                 </div>
               </div>
               <div className="rounded-xl bg-blue-500/5 border border-blue-500/15 p-4 text-center">
-                <div className="text-sm font-semibold text-blue-400 mb-1">CarePlanPlus</div>
-                <div className="text-xs text-slate-500 mb-2">BERT Recommender</div>
+                <div className="text-sm font-semibold text-blue-600 mb-1">CarePlanPlus</div>
+                <div className="text-xs text-gray-400 mb-2">BERT Recommender</div>
                 <div className="flex flex-wrap justify-center gap-1">
-                  <TechBadge label="PyTorch" color="blue" />
                   <TechBadge label="BERT" color="blue" />
                   <TechBadge label="HuggingFace" color="blue" />
                 </div>
               </div>
               <div className="rounded-xl bg-purple-500/5 border border-purple-500/15 p-4 text-center">
-                <div className="text-sm font-semibold text-purple-400 mb-1">PulseNotes</div>
-                <div className="text-xs text-slate-500 mb-2">ClinicalBERT RAG</div>
+                <div className="text-sm font-semibold text-purple-600 mb-1">PulseNotes</div>
+                <div className="text-xs text-gray-400 mb-2">ClinicalBERT RAG</div>
                 <div className="flex flex-wrap justify-center gap-1">
                   <TechBadge label="ClinicalBERT" color="purple" />
                   <TechBadge label="FAISS" color="purple" />
-                  <TechBadge label="RAG" color="purple" />
                 </div>
               </div>
               <div className="rounded-xl bg-amber-500/5 border border-amber-500/15 p-4 text-center">
-                <div className="text-sm font-semibold text-amber-400 mb-1">PulseFlow</div>
-                <div className="text-xs text-slate-500 mb-2">LSTM ED Forecasting</div>
+                <div className="text-sm font-semibold text-amber-600 mb-1">PulseFlow</div>
+                <div className="text-xs text-gray-400 mb-2">LSTM Forecasting</div>
                 <div className="flex flex-wrap justify-center gap-1">
                   <TechBadge label="PyTorch" color="amber" />
                   <TechBadge label="LSTM" color="amber" />
-                  <TechBadge label="MongoDB" color="amber" />
                 </div>
               </div>
             </div>
@@ -144,17 +170,17 @@ export default function PlatformOverview() {
 
             {/* Data layer */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="rounded-xl bg-slate-800/50 border border-slate-700/50 p-3 text-center">
-                <div className="text-xs font-medium text-slate-400">MongoDB</div>
-                <div className="text-xs text-slate-600">Clinical Data</div>
+              <div className="rounded-xl bg-gray-100 border border-gray-200 p-3 text-center">
+                <div className="text-xs font-medium text-gray-500">MongoDB</div>
+                <div className="text-xs text-gray-400">Clinical Data</div>
               </div>
-              <div className="rounded-xl bg-slate-800/50 border border-slate-700/50 p-3 text-center">
-                <div className="text-xs font-medium text-slate-400">MLflow + MinIO</div>
-                <div className="text-xs text-slate-600">Experiment Tracking</div>
+              <div className="rounded-xl bg-gray-100 border border-gray-200 p-3 text-center">
+                <div className="text-xs font-medium text-gray-500">MLflow + MinIO</div>
+                <div className="text-xs text-gray-400">Experiment Tracking</div>
               </div>
-              <div className="rounded-xl bg-slate-800/50 border border-slate-700/50 p-3 text-center">
-                <div className="text-xs font-medium text-slate-400">Prometheus + Grafana</div>
-                <div className="text-xs text-slate-600">Monitoring</div>
+              <div className="rounded-xl bg-gray-100 border border-gray-200 p-3 text-center">
+                <div className="text-xs font-medium text-gray-500">Prometheus + Grafana</div>
+                <div className="text-xs text-gray-400">Monitoring</div>
               </div>
             </div>
           </div>
@@ -164,9 +190,9 @@ export default function PlatformOverview() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {pillars.map((pillar) => (
             <div key={pillar.title} className="glass glass-hover rounded-2xl p-6 transition-all">
-              <pillar.icon className="w-5 h-5 text-primary-400 mb-4" />
-              <h3 className="text-sm font-semibold text-white mb-2">{pillar.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{pillar.description}</p>
+              <pillar.icon className="w-5 h-5 text-primary-600 mb-4" />
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">{pillar.title}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">{pillar.description}</p>
             </div>
           ))}
         </div>

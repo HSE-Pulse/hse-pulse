@@ -36,21 +36,21 @@ export default function ThesisSection() {
           <div className="glass rounded-2xl p-8">
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-xl bg-primary-500/10 flex items-center justify-center flex-shrink-0">
-                <BookOpen className="w-6 h-6 text-primary-400" />
+                <BookOpen className="w-6 h-6 text-primary-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">MSc Capstone Dissertation</h3>
-                <p className="text-sm text-slate-400">Dublin Business School, 2025 - 2026</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-1">MSc Capstone Dissertation</h3>
+                <p className="text-sm text-gray-500">Dublin Business School, 2025 - 2026</p>
               </div>
             </div>
 
             <div className="space-y-4 mb-8">
               <div>
-                <span className="text-xs text-slate-500 uppercase tracking-wider">Programme</span>
-                <p className="text-sm text-slate-300 mt-1">Master of Science in Artificial Intelligence</p>
+                <span className="text-xs text-gray-400 uppercase tracking-wider">Programme</span>
+                <p className="text-sm text-gray-600 mt-1">Master of Science in Artificial Intelligence</p>
               </div>
               <div>
-                <span className="text-xs text-slate-500 uppercase tracking-wider">Focus Areas</span>
+                <span className="text-xs text-gray-400 uppercase tracking-wider">Focus Areas</span>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {[
                     'Healthcare AI',
@@ -64,7 +64,7 @@ export default function ThesisSection() {
                   ].map((area) => (
                     <span
                       key={area}
-                      className="px-2.5 py-1 rounded-md text-xs text-primary-400 bg-primary-500/10 border border-primary-500/15"
+                      className="px-2.5 py-1 rounded-md text-xs text-primary-600 bg-primary-500/10 border border-primary-500/15"
                     >
                       {area}
                     </span>
@@ -72,8 +72,8 @@ export default function ThesisSection() {
                 </div>
               </div>
               <div>
-                <span className="text-xs text-slate-500 uppercase tracking-wider">Clinical Datasets</span>
-                <p className="text-sm text-slate-300 mt-1">
+                <span className="text-xs text-gray-400 uppercase tracking-wider">Clinical Datasets</span>
+                <p className="text-sm text-gray-600 mt-1">
                   MIMIC-IV (Medical Information Mart for Intensive Care) — de-identified clinical data from Beth Israel Deaconess Medical Center. HSE TrolleyGAR — Irish hospital trolley census data. NIES 2020 — Nursing Interventions Equivalence Scale used by CarePlanPlus for procedure classification.
                 </p>
               </div>
@@ -84,7 +84,7 @@ export default function ThesisSection() {
                 href={`${BASE}reports/desmarl-applied-research.pdf`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-400 text-sm font-medium hover:bg-primary-500/20 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-500/10 text-primary-600 text-sm font-medium hover:bg-primary-500/20 transition-colors"
               >
                 <Download className="w-4 h-4" />
                 Download Applied Research PDF
@@ -97,10 +97,10 @@ export default function ThesisSection() {
             {researchAreas.map((area) => (
               <div key={area.title} className="glass glass-hover rounded-2xl p-6 transition-all">
                 <div className="flex items-start gap-3">
-                  <area.icon className="w-5 h-5 text-primary-400 mt-0.5 flex-shrink-0" />
+                  <area.icon className="w-5 h-5 text-primary-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="text-sm font-semibold text-white mb-2">{area.title}</h4>
-                    <p className="text-sm text-slate-400 leading-relaxed">{area.content}</p>
+                    <h4 className="text-sm font-semibold text-gray-900 mb-2">{area.title}</h4>
+                    <p className="text-sm text-gray-500 leading-relaxed">{area.content}</p>
                   </div>
                 </div>
               </div>
@@ -108,7 +108,7 @@ export default function ThesisSection() {
 
             {/* Technical scope */}
             <div className="glass rounded-2xl p-6">
-              <h4 className="text-sm font-semibold text-white mb-3">Technical Scope</h4>
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">Technical Scope</h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: 'ML Frameworks', value: 'PyTorch, HuggingFace' },
@@ -121,8 +121,8 @@ export default function ThesisSection() {
                   { label: 'LLM Inference', value: 'Ollama, MedLLaMA2' },
                 ].map((item) => (
                   <div key={item.label}>
-                    <div className="text-xs text-slate-500">{item.label}</div>
-                    <div className="text-sm text-slate-300">{item.value}</div>
+                    <div className="text-xs text-gray-400">{item.label}</div>
+                    <div className="text-sm text-gray-600">{item.value}</div>
                   </div>
                 ))}
               </div>

@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tgar-scraper
+  namespace: hse-pulse
+spec:
+  schedule: "0 9 * * *"  # Daily at 09:00 UTC (after HSE publishes 08:00 data)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: scraper
+            image: python:3.11-slim
+            command:
+            - /bin/sh
+            - -c
+            - |
+              pip install -q requests beautifulsoup4 pymongo &&
+              python /scripts/scrape_tgar.py
+            env:
+            - name: MONGO_URI
+              value: "mongodb://mongodb.hse-pulse.svc.cluster.local:27017/"
+            - name: MONGO_DB
+              value: "healthcare"
+            volumeMounts:
+            - name: scraper-script
+              mountPath: /scripts
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                cpu: 200m
+                memory: 256Mi
+          volumes:
+          - name: scraper-script
+            configMap:
+              name: tgar-scraper

@@ -20,6 +20,13 @@ spec:
     - host: harishankar.info
       http:
         paths:
+          - path: /hse-pulse
+            pathType: Prefix
+            backend:
+              service:
+                name: hse-pulse-dashboard
+                port:
+                  number: 80
           - path: /activate
             pathType: Prefix
             backend:

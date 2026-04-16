@@ -27,7 +27,7 @@ html {
 }
 
 body {
-  @apply bg-slate-950 text-slate-200 antialiased;
+  @apply bg-white text-gray-700 antialiased;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -69,7 +69,7 @@ body {
 
 .gradient-text {
   @apply bg-clip-text text-transparent;
-  background-image: linear-gradient(135deg, #3b82f6, #06b6d4);
+  background-image: linear-gradient(135deg, #2563eb, #0891b2);
 }
 
 .gradient-border {
@@ -82,7 +82,7 @@ body {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  background: linear-gradient(135deg, #2563eb, #0891b2);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -90,13 +90,14 @@ body {
 }
 
 .glass {
-  @apply bg-white/5 backdrop-blur-xl;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  @apply bg-white backdrop-blur-xl shadow-sm;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .glass-hover:hover {
-  @apply bg-white/10;
-  border-color: rgba(255, 255, 255, 0.15);
+  @apply bg-gray-50;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .section-padding {
@@ -105,7 +106,7 @@ body {
 
 .grid-bg {
   background-image:
-    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
   background-size: 64px 64px;
 }

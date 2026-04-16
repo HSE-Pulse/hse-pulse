@@ -1,166 +1,105 @@
-import { Brain, Code, Database, Cloud, Server, Wrench } from 'lucide-react'
+import { Brain, Sparkles, Cloud, Database, Code, Wrench } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
 
 const skillGroups = [
   {
+    icon: Sparkles,
+    label: 'GenAI & LLMs',
+    priority: true,
+    skills: [
+      'GPT-4o', 'LLaMA-2', 'Falcon-180B',
+      'LangGraph', 'LangChain',
+      'RAG Pipelines', 'FAISS / Vector DBs',
+      'Agentic Workflows', 'Prompt Engineering',
+      'LLM Fine-tuning', 'LLM Evaluation',
+      'Guardrails', 'Tool Orchestration',
+    ],
+  },
+  {
     icon: Brain,
-    label: 'AI & Machine Learning',
+    label: 'ML & Deep Learning',
+    priority: true,
     skills: [
-      'PyTorch',
-      'TensorFlow',
-      'Keras',
-      'Scikit-learn',
-      'LSTM / RNN',
-      'BERT / Transformers',
-      'Bio_ClinicalBERT',
-      'LLMs (GPT-4, LLaMA-2, Falcon-180B)',
-      'MADDPG',
-      'MAPPO',
-      'Reinforcement Learning',
-      'NLP',
-      'Computer Vision / OCR',
-      'Anomaly Detection',
-      'Time Series Forecasting',
-      'MedLLaMA2',
-      'Ollama',
-      'RAG Pipelines',
-      'fbprophet',
-      'SciPy',
-      'NumPy',
+      'PyTorch', 'TensorFlow', 'Scikit-learn',
+      'BERT / ClinicalBERT', 'MADDPG / MAPPO',
+      'Reinforcement Learning', 'NLP',
+      'LSTM / RNN', 'Time Series',
+      'Anomaly Detection', 'SHAP / LIME',
     ],
   },
   {
-    icon: Code,
-    label: 'Languages',
+    icon: Cloud,
+    label: 'MLOps & Cloud',
+    priority: true,
     skills: [
-      'Python',
-      'Java',
-      'TypeScript',
-      'JavaScript',
-      'R',
-      'C#',
-      'Scala',
-      'SQL',
-      'Bash',
-    ],
-  },
-  {
-    icon: Wrench,
-    label: 'Frameworks & Libraries',
-    skills: [
-      'FastAPI',
-      'Django',
-      'Flask',
-      'Gunicorn',
-      'React',
-      'Spring Boot',
-      'Spring Microservices',
-      'ASP.NET MVC',
-      'AngularJS',
-      'jQuery',
-      'D3.js',
-      'Highcharts',
-      'HuggingFace Transformers',
-      'LangChain',
-      'SimPy',
-      'SHAP',
-      'LIME',
-      'Apache Camel',
-      'JBoss Fuse',
-      'Hibernate',
-      'JooQ',
+      'Kubernetes', 'Docker', 'Helm',
+      'GCP', 'AWS', 'Azure',
+      'MLflow', 'Prometheus', 'Grafana',
+      'Terraform', 'CI/CD (GitHub Actions, Jenkins)',
+      'Nginx', 'Health Checks / Probes',
     ],
   },
   {
     icon: Database,
     label: 'Data Engineering',
+    priority: false,
     skills: [
-      'Apache Kafka',
-      'RabbitMQ',
-      'Apache Spark',
-      'Spark MLlib',
-      'MongoDB',
-      'PostgreSQL',
-      'MySQL',
-      'MS SQL Server',
-      'Elasticsearch',
-      'Redis',
-      'Neo4j',
-      'FAISS',
-      'Vector Databases',
-      'Logstash',
-      'Kibana',
+      'MongoDB', 'PostgreSQL', 'Elasticsearch',
+      'Apache Kafka', 'Apache Spark',
+      'Redis', 'FAISS / Vector DBs',
       'ETL Pipelines',
     ],
   },
   {
-    icon: Cloud,
-    label: 'Cloud & MLOps',
+    icon: Code,
+    label: 'Languages',
+    priority: false,
     skills: [
-      'AWS',
-      'Azure',
-      'GCP',
-      'Docker',
-      'Docker Compose',
-      'Kubernetes',
-      'Helm',
-      'Terraform',
-      'Kubeflow',
-      'Knative',
-      'Ansible',
-      'HashiCorp Vault',
-      'MLflow',
-      'Prometheus',
-      'Grafana',
-      'MinIO',
+      'Python', 'Java', 'TypeScript',
+      'SQL', 'Scala', 'Bash',
     ],
   },
   {
-    icon: Server,
-    label: 'Architecture & DevOps',
+    icon: Wrench,
+    label: 'Frameworks',
+    priority: false,
     skills: [
-      'Microservice Design',
-      'REST / WebSocket APIs',
-      'Nginx Reverse Proxy',
-      'Apache Tomcat',
-      'Microsoft BizTalk',
-      'CI/CD (GitHub Actions, Jenkins, Bamboo)',
-      'ELK Stack',
-      'Health Checks & Readiness Probes',
-      'Structured Logging',
-      'Observability',
-      'Agile / Scrum',
-      'JIRA',
-      'Git',
+      'FastAPI', 'React', 'HuggingFace Transformers',
+      'Flask', 'Django', 'Spring Boot',
     ],
   },
 ]
 
 export default function Skills() {
   return (
-    <section id="skills" className="section-padding relative">
+    <section id="skills" className="section-padding relative bg-gray-50/80">
       <div className="max-w-7xl mx-auto">
         <SectionHeading
           tag="Technical Skills"
-          title="Tools &amp; Technologies"
-          description="Grouped by domain. These reflect tools I have used in production or research — not a wish list."
+          title="Tools I Use in Production"
+          description="Grouped by domain. These reflect tools used in production deployments and research, not a wish list."
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {skillGroups.map((group) => (
-            <div key={group.label} className="glass rounded-2xl p-6">
+            <div
+              key={group.label}
+              className={`glass rounded-2xl p-6 ${group.priority ? 'sm:col-span-1 lg:col-span-1 ring-1 ring-primary-500/10' : ''}`}
+            >
               <div className="flex items-center gap-2.5 mb-4">
-                <group.icon className="w-4.5 h-4.5 text-primary-400" />
-                <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
+                <group.icon className="w-4.5 h-4.5 text-primary-600" />
+                <h3 className="text-xs font-semibold text-gray-900 uppercase tracking-wider">
                   {group.label}
                 </h3>
+                {group.priority && (
+                  <span className="ml-auto px-2 py-0.5 rounded text-xs text-primary-600 bg-primary-500/10">
+                    Core
+                  </span>
+                )}
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {group.skills.map((s) => (
-                  <span
-                    key={s}
-                    className="px-2 py-0.5 rounded text-xs text-slate-400 bg-white/5 border border-white/5"
-                  >
+                  <span key={s} className="px-2 py-0.5 rounded text-xs text-gray-500 bg-white border border-gray-200">
                     {s}
                   </span>
                 ))}

@@ -35,7 +35,7 @@ function ServiceCard({
   features, techStack, demoUrl, metrics, reports,
 }: ServiceCardProps) {
   return (
-    <div className={`glass rounded-2xl overflow-hidden transition-all hover:border-white/10`}>
+    <div className={`glass rounded-2xl overflow-hidden transition-all hover:border-gray-200`}>
       {/* Header */}
       <div className={`${bgClass} px-6 py-5 border-b ${borderClass}`}>
         <div className="flex items-center justify-between mb-2">
@@ -48,7 +48,7 @@ function ServiceCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 download
-                className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <Download className="w-3 h-3" /> {r.label}
               </a>
@@ -63,17 +63,17 @@ function ServiceCard({
             </a>
           </div>
         </div>
-        <p className="text-sm text-slate-400">{subtitle}</p>
+        <p className="text-sm text-gray-500">{subtitle}</p>
       </div>
 
       {/* Body */}
       <div className="p-6 space-y-5">
-        <p className="text-sm text-slate-400 leading-relaxed">{description}</p>
+        <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
 
         {/* Model */}
         <div>
-          <span className="text-xs text-slate-500 uppercase tracking-wider">Model</span>
-          <p className="text-sm text-white font-medium mt-1">{model}</p>
+          <span className="text-xs text-gray-400 uppercase tracking-wider">Model</span>
+          <p className="text-sm text-gray-900 font-medium mt-1">{model}</p>
         </div>
 
         {/* Features */}
@@ -81,7 +81,7 @@ function ServiceCard({
           {features.map((f) => (
             <div key={f.label} className="flex items-center gap-2.5">
               <f.icon className={`w-3.5 h-3.5 ${colorClass} flex-shrink-0`} />
-              <span className="text-sm text-slate-400">{f.label}</span>
+              <span className="text-sm text-gray-500">{f.label}</span>
             </div>
           ))}
         </div>
@@ -89,9 +89,9 @@ function ServiceCard({
         {/* Metrics */}
         <div className="grid grid-cols-2 gap-3">
           {metrics.map((m) => (
-            <div key={m.label} className="bg-white/3 rounded-lg p-3">
-              <div className="text-sm font-semibold text-white">{m.value}</div>
-              <div className="text-xs text-slate-500">{m.label}</div>
+            <div key={m.label} className="bg-gray-50 rounded-lg p-3">
+              <div className="text-sm font-semibold text-gray-900">{m.value}</div>
+              <div className="text-xs text-gray-400">{m.label}</div>
             </div>
           ))}
         </div>
@@ -110,7 +110,7 @@ function ServiceCard({
 const services: ServiceCardProps[] = [
   {
     color: 'emerald',
-    colorClass: 'text-emerald-400',
+    colorClass: 'text-emerald-600',
     bgClass: 'bg-emerald-500/5',
     borderClass: 'border-emerald-500/10',
     title: 'DES-MARL',
@@ -144,7 +144,7 @@ const services: ServiceCardProps[] = [
   },
   {
     color: 'blue',
-    colorClass: 'text-blue-400',
+    colorClass: 'text-blue-600',
     bgClass: 'bg-blue-500/5',
     borderClass: 'border-blue-500/10',
     title: 'CarePlanPlus',
@@ -181,7 +181,7 @@ const services: ServiceCardProps[] = [
   },
   {
     color: 'purple',
-    colorClass: 'text-purple-400',
+    colorClass: 'text-purple-600',
     bgClass: 'bg-purple-500/5',
     borderClass: 'border-purple-500/10',
     title: 'PulseNotes',
@@ -214,7 +214,7 @@ const services: ServiceCardProps[] = [
   },
   {
     color: 'amber',
-    colorClass: 'text-amber-400',
+    colorClass: 'text-amber-600',
     bgClass: 'bg-amber-500/5',
     borderClass: 'border-amber-500/10',
     title: 'PulseFlow',

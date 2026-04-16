@@ -28,13 +28,13 @@ export function DemoButton({ serviceName, label = 'Live Demo', className = '' }:
 
     switch (status?.status) {
       case 'starting':
-        return `${base} bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 cursor-wait`
+        return `${base} bg-yellow-500/20 text-yellow-600 border border-yellow-500/30 cursor-wait`
       case 'ready':
-        return `${base} bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30`
+        return `${base} bg-green-500/20 text-green-600 border border-green-500/30 hover:bg-green-500/30`
       case 'error':
-        return `${base} bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30`
+        return `${base} bg-red-500/20 text-red-600 border border-red-500/30 hover:bg-red-500/30`
       default:
-        return `${base} bg-primary-500/20 text-primary-400 border border-primary-500/30 hover:bg-primary-500/30`
+        return `${base} bg-primary-500/20 text-primary-600 border border-primary-500/30 hover:bg-primary-500/30`
     }
   }
 
@@ -83,13 +83,13 @@ export function DemoButton({ serviceName, label = 'Live Demo', className = '' }:
       </button>
 
       {status?.status === 'starting' && (
-        <div className="absolute -bottom-6 left-0 text-xs text-slate-500">
+        <div className="absolute -bottom-6 left-0 text-xs text-gray-400">
           Spinning up ML cluster (~30s)
         </div>
       )}
 
       {status?.status === 'error' && status.message && (
-        <div className="absolute -bottom-6 left-0 text-xs text-red-400 max-w-48 truncate">
+        <div className="absolute -bottom-6 left-0 text-xs text-red-600 max-w-48 truncate">
           {status.message}
         </div>
       )}
