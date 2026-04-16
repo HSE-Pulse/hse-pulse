@@ -43,7 +43,7 @@ export default function Hero() {
         <div className="flex flex-wrap items-center justify-center gap-4 mb-14 animate-fade-up" style={{ animationDelay: '0.3s' }}>
           <a
             href="#projects"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-gray-900 font-medium text-sm hover:from-primary-500 hover:to-primary-400 transition-all shadow-lg shadow-primary-500/25"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium text-sm hover:from-primary-500 hover:to-primary-400 transition-all shadow-lg shadow-primary-500/25"
           >
             View Live Projects
             <ArrowRight className="w-4 h-4" />
@@ -65,34 +65,34 @@ export default function Hero() {
             <div key={stat.label} className="glass rounded-xl p-5 text-center">
               <div className="text-2xl sm:text-3xl font-bold gradient-text mb-1">{stat.value}</div>
               <div className="text-sm font-medium text-gray-900 mb-1">{stat.label}</div>
-              <div className="text-xs text-gray-400">{stat.detail}</div>
+              <div className="text-xs text-gray-500">{stat.detail}</div>
             </div>
           ))}
         </div>
 
         {/* Professional links */}
-        <div className="flex items-center justify-center gap-6 animate-fade-up" style={{ animationDelay: '0.5s' }}>
+        <div className="flex items-center justify-center gap-4 animate-fade-up" style={{ animationDelay: '0.5s' }}>
           <a
             href="https://github.com/HSE-Pulse"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-2 min-h-[44px] text-sm text-gray-500 hover:text-gray-700 transition-colors rounded-lg"
           >
-            <Github className="w-4 h-4" />
-            GitHub
+            <Github className="w-4 h-4" aria-hidden="true" />
+            GitHub <span className="sr-only">(opens in new tab)</span>
           </a>
           <a
             href="https://www.linkedin.com/in/harishankar-somasundaram"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-2 min-h-[44px] text-sm text-gray-500 hover:text-gray-700 transition-colors rounded-lg"
           >
-            <Linkedin className="w-4 h-4" />
-            LinkedIn
+            <Linkedin className="w-4 h-4" aria-hidden="true" />
+            LinkedIn <span className="sr-only">(opens in new tab)</span>
           </a>
           <a
             href="mailto:harishankar.info@gmail.com"
-            className="inline-flex items-center gap-2 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-2 min-h-[44px] text-sm text-gray-500 hover:text-gray-700 transition-colors rounded-lg"
           >
             harishankar.info@gmail.com
           </a>
