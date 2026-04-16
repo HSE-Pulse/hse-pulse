@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: landing
-          image: europe-west1-docker.pkg.dev/hse-pulse-portfolio/hse-pulse/landing:latest
+          image: europe-west1-docker.pkg.dev/hse-pulse-ireland/hse-pulse/landing:latest
           ports:
             - containerPort: 6000
           env:
