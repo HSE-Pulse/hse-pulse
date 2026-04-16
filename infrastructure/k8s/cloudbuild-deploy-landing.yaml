@@ -1,0 +1,41 @@
+steps:
+  # Build the landing page
+  - name: 'node:20-alpine'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        cd services/landing
+        npm ci
+        npm run build
+
+  # Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'europe-west1-docker.pkg.dev/hse-pulse-ireland/hse-pulse/landing:latest', 'services/landing']
+
+  # Push to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'europe-west1-docker.pkg.dev/hse-pulse-ireland/hse-pulse/landing:latest']
+
+  # Apply deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'infrastructure/k8s/landing/deployment.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+
+  # Restart deployment
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['rollout', 'restart', 'deployment/landing', '-n', 'hse-pulse']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+
+  # Wait for rollout
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['rollout', 'status', 'deployment/landing', '-n', 'hse-pulse', '--timeout=120s']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
+
+timeout: '600s'
