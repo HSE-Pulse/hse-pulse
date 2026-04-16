@@ -55,17 +55,27 @@ spec:
               value: "mongodb://mongodb:27017/"
             - name: MONGO_DB
               value: "healthcare"
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8000
-            initialDelaySeconds: 60
-            periodSeconds: 30
-          readinessProbe:
+            - name: BUILD_INDEX_ON_STARTUP
+              value: "true"
+          startupProbe:
             httpGet:
               path: /health
               port: 8000
             initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 120
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
             periodSeconds: 10
 ---
 apiVersion: v1

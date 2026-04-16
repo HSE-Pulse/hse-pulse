@@ -37,6 +37,8 @@ services:
       context: ./services/pulseflow
       dockerfile: Dockerfile
     container_name: pulseflow
+    ports:
+      - "8001:8000"
     environment:
       - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/}
       - MONGO_DB=healthcare
@@ -66,6 +68,8 @@ services:
       context: ./services/careplanplus
       dockerfile: Dockerfile
     container_name: careplanplus
+    ports:
+      - "8002:8000"
     environment:
       - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/}
       - MONGO_DB=healthcare
@@ -124,6 +128,8 @@ services:
       context: ./services/pulsenotes
       dockerfile: Dockerfile
     container_name: pulsenotes
+    ports:
+      - "8003:8000"
     environment:
       - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/}
       - MONGO_DB=healthcare
@@ -153,6 +159,8 @@ services:
       context: ./services/medisync
       dockerfile: Dockerfile
     container_name: medisync
+    ports:
+      - "8004:8000"
     environment:
       - DEVICE=${DEVICE:-cpu}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
@@ -216,6 +224,79 @@ services:
     networks:
       - frontend_net
     restart: unless-stopped
+
+  # ==========================================================================
+  # PulseDiagAgent — Differential Diagnosis
+  # ==========================================================================
+  pulsediagagent:
+    build:
+      context: ./services/pulsediagagent
+      dockerfile: Dockerfile
+    container_name: pulsediagagent
+    ports:
+      - "8005:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o}
+      - DDX_LENGTH=10
+    networks:
+      - frontend_net
+      - backend_net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==========================================================================
+  # Agentic AI Orchestrator
+  # ==========================================================================
+  agent:
+    build:
+      context: ../hse-pulse-agent
+      dockerfile: Dockerfile
+    container_name: hse-pulse-agent
+    ports:
+      - "8100:8100"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o}
+      - OPENAI_FAST_MODEL=${OPENAI_FAST_MODEL:-gpt-4o-mini}
+      - OPENAI_TEMPERATURE=0.1
+      - PULSEFLOW_URL=http://pulseflow:8000
+      - CAREPLANPLUS_URL=http://careplanplus:8000
+      - PULSENOTES_URL=http://pulsenotes:8000
+      - MEDISYNC_URL=http://medisync:8000
+      - MEDDXAGENT_URL=http://pulsediagagent:8000
+      - MONGO_URI=mongodb://mongodb:27017/
+      - MONGO_DB=healthcare
+      - AGENT_PORT=8100
+      - AGENT_LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - AGENT_MAX_ITERATIONS=15
+      - AGENT_REQUIRE_APPROVAL=true
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      pulseflow:
+        condition: service_healthy
+      careplanplus:
+        condition: service_healthy
+      pulsenotes:
+        condition: service_healthy
+      medisync:
+        condition: service_healthy
+      pulsediagagent:
+        condition: service_healthy
+    networks:
+      - frontend_net
+      - backend_net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # ==========================================================================
   # Data Services

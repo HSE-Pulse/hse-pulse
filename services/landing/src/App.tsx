@@ -11,7 +11,7 @@ export default function App() {
       <main>
         <Routes>
           <Route path="/" element={<PortfolioPage />} />
-          <Route path="/hse-pulse" element={<PlatformPage />} />
+          <Route path="/platform" element={<PlatformPage />} />
         </Routes>
       </main>
       <Footer />

@@ -3,6 +3,7 @@ interface LandingConfig {
   CAREPLANPLUS_URL: string
   PULSENOTES_URL: string
   PULSEFLOW_URL: string
+  HSE_PULSE_AGENT_URL: string
   MLFLOW_URL: string
   GRAFANA_URL: string
   PROMETHEUS_URL: string
@@ -21,6 +22,7 @@ const defaults: LandingConfig = {
   PULSEFLOW_URL: 'https://pulseflow.harishankar.info',
   CAREPLANPLUS_URL: 'https://careplanplus.harishankar.info',
   PULSENOTES_URL: 'https://pulsenotes.harishankar.info',
+  HSE_PULSE_AGENT_URL: 'https://harishankar.info/hse-pulse',
   // Observability dashboards
   MLFLOW_URL: 'https://mlflow.harishankar.info',
   GRAFANA_URL: 'https://grafana.harishankar.info',

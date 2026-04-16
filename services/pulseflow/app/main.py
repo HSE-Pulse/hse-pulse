@@ -220,8 +220,10 @@ def _build_trolley_code_map():
             {"$group": {"_id": "$hospital_code", "name": {"$first": "$hospital_name"}}}
         ]):
             code = doc["_id"]
-            name = doc.get("name", "")
+            name = doc.get("name") or ""
             trolley_hospitals[code] = name
+            # Map by trolley_counts code (lowercase) → trolley_counts code
+            _TROLLEY_CODE_MAP[code.lower()] = code
             # Map by trolley_counts name (lowercase) → trolley_counts code
             if name:
                 _TROLLEY_CODE_MAP[name.lower()] = code
@@ -235,8 +237,8 @@ def _build_trolley_code_map():
             # Try to find a matching trolley code by partial name match
             matched = None
             for t_code, t_name in trolley_hospitals.items():
-                t_lower = t_name.lower()
-                h_lower = h_name.lower()
+                t_lower = (t_name or "").lower()
+                h_lower = (h_name or "").lower()
                 # Direct match, contains, or keyword overlap
                 if h_lower == t_lower or h_lower in t_lower or t_lower in h_lower:
                     matched = t_code

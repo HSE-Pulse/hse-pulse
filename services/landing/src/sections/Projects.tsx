@@ -2,311 +2,238 @@ import { Github, ExternalLink, Download } from 'lucide-react'
 import SectionHeading from '../components/SectionHeading'
 import { config } from '../config'
 
-interface Report {
-  label: string
-  url: string
-}
-
 interface Project {
   name: string
   tagline: string
-  color: string
   iconLetter: string
   iconBg: string
-  problem: string
+  colorText: string
+  result: string
   approach: string
-  nonTrivial: string
   stack: string[]
   github: string
   demo?: string
-  reports?: Report[]
+  reports?: { label: string; url: string }[]
 }
 
 const projects: Project[] = [
   {
+    name: 'HSE Pulse Agent',
+    tagline: 'Agentic AI Clinical Decision Support',
+    iconLetter: 'A',
+    iconBg: 'bg-cyan-500/10',
+    colorText: 'text-cyan-600',
+    result: 'Unified AI orchestrator across 5 ML services with multi-step tool chaining, clinical routing, and human-in-the-loop approval',
+    approach: 'LangGraph agentic workflow with GPT-4o reasoning. Routes queries to PulseDiagAgent (diagnosis), PulseFlow (forecasting), CarePlanPlus (treatment), PulseNotes (RAG search), and MediSync (simulation). Integrated React dashboard.',
+    stack: ['LangGraph', 'GPT-4o', 'FastAPI', 'React', 'Tailwind', 'Prometheus'],
+    github: 'https://github.com/HSE-Pulse/pulsediagagent-studio',
+    demo: config.HSE_PULSE_AGENT_URL,
+  },
+  {
     name: 'DES-MARL',
     tagline: 'Multi-Agent RL for Hospital Resource Optimisation',
-    color: 'amber',
     iconLetter: 'D',
     iconBg: 'bg-amber-500/10',
-    problem:
-      'Hospital emergency departments face chronic overcrowding with unpredictable patient arrivals and constrained resources. Static staffing policies cannot adapt to real-time demand fluctuations across 9 interconnected clinical departments.',
-    approach:
-      'Novel DES-MARL framework integrating Discrete-Event Simulation with Multi-Agent Reinforcement Learning (MADDPG/MAPPO). 9 clinical departments modelled as autonomous agents with 12-dimensional state spaces. Trained on MIMIC-IV clinical data (7-day episodes) with 5-stage curriculum learning progressing from single-department to full-hospital coordination.',
-    nonTrivial:
-      'Achieved 92.9% wait time reduction (28.4h → 2h) and 137% throughput improvement (306 → 727 patients/episode). Multi-agent credit assignment across 9 departments with shared resources. Curriculum learning essential — agents fail to converge without staged complexity increases. Full reproducibility with MLflow experiment tracking.',
-    stack: ['PyTorch', 'MADDPG', 'MAPPO', 'FastAPI', 'WebSocket', 'React', 'MIMIC-IV', 'Docker'],
+    colorText: 'text-amber-600',
+    result: '92.9% wait time reduction (28.4h to 2h), 137% throughput improvement (306 to 727 patients/episode)',
+    approach: '9 autonomous clinical department agents (MADDPG/MAPPO) with 5-stage curriculum learning on MIMIC-IV data. WebSocket real-time simulation.',
+    stack: ['PyTorch', 'MADDPG/MAPPO', 'FastAPI', 'WebSocket', 'React', 'MIMIC-IV'],
     github: 'https://github.com/HSE-Pulse/medi-sync',
     demo: config.DESMARL_URL,
     reports: [
-      { label: 'Applied Research Report', url: '/reports/desmarl-applied-research.pdf' },
-      { label: 'Research Paper', url: '/reports/desmarl-research-paper.pdf' },
+      { label: 'Thesis', url: '/reports/desmarl-applied-research.pdf' },
+      { label: 'Paper', url: '/reports/desmarl-research-paper.pdf' },
     ],
   },
   {
     name: 'CarePlanPlus',
     tagline: 'BERT Treatment Pathway Recommendation',
-    color: 'blue',
     iconLetter: 'C',
     iconBg: 'bg-blue-500/10',
-    problem:
-      'Mapping clinical diagnoses to structured treatment pathways requires understanding of medical terminology and procedure coding systems. Manual pathway construction is slow, error-prone, and struggles with multi-step treatment sequences across 15 NIES intervention categories.',
-    approach:
-      'BERT-base-uncased sequence classifier fine-tuned on 163 patient-admission records from MIMIC-IV, predicting from 96 procedure classes. Diagnosis sequences encoded as ICD code + title pairs with procedure history context (256-token max). Multi-step pathway generation (up to 5 procedures) with confidence-scored recommendations. FastAPI serves inference backed by MongoDB with 195K+ ICD lookup codes. React 19 TypeScript dashboard with 6 pages — predictions, treatment pathways, data explorer, NIES satisfaction analytics, in-app training with MLflow tracking, and service configuration.',
-    nonTrivial:
-      'Parameter-efficient fine-tuning: first 6 of 12 BERT encoder layers frozen, with 256-unit intermediate classifier and batch normalisation. Sequence truncation strategy (10 diagnosis + 5 procedure parts) handles variable-length clinical inputs within 256-token budget. NIES 2020 patient satisfaction data (4,776 records across 17+ condition categories) integrated as contextual analytics. In-app training with early stopping (patience 5), gradient clipping, and MLflow experiment logging. ~125-200ms inference latency. Deployed on GKE with Prometheus metrics and self-healing probes.',
-    stack: ['PyTorch', 'BERT', 'HuggingFace', 'Scikit-learn', 'FastAPI', 'MongoDB', 'React', 'TypeScript', 'Tailwind CSS', 'Recharts', 'MLflow', 'Prometheus', 'Docker', 'GKE'],
+    colorText: 'text-blue-600',
+    result: '96 procedure classes across 15 NIES categories, 125-200ms inference',
+    approach: 'Fine-tuned BERT classifier on MIMIC-IV patient-admissions. Multi-step pathway generation with confidence scoring. 195K+ ICD code search.',
+    stack: ['PyTorch', 'BERT', 'HuggingFace', 'FastAPI', 'MongoDB', 'React', 'MLflow'],
     github: 'https://github.com/HSE-Pulse/care-plan-plus',
     demo: config.CAREPLANPLUS_URL,
-    reports: [
-      { label: 'Report', url: '/reports/careplanplus-report.pdf' },
-    ],
+    reports: [{ label: 'Report', url: '/reports/careplanplus-report.pdf' }],
   },
   {
     name: 'PulseNotes',
-    tagline: 'Clinical Document Intelligence & RAG',
-    color: 'purple',
+    tagline: 'ClinicalBERT RAG Pipeline',
     iconLetter: 'P',
     iconBg: 'bg-purple-500/10',
-    problem:
-      'Clinical notes contain critical patient information locked in unstructured text across multiple note sections. Clinicians need targeted extraction — chief complaints, diagnoses, medications — without reading entire discharge summaries.',
-    approach:
-      'Bio_ClinicalBERT for 768-dimensional semantic embeddings with FAISS vector indexing. RAG pipeline processing 22,184 chunks from 1,203 patients across MIMIC-IV discharge summaries. Section-aware extraction with regex-based NLU classifying query intent (segment extraction, patient lookup, semantic search). Ollama-backed MedLLaMA2 for response generation.',
-    nonTrivial:
-      'Sub-200ms query latency across 22,184 document chunks with FAISS vector indexing. Section-aware extraction handles irregular clinical document structure where headers vary between institutions. Hybrid retrieval combining vector similarity search with deterministic section parsing across 13 standardised note sections. MongoDB-backed document store with pre-computed embeddings.',
-    stack: ['MedLLaMA2', 'Bio_ClinicalBERT', 'Ollama', 'FAISS', 'FastAPI', 'MongoDB', 'React', 'Docker'],
+    colorText: 'text-purple-600',
+    result: 'Sub-200ms queries across 22,184 document chunks from 1,203 patients',
+    approach: 'Bio_ClinicalBERT embeddings with FAISS vector indexing. Section-aware extraction across 13 clinical note sections. Query intent classification.',
+    stack: ['ClinicalBERT', 'FAISS', 'MedLLaMA2', 'Ollama', 'FastAPI', 'MongoDB'],
     github: 'https://github.com/HSE-Pulse/pulse-notes',
     demo: config.PULSENOTES_URL,
-    reports: [
-      { label: 'Report', url: '/reports/pulsenotes-report.pdf' },
-    ],
+    reports: [{ label: 'Report', url: '/reports/pulsenotes-report.pdf' }],
   },
   {
     name: 'PulseFlow',
     tagline: 'LSTM ED Trolley Forecasting',
-    color: 'rose',
     iconLetter: 'P',
     iconBg: 'bg-rose-500/10',
-    problem:
-      'Irish emergency departments track patients on trolleys awaiting admission — the HSE TrolleyGAR daily census. Hospital managers need accurate 7–14 day forecasts of trolley occupancy to pre-allocate beds and staff, but counts are noisy, seasonal, and influenced by flu waves, bank holidays, and regional surges.',
-    approach:
-      '2-layer LSTM regressor (64 hidden units) trained on 2,172 HSE trolley records across 12 Irish hospitals. 5-feature sliding-window input (trolley count, admissions, discharges, >24hr waiting, elderly waiting) with 7-day lookback predicts 1–14 day trolley counts per hospital. FastAPI serves autoregressive inference via REST with confidence intervals, backed by MongoDB. React 19 TypeScript dashboard with 5 pages — live forecasts, data explorer, in-app training with MLflow tracking, and hospital-level drill-down.',
-    nonTrivial:
-      'Capturing weekly and seasonal periodicity (Monday +30% surge, winter +20%) in a single LSTM requires careful feature engineering and sequence length tuning. Autoregressive multi-step forecasting where each prediction feeds the next input window. MinMaxScaler normalisation with inverse transform for interpretable outputs. MAE ~6.9 trolleys with ~10ms inference latency. Full MLOps pipeline: Prometheus metrics, Grafana dashboards, MLflow experiment tracking, and automated training from the UI. Deployed on GKE with spot VM tolerance and self-healing probes.',
-    stack: ['PyTorch', 'LSTM', 'FastAPI', 'MongoDB', 'React', 'TypeScript', 'Tailwind CSS', 'Recharts', 'MLflow', 'Prometheus', 'Docker', 'GKE'],
+    colorText: 'text-rose-600',
+    result: 'MAE ~6.9 trolleys, ~10ms inference, 1-14 day autoregressive forecasts',
+    approach: '2-layer LSTM on HSE TrolleyGAR data across 12 Irish hospitals. 5-feature sliding window with confidence intervals. In-app training with MLflow.',
+    stack: ['PyTorch', 'LSTM', 'FastAPI', 'MongoDB', 'React', 'Prometheus'],
     github: 'https://github.com/HSE-Pulse/pulse-flow',
     demo: config.PULSEFLOW_URL,
   },
-  {
-    name: 'HSE-Pulse Platform',
-    tagline: 'Unified Healthcare AI Infrastructure',
-    color: 'cyan',
-    iconLetter: 'H',
-    iconBg: 'bg-cyan-500/10',
-    problem:
-      'Running heterogeneous ML models (MADDPG/MAPPO, LSTM, BERT, ClinicalBERT) with different inference patterns and latency requirements in a single observable platform with shared experiment tracking and monitoring.',
-    approach:
-      'Microservice architecture with 17 containers orchestrated via Docker Compose behind an Nginx reverse proxy. Shared MLOps layer: MLflow for experiment tracking and model registry (MinIO S3 backend), Prometheus + Grafana for observability, with health checks and structured logging across all services.',
-    nonTrivial:
-      'Heterogeneous model serving — each service has different framework dependencies, inference patterns, and latency budgets — unified behind a single entry point. Full experiment lineage from training through deployment. EU-aligned design with explainability considerations and GDPR-aware data handling.',
-    stack: ['Docker Compose', 'Nginx', 'MLflow', 'Prometheus', 'Grafana', 'MinIO', 'GitHub Actions'],
-    github: 'https://github.com/HSE-Pulse/hse-pulse',
-  },
 ]
 
-const professionalProjects = [
+const commercialHighlights = [
   {
-    name: 'Cloudply - AIOps Platform',
+    name: 'Cloudply AIOps Platform',
     client: 'Kaiburr LLC, MA, USA',
-    period: 'May 2020 – Dec 2024',
-    description: 'Enterprise AIOps platform with 30+ microservices delivering 40% faster deployments and 35% cost reduction. LLM-powered Terraform Engine (GPT-4, LLaMA-2, Falcon-180B), data collectors, RCA engine, anomaly detection (LSTM, Autoencoders), ML pipelines processing 10M+ daily events, code remediation, LLM test generation, vector store management, and GitHub/Selenium automation at 99.9% uptime.',
-    stack: ['GPT-4', 'LLaMA-2', 'Falcon', 'TensorFlow', 'LSTM', 'Vector DB', 'Kubernetes', 'Jenkins'],
+    period: '2020 - 2024',
+    result: '40% faster deployments, 35% cost reduction, 10M+ daily events',
+    description: 'LLM-powered Terraform Engine (GPT-4, LLaMA-2, Falcon-180B). 30+ microservices: anomaly detection, RCA, ML pipelines at 99.9% uptime.',
+    stack: ['GPT-4', 'LLaMA-2', 'PyTorch', 'Kubernetes', 'Prometheus'],
   },
   {
     name: 'Smart Recruitment Agent',
     client: 'United Software Group, OH, USA',
-    period: 'Aug 2018 – Apr 2020',
-    description: 'Spring microservices platform to assist HR recruiters in sourcing candidates with optimal skillsets. Features workflow management, performance measurement, analytics with reporting dashboard, and zero-downtime deployment.',
-    stack: ['Java', 'Spring', 'Eureka', 'REST', 'Microservices', 'Elasticsearch', 'Logstash', 'Kibana', 'Docker', 'Jenkins'],
+    period: '2018 - 2020',
+    result: '99.9% uptime, 500+ recruiters, 15+ services',
+    description: 'ML-driven candidate matching on Kubernetes with Istio service mesh. NLP resume parsing. Zero-downtime deployment (4h to 15min).',
+    stack: ['Java', 'Kubernetes', 'Istio', 'NLP', 'Elasticsearch'],
   },
   {
-    name: 'ESB – Advance Metrics',
+    name: 'ESB Advance Metrics',
     client: 'Ocwen Mortgage Services, FL, USA',
-    period: 'Jan 2016 – Jun 2018',
-    description: 'Data Analytics platform exposing a web application interface for server logs metric workflow. Loads, processes, transforms, and predicts future server metrics using machine learning algorithms with Apache Camel and JBoss Fuse integration.',
-    stack: ['Java', 'AngularJS', 'Logstash', 'JBoss Fuse', 'Scala MLlib', 'WebAPI'],
-  },
-  {
-    name: 'Enterprise Data Wrangling Platform',
-    client: 'Ocwen Mortgage Services, FL, USA',
-    period: 'Jan 2016 – Jun 2018',
-    description: 'Large-scale data organization platform handling data cleaning, integration, transformation, and reduction. Features Deep Learning OCR for handwritten recognition and NLP-driven search engine.',
-    stack: ['Python', 'Java', 'R', 'TensorFlow', 'Keras', 'MongoDB', 'Apache Camel', 'JBoss Fuse', 'NLTK', 'OpenNLP'],
-  },
-  {
-    name: 'SPoT – Provisioning Tool',
-    client: 'IntelligIS Consultants, USA',
-    period: 'Jan 2015 – Dec 2015',
-    description: 'Rich Internet Web Application automating administrative workflow tasks for system provisioning. Features role-based access control, audit logging, and unified interface for viewing subscriber/phone data.',
-    stack: ['Java', 'Spring Boot', 'REST', 'JavaScript', 'jQuery'],
+    period: '2016 - 2018',
+    result: '10M+ daily log entries, 92% OCR accuracy, 88% prediction accuracy',
+    description: 'Spark MLlib time-series forecasting (ARIMA, Prophet). TensorFlow OCR on 5,000+ monthly documents. NLP search engine. 100+ GB daily pipeline.',
+    stack: ['Spark MLlib', 'TensorFlow', 'NLTK', 'Apache Camel', 'JBoss Fuse'],
   },
   {
     name: 'Patient Tracking System',
     client: 'Advanced Diagnostic Medical, USA',
-    period: 'Jan 2015 – Dec 2015',
-    description: 'HIPAA-compliant Medicare certified IDTF platform for home sleep apnea and overnight oximetry testing. Features scheduling, billing, report generation, and pulse oximetry device integration via Bluetooth.',
-    stack: ['C#', '.NET 4.0', 'ASP.NET', 'SSRS', 'SQL Server', 'Java Applets', 'Bluetooth SDK'],
+    period: '2015',
+    result: 'HIPAA-compliant, 10K+ monthly transactions',
+    description: 'Medicare certified IDTF platform for home sleep apnea and overnight oximetry testing. Scheduling, billing, pulse oximetry Bluetooth integration.',
+    stack: ['C#', '.NET', 'ASP.NET', 'SQL Server', 'Bluetooth SDK'],
   },
   {
-    name: 'Tour Operator Back Office',
-    client: 'Afwaj Tours and Travels, Dubai',
-    period: 'Jan 2015 – Dec 2015',
-    description: 'Tour operator platform for Hajj and Umrah packages in Dubai. Features one-step accommodation and transport creation, visa processing, payment handling, invoice generation, and reporting.',
-    stack: ['ASP.NET MVC', 'WebAPI', 'jQuery', 'C#', 'Azure Cloud Services'],
+    name: 'Tour Operator Platform',
+    client: 'Afwaj Tours, Dubai',
+    period: '2015',
+    result: '1K+ packages, $2M+ annual transactions',
+    description: 'Hajj and Umrah tour operator back office. Accommodation, transport, visa processing, payment handling, invoice generation.',
+    stack: ['ASP.NET MVC', 'C#', 'Azure Cloud', 'WebAPI', 'jQuery'],
   },
   {
-    name: 'SOLO - Order Management System',
+    name: 'SOLO Order Management',
     client: 'Carillion Telent, UK',
-    period: 'May 2013 – Dec 2014',
-    description: 'Carillion Telent work management system fully integrated with Openreach work notification system. Features secure electronic order/notice transmission and role-based access for third-party subcontractors.',
-    stack: ['ASP.NET', 'WebAPI', 'BizTalk', 'jQuery', 'C#', 'Azure Cloud'],
+    period: '2013 - 2014',
+    result: '50K+ orders, 98% SLA compliance',
+    description: 'Work management system integrated with Openreach. Secure electronic order and notice transmission with role-based access for subcontractors.',
+    stack: ['ASP.NET', 'BizTalk', 'C#', 'Azure Cloud', 'SQL Server'],
   },
 ]
-
-const colorTextMap: Record<string, string> = {
-  amber: 'text-amber-400',
-  blue: 'text-blue-400',
-  purple: 'text-purple-400',
-  rose: 'text-rose-400',
-  cyan: 'text-cyan-400',
-}
 
 export default function Projects() {
   return (
     <section id="projects" className="section-padding relative">
       <div className="max-w-7xl mx-auto">
         <SectionHeading
-          tag="Demo Projects"
-          title="Selected Work"
-          description="Each project addresses a specific clinical or infrastructure problem with measurable technical depth. All are deployed and running on this platform."
+          tag="Live Projects"
+          title="5 ML Systems Running on This Domain"
+          description="Healthcare AI built end-to-end: agentic orchestration, data pipelines, model training, API serving, React dashboards, MLflow tracking, Prometheus monitoring. All deployed on GKE."
         />
 
-        <div className="space-y-8">
-          {projects.map((p) => (
-            <div key={p.name} className="glass rounded-2xl p-6 lg:p-8">
-              <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                {/* Header */}
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-10 h-10 rounded-xl ${p.iconBg} flex items-center justify-center`}>
-                      <span className={`text-lg font-bold ${colorTextMap[p.color]}`}>{p.iconLetter}</span>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">{p.name}</h3>
-                      <p className="text-xs text-slate-500">{p.tagline}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 text-sm text-slate-400 leading-relaxed">
-                    <div>
-                      <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Problem</span>
-                      <p className="mt-1">{p.problem}</p>
-                    </div>
-                    <div>
-                      <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Technical Approach</span>
-                      <p className="mt-1">{p.approach}</p>
-                    </div>
-                    <div>
-                      <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">What Makes It Non-Trivial</span>
-                      <p className="mt-1">{p.nonTrivial}</p>
-                    </div>
-                  </div>
-
-                  {/* Tech stack */}
-                  <div className="flex flex-wrap gap-1.5 mt-5">
-                    {p.stack.map((tech) => (
-                      <span key={tech} className="px-2.5 py-1 rounded-md text-xs text-slate-400 bg-white/5 border border-white/5">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Links */}
-                  <div className="flex flex-wrap items-center gap-3 mt-5">
-                    <a
-                      href={p.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
-                    >
-                      <Github className="w-3.5 h-3.5" />
-                      Source Code
-                    </a>
-                    {p.demo && (
-                      <a
-                        href={p.demo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 transition-colors"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        Live Demo
-                      </a>
-                    )}
-                    {p.reports?.map((r) => (
-                      <a
-                        key={r.label}
-                        href={r.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        download
-                        className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        {r.label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Professional Projects Section */}
-        <div className="mt-16">
-          <div className="text-center mb-10">
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-slate-400 border border-white/10 mb-4">
-              Professional Experience
+        {/* Commercial work — above academic projects for senior positioning */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-white text-gray-500 border border-gray-200 mb-3">
+              Commercial Experience
             </span>
-            <h3 className="text-2xl font-bold text-white mb-2">Commercial Projects</h3>
-            <p className="text-sm text-slate-500 max-w-2xl mx-auto">
-              Enterprise solutions delivered for clients across USA, UK, and Middle East spanning AI/ML, data engineering, and full-stack development.
+            <h3 className="text-xl font-bold text-gray-900">Enterprise Delivery</h3>
+            <p className="text-sm text-gray-400 max-w-2xl mx-auto mt-2">
+              Solutions delivered for clients across USA, UK, and Middle East spanning AI/ML, data engineering, and full-stack development.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {professionalProjects.map((p) => (
+            {commercialHighlights.map((p) => (
               <div key={p.name} className="glass rounded-2xl p-5">
-                <div className="mb-3">
-                  <h4 className="text-sm font-semibold text-white mb-1">{p.name}</h4>
-                  <div className="text-xs text-primary-400">{p.client}</div>
-                  <div className="text-xs text-slate-500">{p.period}</div>
+                <h4 className="text-sm font-semibold text-gray-900 mb-1">{p.name}</h4>
+                <div className="text-xs text-primary-600 mb-1">{p.client}</div>
+                <div className="text-xs text-gray-400 mb-3">{p.period}</div>
+                <div className="bg-gray-50 rounded-lg p-2 mb-3">
+                  <p className="text-xs text-primary-600 font-medium">{p.result}</p>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                  {p.description}
-                </p>
+                <p className="text-xs text-gray-500 leading-relaxed mb-3">{p.description}</p>
                 <div className="flex flex-wrap gap-1">
-                  {p.stack.slice(0, 6).map((tech) => (
-                    <span key={tech} className="px-2 py-0.5 rounded text-xs text-slate-500 bg-white/5 border border-white/5">
+                  {p.stack.map((tech) => (
+                    <span key={tech} className="px-2 py-0.5 rounded text-xs text-gray-400 bg-white border border-gray-200">
                       {tech}
                     </span>
                   ))}
-                  {p.stack.length > 6 && (
-                    <span className="px-2 py-0.5 rounded text-xs text-slate-600 bg-white/5 border border-white/5">
-                      +{p.stack.length - 6} more
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Live ML projects */}
+        <div>
+          <div className="text-center mb-8">
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-primary-500/10 text-primary-600 border border-primary-500/20 mb-3">
+              Live on This Domain
+            </span>
+            <h3 className="text-xl font-bold text-gray-900">5 ML Systems You Can Try Right Now</h3>
+            <p className="text-sm text-gray-400 max-w-2xl mx-auto mt-2">
+              Healthcare AI built end-to-end: agentic orchestration, model training, API serving, React dashboards, MLflow tracking, Prometheus monitoring. Deployed on GKE.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {projects.map((p) => (
+              <div key={p.name} className="glass rounded-2xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`w-10 h-10 rounded-xl ${p.iconBg} flex items-center justify-center`}>
+                    <span className={`text-lg font-bold ${p.colorText}`}>{p.iconLetter}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-900">{p.name}</h3>
+                    <p className="text-xs text-gray-400">{p.tagline}</p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                  <span className="text-xs text-gray-400 uppercase tracking-wider">Result</span>
+                  <p className="text-sm text-primary-600 font-medium mt-0.5">{p.result}</p>
+                </div>
+
+                <p className="text-sm text-gray-500 leading-relaxed mb-4">{p.approach}</p>
+
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {p.stack.map((tech) => (
+                    <span key={tech} className="px-2 py-0.5 rounded text-xs text-gray-500 bg-white border border-gray-200">
+                      {tech}
                     </span>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <a href={p.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors">
+                    <Github className="w-3.5 h-3.5" /> Source
+                  </a>
+                  {p.demo && (
+                    <a href={p.demo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-700 transition-colors">
+                      <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+                    </a>
                   )}
+                  {p.reports?.map((r) => (
+                    <a key={r.label} href={r.url} target="_blank" rel="noopener noreferrer" download className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors">
+                      <Download className="w-3.5 h-3.5" /> {r.label}
+                    </a>
+                  ))}
                 </div>
               </div>
             ))}
