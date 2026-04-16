@@ -62,6 +62,8 @@ kind: Service
 metadata:
   name: landing
   namespace: hse-pulse
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
 spec:
   selector:
     app: landing
