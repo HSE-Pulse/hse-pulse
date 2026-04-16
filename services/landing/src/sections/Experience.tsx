@@ -110,8 +110,8 @@ export default function Experience() {
                   <div className="text-sm font-medium text-gray-900">MSc Artificial Intelligence</div>
                   <div className="text-xs text-primary-600 font-medium">First Class Honours (1:1)</div>
                   <div className="text-xs text-gray-500">Dublin Business School</div>
-                  <div className="text-xs text-gray-400">2025 - 2026</div>
-                  <p className="text-xs text-gray-400 mt-2 leading-relaxed">
+                  <div className="text-xs text-gray-500">2025 - 2026</div>
+                  <p className="text-xs text-gray-500 mt-2 leading-relaxed">
                     Capstone: HSE-Pulse, 4 ML services across 17 containers.
                     Multi-Agent RL, BERT, ClinicalBERT RAG, LSTM forecasting.
                   </p>
@@ -119,7 +119,7 @@ export default function Experience() {
                 <div>
                   <div className="text-sm font-medium text-gray-900">BE Computer Science</div>
                   <div className="text-xs text-gray-500">Anna University, India</div>
-                  <div className="text-xs text-gray-400">2008 - 2012</div>
+                  <div className="text-xs text-gray-500">2008 - 2012</div>
                 </div>
               </div>
             </div>
@@ -130,7 +130,7 @@ export default function Experience() {
                 <MapPin className="w-4 h-4 text-primary-600" />
                 <span className="text-sm text-gray-600">Dublin, Ireland</span>
               </div>
-              <p className="text-xs text-gray-400 leading-relaxed">
+              <p className="text-xs text-gray-500 leading-relaxed">
                 Available for roles in Dublin, Cork, Galway, Limerick, or hybrid/remote across Ireland and the EU.
               </p>
             </div>
@@ -142,7 +142,7 @@ export default function Experience() {
               <div className="flex items-center gap-2 mb-6">
                 <Briefcase className="w-5 h-5 text-primary-600" />
                 <h3 className="text-sm font-semibold text-gray-900">Professional Experience</h3>
-                <span className="ml-auto text-xs text-gray-400">11+ years</span>
+                <span className="ml-auto text-xs text-gray-500">11+ years</span>
               </div>
               <div className="space-y-6">
                 {roles.map((exp, idx) => (
@@ -153,25 +153,25 @@ export default function Experience() {
                     <div className={`absolute left-0 top-1 w-2 h-2 rounded-full -translate-x-[4.5px] ${exp.featured ? 'bg-primary-500' : 'bg-gray-400'}`} />
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
                       <h4 className="text-sm font-semibold text-gray-900">{exp.role}</h4>
-                      <span className="text-xs text-gray-400">{exp.period}</span>
+                      <span className="text-xs text-gray-500">{exp.period}</span>
                     </div>
                     <div className="text-xs text-primary-600 mb-1">
                       {exp.company}, {exp.location}
                     </div>
-                    <div className="text-xs text-gray-400 mb-2">
+                    <div className="text-xs text-gray-500 mb-2">
                       {exp.project}
                     </div>
                     <ul className="space-y-1.5 mb-3">
                       {exp.highlights.map((h) => (
                         <li key={h} className="text-sm text-gray-500 flex items-start gap-2">
-                          <span className="text-gray-400 mt-1.5 flex-shrink-0">&#8226;</span>
+                          <span className="text-gray-500 mt-1.5 flex-shrink-0">&#8226;</span>
                           {h}
                         </li>
                       ))}
                     </ul>
                     <div className="flex flex-wrap gap-1">
                       {exp.stack.map((tech) => (
-                        <span key={tech} className="px-1.5 py-0.5 rounded text-xs text-gray-400 bg-white border border-gray-200">
+                        <span key={tech} className="px-1.5 py-0.5 rounded text-xs text-gray-500 bg-white border border-gray-200">
                           {tech}
                         </span>
                       ))}

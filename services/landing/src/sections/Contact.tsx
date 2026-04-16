@@ -49,8 +49,8 @@ export default function Contact() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-sm text-gray-600 hover:text-gray-900 transition-colors"
               >
-                <Github className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                GitHub
+                <Github className="w-4 h-4 text-gray-500 flex-shrink-0" aria-hidden="true" />
+                GitHub <span className="sr-only">(opens in new tab)</span>
               </a>
               <a
                 href="https://www.linkedin.com/in/harishankar-somasundaram"
@@ -58,8 +58,8 @@ export default function Contact() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-sm text-gray-600 hover:text-gray-900 transition-colors"
               >
-                <Linkedin className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                LinkedIn
+                <Linkedin className="w-4 h-4 text-gray-500 flex-shrink-0" aria-hidden="true" />
+                LinkedIn <span className="sr-only">(opens in new tab)</span>
               </a>
               <a
                 href={`${BASE}resume/HarishankarSomasundaram_CV.pdf`}
@@ -67,8 +67,8 @@ export default function Contact() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-sm text-primary-600 hover:text-primary-700 transition-colors"
               >
-                <Download className="w-4 h-4 flex-shrink-0" />
-                Download CV
+                <Download className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                Download CV <span className="sr-only">(opens in new tab)</span>
               </a>
             </div>
           </div>
@@ -78,17 +78,17 @@ export default function Contact() {
             <h3 className="text-sm font-semibold text-gray-900 mb-5">Availability</h3>
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" aria-hidden="true" />
                 <span className="text-sm text-green-600 font-medium">Available now</span>
               </div>
               <div>
-                <span className="text-xs text-gray-400 uppercase tracking-wider">Work Auth</span>
+                <span className="text-xs text-gray-500 uppercase tracking-wider">Work Auth</span>
                 <p className="text-sm text-gray-600 mt-1">
                   Stamp 1G | No sponsorship needed
                 </p>
               </div>
               <div>
-                <span className="text-xs text-gray-400 uppercase tracking-wider">Seeking</span>
+                <span className="text-xs text-gray-500 uppercase tracking-wider">Seeking</span>
                 <p className="text-sm text-gray-500 mt-1">
                   Senior/Staff ML Engineer or AI Architect in Ireland
                 </p>

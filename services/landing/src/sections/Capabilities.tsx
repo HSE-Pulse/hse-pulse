@@ -48,7 +48,7 @@ function ServiceCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 download
-                className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-600 transition-colors"
               >
                 <Download className="w-3 h-3" /> {r.label}
               </a>
@@ -72,7 +72,7 @@ function ServiceCard({
 
         {/* Model */}
         <div>
-          <span className="text-xs text-gray-400 uppercase tracking-wider">Model</span>
+          <span className="text-xs text-gray-500 uppercase tracking-wider">Model</span>
           <p className="text-sm text-gray-900 font-medium mt-1">{model}</p>
         </div>
 
@@ -91,7 +91,7 @@ function ServiceCard({
           {metrics.map((m) => (
             <div key={m.label} className="bg-gray-50 rounded-lg p-3">
               <div className="text-sm font-semibold text-gray-900">{m.value}</div>
-              <div className="text-xs text-gray-400">{m.label}</div>
+              <div className="text-xs text-gray-500">{m.label}</div>
             </div>
           ))}
         </div>

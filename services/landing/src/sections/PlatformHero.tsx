@@ -25,7 +25,7 @@ export default function PlatformHero() {
           AI-Driven Healthcare Intelligence Platform
         </p>
 
-        <p className="text-base text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-up" style={{ animationDelay: '0.3s' }}>
+        <p className="text-base text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-up" style={{ animationDelay: '0.3s' }}>
           Five specialised AI services — Agentic AI orchestration with LangGraph,
           Multi-Agent RL hospital optimisation, BERT treatment pathway recommendation,
           ClinicalBERT document intelligence, and LSTM ED trolley forecasting — unified
@@ -35,7 +35,7 @@ export default function PlatformHero() {
         <div className="flex flex-wrap items-center justify-center gap-4 mb-16 animate-fade-up" style={{ animationDelay: '0.4s' }}>
           <a
             href="#capabilities"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-gray-900 font-medium text-sm hover:from-primary-500 hover:to-primary-400 transition-all shadow-lg shadow-primary-500/25"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium text-sm hover:from-primary-500 hover:to-primary-400 transition-all shadow-lg shadow-primary-500/25"
           >
             Explore Platform
             <ArrowRight className="w-4 h-4" />
@@ -56,42 +56,42 @@ export default function PlatformHero() {
               <span className="text-cyan-600 text-lg font-bold">A</span>
             </div>
             <h3 className="text-sm font-semibold text-gray-900 mb-1">HSE Pulse Agent</h3>
-            <p className="text-xs text-gray-400">Agentic AI orchestration</p>
+            <p className="text-xs text-gray-500">Agentic AI orchestration</p>
           </a>
           <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
               <span className="text-emerald-600 text-lg font-bold">D</span>
             </div>
             <h3 className="text-sm font-semibold text-gray-900 mb-1">DES-MARL</h3>
-            <p className="text-xs text-gray-400">Multi-Agent RL hospital optimisation</p>
+            <p className="text-xs text-gray-500">Multi-Agent RL hospital optimisation</p>
           </a>
           <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3">
               <span className="text-blue-600 text-lg font-bold">C</span>
             </div>
             <h3 className="text-sm font-semibold text-gray-900 mb-1">CarePlanPlus</h3>
-            <p className="text-xs text-gray-400">BERT treatment pathway recommendation</p>
+            <p className="text-xs text-gray-500">BERT treatment pathway recommendation</p>
           </a>
           <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
             <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-3">
               <span className="text-purple-600 text-lg font-bold">P</span>
             </div>
             <h3 className="text-sm font-semibold text-gray-900 mb-1">PulseNotes</h3>
-            <p className="text-xs text-gray-400">ClinicalBERT document intelligence &amp; RAG</p>
+            <p className="text-xs text-gray-500">ClinicalBERT document intelligence &amp; RAG</p>
           </a>
           <a href="#capabilities" className="glass glass-hover rounded-2xl p-5 text-left transition-all group">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3">
               <span className="text-amber-600 text-lg font-bold">P</span>
             </div>
             <h3 className="text-sm font-semibold text-gray-900 mb-1">PulseFlow</h3>
-            <p className="text-xs text-gray-400">LSTM ED trolley forecasting</p>
+            <p className="text-xs text-gray-500">LSTM ED trolley forecasting</p>
           </a>
         </div>
 
         {/* Tech badges */}
         <div className="flex flex-wrap justify-center gap-2 mt-12 animate-fade-up" style={{ animationDelay: '0.6s' }}>
           {['LangGraph', 'GPT-4o', 'PyTorch', 'MADDPG', 'BERT', 'LSTM', 'FastAPI', 'React', 'Docker', 'MLflow', 'Prometheus'].map((tech) => (
-            <span key={tech} className="px-2.5 py-1 rounded-md text-xs text-gray-400 bg-gray-50 border border-gray-200">
+            <span key={tech} className="px-2.5 py-1 rounded-md text-xs text-gray-500 bg-gray-50 border border-gray-200">
               {tech}
             </span>
           ))}
@@ -103,10 +103,10 @@ export default function PlatformHero() {
             href="https://github.com/HSE-Pulse/hse-pulse"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-xs text-gray-400 hover:text-gray-500 transition-colors"
+            className="inline-flex items-center gap-2 text-xs text-gray-500 hover:text-gray-500 transition-colors"
           >
-            <Github className="w-3.5 h-3.5" />
-            github.com/HSE-Pulse/hse-pulse
+            <Github className="w-3.5 h-3.5" aria-hidden="true" />
+            github.com/HSE-Pulse/hse-pulse <span className="sr-only">(opens in new tab)</span>
           </a>
         </div>
       </div>

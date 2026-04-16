@@ -82,17 +82,19 @@ export function DemoButton({ serviceName, label = 'Live Demo', className = '' }:
         {getContent()}
       </button>
 
-      {status?.status === 'starting' && (
-        <div className="absolute -bottom-6 left-0 text-xs text-gray-400">
-          Spinning up ML cluster (~30s)
-        </div>
-      )}
+      <div aria-live="polite" aria-atomic="true">
+        {status?.status === 'starting' && (
+          <div className="absolute -bottom-6 left-0 text-xs text-gray-500">
+            Spinning up ML cluster (~30s)
+          </div>
+        )}
 
-      {status?.status === 'error' && status.message && (
-        <div className="absolute -bottom-6 left-0 text-xs text-red-600 max-w-48 truncate">
-          {status.message}
-        </div>
-      )}
+        {status?.status === 'error' && status.message && (
+          <div className="absolute -bottom-6 left-0 text-xs text-red-600 max-w-48 truncate">
+            {status.message}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

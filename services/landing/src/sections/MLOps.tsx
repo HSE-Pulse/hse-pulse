@@ -98,7 +98,7 @@ export default function MLOps() {
                   <div className="px-4 py-2 rounded-lg bg-primary-500/10 border border-primary-500/20 text-sm text-primary-600 font-medium">
                     {item.step}
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">{item.sub}</div>
+                  <div className="text-xs text-gray-500 mt-1">{item.sub}</div>
                 </div>
                 {i < 6 && <span className="text-gray-300 hidden sm:block">&rarr;</span>}
               </div>

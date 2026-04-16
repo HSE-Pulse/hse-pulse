@@ -153,7 +153,7 @@ export default function Projects() {
               Commercial Experience
             </span>
             <h3 className="text-xl font-bold text-gray-900">Enterprise Delivery</h3>
-            <p className="text-sm text-gray-400 max-w-2xl mx-auto mt-2">
+            <p className="text-sm text-gray-500 max-w-2xl mx-auto mt-2">
               Solutions delivered for clients across USA, UK, and Middle East spanning AI/ML, data engineering, and full-stack development.
             </p>
           </div>
@@ -163,14 +163,14 @@ export default function Projects() {
               <div key={p.name} className="glass rounded-2xl p-5">
                 <h4 className="text-sm font-semibold text-gray-900 mb-1">{p.name}</h4>
                 <div className="text-xs text-primary-600 mb-1">{p.client}</div>
-                <div className="text-xs text-gray-400 mb-3">{p.period}</div>
+                <div className="text-xs text-gray-500 mb-3">{p.period}</div>
                 <div className="bg-gray-50 rounded-lg p-2 mb-3">
                   <p className="text-xs text-primary-600 font-medium">{p.result}</p>
                 </div>
                 <p className="text-xs text-gray-500 leading-relaxed mb-3">{p.description}</p>
                 <div className="flex flex-wrap gap-1">
                   {p.stack.map((tech) => (
-                    <span key={tech} className="px-2 py-0.5 rounded text-xs text-gray-400 bg-white border border-gray-200">
+                    <span key={tech} className="px-2 py-0.5 rounded text-xs text-gray-500 bg-white border border-gray-200">
                       {tech}
                     </span>
                   ))}
@@ -187,7 +187,7 @@ export default function Projects() {
               Live on This Domain
             </span>
             <h3 className="text-xl font-bold text-gray-900">5 ML Systems You Can Try Right Now</h3>
-            <p className="text-sm text-gray-400 max-w-2xl mx-auto mt-2">
+            <p className="text-sm text-gray-500 max-w-2xl mx-auto mt-2">
               Healthcare AI built end-to-end: agentic orchestration, model training, API serving, React dashboards, MLflow tracking, Prometheus monitoring. Deployed on GKE.
             </p>
           </div>
@@ -201,12 +201,12 @@ export default function Projects() {
                   </div>
                   <div>
                     <h3 className="text-base font-semibold text-gray-900">{p.name}</h3>
-                    <p className="text-xs text-gray-400">{p.tagline}</p>
+                    <p className="text-xs text-gray-500">{p.tagline}</p>
                   </div>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                  <span className="text-xs text-gray-400 uppercase tracking-wider">Result</span>
+                  <span className="text-xs text-gray-500 uppercase tracking-wider">Result</span>
                   <p className="text-sm text-primary-600 font-medium mt-0.5">{p.result}</p>
                 </div>
 
@@ -220,18 +220,18 @@ export default function Projects() {
                   ))}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <a href={p.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors">
-                    <Github className="w-3.5 h-3.5" /> Source
+                <div className="flex flex-wrap items-center gap-1">
+                  <a href={p.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-2 min-h-[44px] text-sm text-gray-500 hover:text-gray-700 transition-colors rounded-lg">
+                    <Github className="w-3.5 h-3.5" aria-hidden="true" /> Source <span className="sr-only">(opens in new tab)</span>
                   </a>
                   {p.demo && (
-                    <a href={p.demo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-700 transition-colors">
-                      <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+                    <a href={p.demo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-2.5 py-2 min-h-[44px] text-sm text-primary-600 hover:text-primary-700 transition-colors rounded-lg">
+                      <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" /> Live Demo <span className="sr-only">(opens in new tab)</span>
                     </a>
                   )}
                   {p.reports?.map((r) => (
-                    <a key={r.label} href={r.url} target="_blank" rel="noopener noreferrer" download className="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors">
-                      <Download className="w-3.5 h-3.5" /> {r.label}
+                    <a key={r.label} href={r.url} target="_blank" rel="noopener noreferrer" download className="inline-flex items-center gap-1.5 px-2.5 py-2 min-h-[44px] text-sm text-gray-500 hover:text-gray-700 transition-colors rounded-lg">
+                      <Download className="w-3.5 h-3.5" aria-hidden="true" /> {r.label} <span className="sr-only">(opens in new tab)</span>
                     </a>
                   ))}
                 </div>

@@ -46,11 +46,11 @@ export default function ThesisSection() {
 
             <div className="space-y-4 mb-8">
               <div>
-                <span className="text-xs text-gray-400 uppercase tracking-wider">Programme</span>
+                <span className="text-xs text-gray-500 uppercase tracking-wider">Programme</span>
                 <p className="text-sm text-gray-600 mt-1">Master of Science in Artificial Intelligence</p>
               </div>
               <div>
-                <span className="text-xs text-gray-400 uppercase tracking-wider">Focus Areas</span>
+                <span className="text-xs text-gray-500 uppercase tracking-wider">Focus Areas</span>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {[
                     'Healthcare AI',
@@ -72,7 +72,7 @@ export default function ThesisSection() {
                 </div>
               </div>
               <div>
-                <span className="text-xs text-gray-400 uppercase tracking-wider">Clinical Datasets</span>
+                <span className="text-xs text-gray-500 uppercase tracking-wider">Clinical Datasets</span>
                 <p className="text-sm text-gray-600 mt-1">
                   MIMIC-IV (Medical Information Mart for Intensive Care) — de-identified clinical data from Beth Israel Deaconess Medical Center. HSE TrolleyGAR — Irish hospital trolley census data. NIES 2020 — Nursing Interventions Equivalence Scale used by CarePlanPlus for procedure classification.
                 </p>
@@ -121,7 +121,7 @@ export default function ThesisSection() {
                   { label: 'LLM Inference', value: 'Ollama, MedLLaMA2' },
                 ].map((item) => (
                   <div key={item.label}>
-                    <div className="text-xs text-gray-400">{item.label}</div>
+                    <div className="text-xs text-gray-500">{item.label}</div>
                     <div className="text-sm text-gray-600">{item.value}</div>
                   </div>
                 ))}

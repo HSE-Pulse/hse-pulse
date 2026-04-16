@@ -58,14 +58,14 @@ export default function Academic() {
               </p>
               <div className="space-y-3 text-sm text-gray-500 leading-relaxed">
                 <p>
-                  <span className="text-gray-400 font-medium">Research question: </span>
+                  <span className="text-gray-500 font-medium">Research question: </span>
                   How can domain-specific deep learning architectures — Multi-Agent Reinforcement
                   Learning, BERT, ClinicalBERT/RAG, and LSTM — be integrated into a unified,
                   observable platform to improve clinical decision support across hospital resource
                   optimisation, treatment planning, document analysis, and capacity forecasting?
                 </p>
                 <p>
-                  <span className="text-gray-400 font-medium">Methodology: </span>
+                  <span className="text-gray-500 font-medium">Methodology: </span>
                   Four specialised ML services developed and evaluated against clinical benchmarks:{' '}
                   <strong className="text-gray-600">DES-MARL</strong> — 9 departments, 12-dim state,
                   MADDPG/MAPPO with curriculum learning;{' '}
@@ -77,7 +77,7 @@ export default function Academic() {
                   across 12 hospitals for 1–14 day forecasts.
                 </p>
                 <p>
-                  <span className="text-gray-400 font-medium">Key results: </span>
+                  <span className="text-gray-500 font-medium">Key results: </span>
                   92.9% wait time reduction (28.4 h → 2 h), sub-200 ms inference latency, 96
                   procedure classes with NIES satisfaction analytics, 12 hospitals forecasted, 17 Docker
                   containers orchestrated via microservice architecture with MLflow tracking
@@ -123,10 +123,10 @@ export default function Academic() {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900">{doc.title}</h3>
-                  <p className="text-xs text-gray-400">{doc.context}</p>
+                  <p className="text-xs text-gray-500">{doc.context}</p>
                 </div>
               </div>
-              <p className="text-xs text-gray-400 mb-1 font-medium">{doc.subtitle}</p>
+              <p className="text-xs text-gray-500 mb-1 font-medium">{doc.subtitle}</p>
               <p className="text-xs text-gray-500 leading-relaxed mb-5">{doc.description}</p>
               <a
                 href={doc.href}
