@@ -342,7 +342,6 @@ curl http://localhost:8090/health
 
 For deployment assistance or questions:
 - GitHub: [github.com/HSE-Pulse](https://github.com/HSE-Pulse)
-- Email: harishankar.info@gmail.com
 
 ---
 

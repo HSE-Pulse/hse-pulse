@@ -300,4 +300,4 @@ Research and educational use. Contact the maintainer for commercial licensing.
 
 ## Author
 
-Harishankar Somasundaram — harishankar.info@gmail.com — Dublin, Ireland
+Harishankar Somasundaram — Dublin, Ireland
