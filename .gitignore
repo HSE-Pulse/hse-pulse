@@ -86,6 +86,8 @@ secrets/
 *.key
 *.crt
 !proxy/certs/.gitkeep
+k8s/base/secrets.yaml
+!k8s/base/secrets.yaml.example
 
 # Jupyter
 .ipynb_checkpoints/

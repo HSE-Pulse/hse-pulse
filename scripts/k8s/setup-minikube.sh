@@ -125,6 +125,10 @@ deploy() {
 
     # Apply configurations
     kubectl apply -f k8s/base/configmap.yaml
+    if [ ! -f k8s/base/secrets.yaml ]; then
+        echo "k8s/base/secrets.yaml missing — copy secrets.yaml.example and fill in real values before rerunning." >&2
+        exit 1
+    fi
     kubectl apply -f k8s/base/secrets.yaml
     kubectl apply -f k8s/base/storage.yaml
     kubectl apply -f k8s/base/mongodb.yaml
