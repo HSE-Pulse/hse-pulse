@@ -1,0 +1,4 @@
+# Remap Claude Code co-author attribution to the repo owner.
+# Any commit authored with the Claude / Anthropic noreply email is attributed
+# to HarishankarSomasundaram when GitHub and `git shortlog` / `git log --mailmap` render history.
+HarishankarSomasundaram <harishankar.info@gmail.com> <noreply@anthropic.com>
