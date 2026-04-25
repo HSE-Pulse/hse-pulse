@@ -12,7 +12,7 @@ const researchAreas = [
   {
     icon: Target,
     title: 'Methodology',
-    content: 'Design-science research approach: four specialised ML services — DES-MARL (9 clinical departments, MADDPG/MAPPO), CarePlanPlus (BERT, 96 procedure classes), PulseNotes (ClinicalBERT RAG, 22,184 chunks), and PulseFlow (LSTM, 12 hospitals) — each evaluated against clinical benchmarks (MIMIC-IV, HSE TrolleyGAR, NIES 2020), integrated through microservice architecture, and assessed for production viability.',
+    content: 'Design-science research approach: four specialised ML services - DES-MARL (9 clinical departments, MADDPG/MAPPO), CarePlanPlus (BERT, 96 procedure classes), PulseNotes (ClinicalBERT RAG, 22,184 chunks), and PulseFlow (LSTM, 12 hospitals) - each evaluated against clinical benchmarks (MIMIC-IV, HSE TrolleyGAR, NIES 2020), integrated through microservice architecture, and assessed for production viability.',
   },
   {
     icon: Lightbulb,
@@ -74,7 +74,7 @@ export default function ThesisSection() {
               <div>
                 <span className="text-xs text-gray-500 uppercase tracking-wider">Clinical Datasets</span>
                 <p className="text-sm text-gray-600 mt-1">
-                  MIMIC-IV (Medical Information Mart for Intensive Care) — de-identified clinical data from Beth Israel Deaconess Medical Center. HSE TrolleyGAR — Irish hospital trolley census data. NIES 2020 — Nursing Interventions Equivalence Scale used by CarePlanPlus for procedure classification.
+                  MIMIC-IV (Medical Information Mart for Intensive Care) - de-identified clinical data from Beth Israel Deaconess Medical Center. HSE TrolleyGAR - Irish hospital trolley census data. NIES 2020 - Nursing Interventions Equivalence Scale used by CarePlanPlus for procedure classification.
                 </p>
               </div>
             </div>

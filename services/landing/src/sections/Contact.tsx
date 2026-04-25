@@ -84,7 +84,7 @@ export default function Contact() {
               <div>
                 <span className="text-xs text-gray-500 uppercase tracking-wider">Work Auth</span>
                 <p className="text-sm text-gray-600 mt-1">
-                  Stamp 1G | No sponsorship needed
+                  Stamp 1G applied - awaiting visa decision
                 </p>
               </div>
               <div>

@@ -8,7 +8,7 @@ const documents = [
     icon: BookOpen,
     title: 'MSc Thesis',
     subtitle: 'DES-MARL: Multi-Agent Reinforcement Learning for Hospital Resource Optimisation',
-    context: 'MSc Artificial Intelligence — Dublin Business School, 2025–2026',
+    context: 'MSc Artificial Intelligence - Dublin Business School, 2025–2026',
     description:
       'Develops a novel framework integrating Discrete-Event Simulation with Multi-Agent Reinforcement Learning (MADDPG/MAPPO) for dynamic hospital staff allocation. Evaluated on MIMIC-IV clinical data achieving 92.9% wait time reduction and 137% throughput improvement.',
     href: `${BASE}reports/desmarl-applied-research.pdf`,
@@ -17,7 +17,7 @@ const documents = [
     icon: Brain,
     title: 'CarePlanPlus Report',
     subtitle: 'BERT-Based Nursing Intervention Recommendation System',
-    context: 'MSc AI — Project Report, 2025',
+    context: 'MSc AI - Project Report, 2025',
     description:
       'Covers the CarePlanPlus service: BERT-base-uncased classifier fine-tuned on 163 patient-admission records predicting from 96 procedure classes. Includes NIES 2020 satisfaction analytics, preprocessing, training pipeline, and evaluation metrics.',
     href: `${BASE}reports/careplanplus-report.pdf`,
@@ -26,7 +26,7 @@ const documents = [
     icon: Activity,
     title: 'PulseNotes Report',
     subtitle: 'ClinicalBERT RAG for Clinical Document Analysis',
-    context: 'MSc AI — Project Report, 2025',
+    context: 'MSc AI - Project Report, 2025',
     description:
       'Documents the PulseNotes service: ClinicalBERT-based RAG pipeline processing 22,184 chunks from 1,203 patients using FAISS vector search for clinical document retrieval and question answering.',
     href: `${BASE}reports/pulsenotes-report.pdf`,
@@ -54,26 +54,26 @@ export default function Academic() {
                 MSc Artificial Intelligence
               </h3>
               <p className="text-sm text-primary-600 mb-3">
-                Dublin Business School — First Class Honours (1:1) — 2025–2026
+                Dublin Business School - First Class Honours (1:1) - 2025–2026
               </p>
               <div className="space-y-3 text-sm text-gray-500 leading-relaxed">
                 <p>
                   <span className="text-gray-500 font-medium">Research question: </span>
-                  How can domain-specific deep learning architectures — Multi-Agent Reinforcement
-                  Learning, BERT, ClinicalBERT/RAG, and LSTM — be integrated into a unified,
+                  How can domain-specific deep learning architectures - Multi-Agent Reinforcement
+                  Learning, BERT, ClinicalBERT/RAG, and LSTM - be integrated into a unified,
                   observable platform to improve clinical decision support across hospital resource
                   optimisation, treatment planning, document analysis, and capacity forecasting?
                 </p>
                 <p>
                   <span className="text-gray-500 font-medium">Methodology: </span>
                   Four specialised ML services developed and evaluated against clinical benchmarks:{' '}
-                  <strong className="text-gray-600">DES-MARL</strong> — 9 departments, 12-dim state,
+                  <strong className="text-gray-600">DES-MARL</strong> - 9 departments, 12-dim state,
                   MADDPG/MAPPO with curriculum learning;{' '}
-                  <strong className="text-gray-600">CarePlanPlus</strong> — BERT classifier on 163
+                  <strong className="text-gray-600">CarePlanPlus</strong> - BERT classifier on 163
                   patient-admissions, 96 procedure classes with NIES analytics;{' '}
-                  <strong className="text-gray-600">PulseNotes</strong> — ClinicalBERT RAG over
+                  <strong className="text-gray-600">PulseNotes</strong> - ClinicalBERT RAG over
                   22,184 chunks from 1,203 patients via FAISS;{' '}
-                  <strong className="text-gray-600">PulseFlow</strong> — LSTM with 5-feature input
+                  <strong className="text-gray-600">PulseFlow</strong> - LSTM with 5-feature input
                   across 12 hospitals for 1–14 day forecasts.
                 </p>
                 <p>

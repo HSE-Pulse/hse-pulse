@@ -77,7 +77,7 @@ export default function MLOps() {
         <SectionHeading
           tag="Infrastructure"
           title="MLOps & Observability"
-          description="Production infrastructure for training, deploying, and monitoring machine learning models — from experiment tracking to real-time performance dashboards."
+          description="Production infrastructure for training, deploying, and monitoring machine learning models - from experiment tracking to real-time performance dashboards."
         />
 
         {/* Data flow */}

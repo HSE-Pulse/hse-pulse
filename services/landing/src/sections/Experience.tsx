@@ -11,9 +11,9 @@ const roles = [
     featured: true,
     highlights: [
       'Led 8 engineers delivering 15+ production models with 95% SLA success, 40% faster deployments, 35% cloud cost reduction across AWS, Azure, GCP',
-      'Built LLM-powered Terraform Engine (GPT-4, LLaMA-2, Falcon-180B) with agentic orchestration, RAG retrieval, and prompt-chaining — automated 75+ DevOps toolchains, reducing IaC authoring time by 40% across 5,000+ daily telemetry events',
+      'Built LLM-powered Terraform Engine (GPT-4, LLaMA-2, Falcon-180B) with agentic orchestration, RAG retrieval, and prompt-chaining - automated 75+ DevOps toolchains, reducing IaC authoring time by 40% across 5,000+ daily telemetry events',
       'Architected AIOps platform with 30+ microservices: anomaly detection (LSTM, Autoencoders), root cause analysis, ML pipelines processing 10M+ daily events at 99.9% uptime with Prometheus/Grafana observability',
-      'Built production RAG pipelines, vector store management, LLM-powered test generation, and code remediation workflows with guardrails — adopted across 3 enterprise client teams',
+      'Built production RAG pipelines, vector store management, LLM-powered test generation, and code remediation workflows with guardrails - adopted across 3 enterprise client teams',
     ],
     stack: ['GPT-4', 'LLaMA-2', 'Falcon-180B', 'RAG', 'LangChain', 'PyTorch', 'LSTM', 'Vector DB', 'Kubernetes', 'Docker', 'Prometheus', 'Grafana'],
   },
@@ -92,10 +92,10 @@ export default function Experience() {
                 <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
                 <h3 className="text-sm font-semibold text-gray-900">Work Authorisation</h3>
               </div>
-              <p className="text-sm text-green-600 font-medium mb-1">Stamp 1G</p>
+              <p className="text-sm text-green-600 font-medium mb-1">Stamp 1G - Applied</p>
               <p className="text-xs text-gray-500 leading-relaxed">
-                Eligible to work full-time in Ireland without employer sponsorship.
-                No visa processing required.
+                Applied for Stamp 1G; awaiting visa decision.
+                Once approved, eligible to work full-time in Ireland without employer sponsorship.
               </p>
             </div>
 

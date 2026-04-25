@@ -25,7 +25,7 @@ LinkedIn: linkedin.com/in/harishankar-somasundaram | GitHub: github.com/HSE-Puls
 ### Lead Data Scientist | Kaiburr LLC, MA, USA
 **May 2020 – Dec 2024** | Cloudply - AIOps Platform
 
-- Led 8 engineers delivering 15+ production models with 95% SLA success — **40% faster deployments, 35% cloud cost reduction** across AWS, Azure, GCP
+- Led 8 engineers delivering 15+ production models with 95% SLA success - **40% faster deployments, 35% cloud cost reduction** across AWS, Azure, GCP
 - Built LLM-powered Terraform Engine (GPT-4, LLaMA-2, Falcon-180B) automating 75+ DevOps tools and multi-agent orchestration processing 5,000+ daily telemetry data points
 - Architected AIOps platform with **30+ microservices**: data collectors, RCA engine, anomaly detection (LSTM, Autoencoders), ML pipelines processing **10M+ daily events at 99.9% uptime**
 - Developed code remediation, LLM test generation, Semgrep rules, vector store management, deduplication engines, and GitHub/Selenium automation
@@ -37,7 +37,7 @@ LinkedIn: linkedin.com/in/harishankar-somasundaram | GitHub: github.com/HSE-Puls
 ### Lead Engineer | Sathyanarayana United Software, Chennai, India
 **Aug 2018 – Apr 2020** | Smart Recruitment Agent | Client: United Software Group, OH, USA
 
-- Architected Smart Recruitment Agent — microservices platform on Kubernetes with Istio service mesh, serving 500+ HR recruiters with 99.9% uptime across 15+ services
+- Architected Smart Recruitment Agent - microservices platform on Kubernetes with Istio service mesh, serving 500+ HR recruiters with 99.9% uptime across 15+ services
 - Implemented ML-driven candidate matching and resume parsing using NLP techniques for intelligent skill extraction and job-candidate scoring
 - Implemented zero-downtime deployment with ELK stack monitoring and CI/CD pipeline reducing deployment from 4 hours to 15 minutes
 
@@ -85,12 +85,12 @@ LinkedIn: linkedin.com/in/harishankar-somasundaram | GitHub: github.com/HSE-Puls
 ### MSc Artificial Intelligence | Dublin Business School, Dublin, Ireland
 **2025 – 2026** | First Class Honours (1:1)
 
-**Capstone:** HSE-Pulse — Production-grade healthcare AI platform with 4 ML services across 17 containerised microservices
+**Capstone:** HSE-Pulse - Production-grade healthcare AI platform with 4 ML services across 17 containerised microservices
 
-- **DES-MARL:** Multi-Agent RL (MADDPG/MAPPO) for hospital resource optimisation — 92.9% wait time reduction, 137% throughput improvement
-- **CarePlanPlus:** BERT treatment pathway recommendation — 96 procedure classes, 6-page React dashboard with NIES analytics
-- **PulseNotes:** ClinicalBERT RAG pipeline — 22,184 document chunks from 1,203 patients
-- **PulseFlow:** LSTM trolley forecasting — 12 Irish hospitals, MAE ~6.9, 5-page React dashboard with MLflow
+- **DES-MARL:** Multi-Agent RL (MADDPG/MAPPO) for hospital resource optimisation - 92.9% wait time reduction, 137% throughput improvement
+- **CarePlanPlus:** BERT treatment pathway recommendation - 96 procedure classes, 6-page React dashboard with NIES analytics
+- **PulseNotes:** ClinicalBERT RAG pipeline - 22,184 document chunks from 1,203 patients
+- **PulseFlow:** LSTM trolley forecasting - 12 Irish hospitals, MAE ~6.9, 5-page React dashboard with MLflow
 
 ### BE Computer Science & Engineering | Anna University, India
 **2008 – 2012** | Arunai Engineering College
@@ -121,17 +121,17 @@ Microservice Design, REST/WebSocket APIs, Nginx, Apache Tomcat, Microsoft BizTal
 
 ## WORK AUTHORISATION
 
-**Stamp 1G** — Eligible to work full-time in Ireland without employer sponsorship
+**Stamp 1G** - Applied and awaiting visa decision. Once approved, eligible to work full-time in Ireland without employer sponsorship.
 
 ---
 
 ## PROFESSIONAL PROJECTS (COMMERCIAL)
 
-1. **Cloudply AIOps Platform** — 30+ microservices, LLM Terraform Engine, 40% faster deployments (Kaiburr LLC)
-2. **Smart Recruitment Agent** — Kubernetes/Istio microservices with ML matching (United Software Group)
-3. **ESB Advance Metrics** — Spark MLlib time-series forecasting (Ocwen Mortgage)
-4. **Data Wrangling Platform** — TensorFlow OCR, NLP search (Ocwen Mortgage)
-5. **SPoT Provisioning** — Enterprise system provisioning (IntelligIS)
-6. **Patient Tracking** — HIPAA-compliant medical platform (Advanced Diagnostic Medical)
-7. **Tour Operator Platform** — Azure cloud travel management (Afwaj Tours, Dubai)
-8. **SOLO Order Management** — BizTalk integration (Carillion Telent, UK)
+1. **Cloudply AIOps Platform** - 30+ microservices, LLM Terraform Engine, 40% faster deployments (Kaiburr LLC)
+2. **Smart Recruitment Agent** - Kubernetes/Istio microservices with ML matching (United Software Group)
+3. **ESB Advance Metrics** - Spark MLlib time-series forecasting (Ocwen Mortgage)
+4. **Data Wrangling Platform** - TensorFlow OCR, NLP search (Ocwen Mortgage)
+5. **SPoT Provisioning** - Enterprise system provisioning (IntelligIS)
+6. **Patient Tracking** - HIPAA-compliant medical platform (Advanced Diagnostic Medical)
+7. **Tour Operator Platform** - Azure cloud travel management (Afwaj Tours, Dubai)
+8. **SOLO Order Management** - BizTalk integration (Carillion Telent, UK)

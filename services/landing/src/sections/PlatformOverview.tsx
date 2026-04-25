@@ -3,7 +3,7 @@ import SectionHeading from '../components/SectionHeading'
 import TechBadge from '../components/TechBadge'
 
 const stats = [
-  { label: 'AI Services', value: '6' },
+  { label: 'AI Services', value: '5' },
   { label: 'Containers', value: '19' },
   { label: 'Architectures', value: 'Agentic / MARL / LSTM / BERT' },
   { label: 'Observability', value: 'Full Stack' },
@@ -13,7 +13,7 @@ const pillars = [
   {
     icon: Cpu,
     title: 'Deep Learning & Agentic Inference',
-    description: 'Six AI services — LangGraph agentic orchestrator with GPT-4o, PulseDiagAgent differential diagnosis, MADDPG/MAPPO hospital optimisation, LSTM ED trolley forecasting, BERT treatment pathways, ClinicalBERT document RAG — each served via FastAPI.',
+    description: 'Five AI services - LangGraph agentic orchestrator with GPT-4o, MADDPG/MAPPO hospital optimisation, BERT treatment pathways, ClinicalBERT document RAG, and LSTM ED trolley forecasting - each served via FastAPI.',
   },
   {
     icon: Layers,
@@ -49,7 +49,7 @@ export default function PlatformOverview() {
         <SectionHeading
           tag="Architecture"
           title="Platform Overview"
-          description="A containerised microservice platform integrating six specialised healthcare AI services — including an agentic orchestrator — with production-grade observability, experiment tracking, and infrastructure automation."
+          description="A containerised microservice platform integrating five specialised healthcare AI services - including an agentic orchestrator - with production-grade observability, experiment tracking, and infrastructure automation."
         />
 
         {/* Stats bar */}
@@ -67,7 +67,7 @@ export default function PlatformOverview() {
         {/* Architecture diagram */}
         <div className="glass rounded-2xl p-8 mb-16">
           <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">System Architecture</h3>
-          <div className="space-y-4" role="img" aria-label="System architecture diagram showing client browser connecting through Nginx reverse proxy to HSE Pulse Agent orchestrator, which routes to 5 AI services (PulseDiagAgent, DES-MARL, CarePlanPlus, PulseNotes, PulseFlow), backed by MongoDB, MLflow with MinIO, and Prometheus with Grafana">
+          <div className="space-y-4" role="img" aria-label="System architecture: client browser through Nginx reverse proxy to HSE Pulse Agent orchestrator, which routes to four AI services (DES-MARL, CarePlanPlus, PulseNotes, PulseFlow), backed by MongoDB, MLflow with MinIO, and Prometheus with Grafana">
             {/* Client layer */}
             <div className="flex justify-center">
               <div className="px-6 py-3 rounded-xl bg-primary-500/10 border border-primary-500/20 text-sm text-primary-600 font-medium">
@@ -81,7 +81,7 @@ export default function PlatformOverview() {
             {/* Nginx proxy */}
             <div className="flex justify-center">
               <div className="px-8 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-sm text-cyan-600 font-medium">
-                Nginx Reverse Proxy — :8090
+                Nginx Reverse Proxy - :8090
               </div>
             </div>
             <div className="flex justify-center">
@@ -111,20 +111,11 @@ export default function PlatformOverview() {
                 <div className="w-px h-6 bg-slate-700" />
                 <div className="w-px h-6 bg-slate-700" />
                 <div className="w-px h-6 bg-slate-700" />
-                <div className="w-px h-6 bg-slate-700" />
               </div>
             </div>
 
             {/* Services */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-              <div className="rounded-xl bg-teal-500/5 border border-teal-500/15 p-4 text-center">
-                <div className="text-sm font-semibold text-teal-600 mb-1">PulseDiagAgent</div>
-                <div className="text-xs text-gray-500 mb-2">Differential Diagnosis</div>
-                <div className="flex flex-wrap justify-center gap-1">
-                  <TechBadge label="GPT-4o" color="green" />
-                  <TechBadge label="CoT" color="green" />
-                </div>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/15 p-4 text-center">
                 <div className="text-sm font-semibold text-emerald-600 mb-1">DES-MARL</div>
                 <div className="text-xs text-gray-500 mb-2">Multi-Agent RL</div>

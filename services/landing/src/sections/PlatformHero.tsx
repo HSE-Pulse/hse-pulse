@@ -26,9 +26,9 @@ export default function PlatformHero() {
         </p>
 
         <p className="text-base text-gray-500 max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-up" style={{ animationDelay: '0.3s' }}>
-          Five specialised AI services — Agentic AI orchestration with LangGraph,
+          Five specialised AI services - Agentic AI orchestration with LangGraph,
           Multi-Agent RL hospital optimisation, BERT treatment pathway recommendation,
-          ClinicalBERT document intelligence, and LSTM ED trolley forecasting — unified
+          ClinicalBERT document intelligence, and LSTM ED trolley forecasting - unified
           into a single observable, containerised platform.
         </p>
 
