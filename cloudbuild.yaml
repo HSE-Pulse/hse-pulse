@@ -39,7 +39,7 @@ steps:
       - run
       - --filename=./infrastructure/k8s/landing/deployment.yaml
       - --image=europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/landing:$COMMIT_SHA
-      - --location=europe-west1
+      - --location=europe-west1-b
       - --cluster=hse-pulse-cluster
     id: 'deploy-landing'
     waitFor: ['push-landing']
@@ -49,7 +49,7 @@ steps:
       - run
       - --filename=./infrastructure/k8s/medisync/deployment.yaml
       - --image=europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/medisync:$COMMIT_SHA
-      - --location=europe-west1
+      - --location=europe-west1-b
       - --cluster=hse-pulse-cluster
     id: 'deploy-medisync'
     waitFor: ['push-medisync']
@@ -59,7 +59,7 @@ steps:
       - run
       - --filename=./infrastructure/k8s/pulseflow/deployment.yaml
       - --image=europe-west1-docker.pkg.dev/$PROJECT_ID/hse-pulse/pulseflow:$COMMIT_SHA
-      - --location=europe-west1
+      - --location=europe-west1-b
       - --cluster=hse-pulse-cluster
     id: 'deploy-pulseflow'
     waitFor: ['push-pulseflow']
@@ -68,7 +68,7 @@ steps:
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['rollout', 'restart', 'deployment/landing', '-n', 'hse-pulse']
     env:
-      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
     id: 'restart-landing'
     waitFor: ['deploy-landing']
@@ -76,7 +76,7 @@ steps:
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['rollout', 'restart', 'deployment/medisync', '-n', 'hse-pulse']
     env:
-      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
     id: 'restart-medisync'
     waitFor: ['deploy-medisync']
@@ -84,7 +84,7 @@ steps:
   - name: 'gcr.io/cloud-builders/kubectl'
     args: ['rollout', 'restart', 'deployment/pulseflow', '-n', 'hse-pulse']
     env:
-      - 'CLOUDSDK_COMPUTE_REGION=europe-west1'
+      - 'CLOUDSDK_COMPUTE_ZONE=europe-west1-b'
       - 'CLOUDSDK_CONTAINER_CLUSTER=hse-pulse-cluster'
     id: 'restart-pulseflow'
     waitFor: ['deploy-pulseflow']
